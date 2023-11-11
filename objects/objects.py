@@ -7,7 +7,7 @@ import random as random
 
 class Sprite(pygame.sprite.Sprite):
     def __init__(self, height: int, width: int, x: float, y: float,\
-                  r: float, id: int, file_name: str, name: str):
+                  r: float, id: int, stage: int, file_name: str, name: str):
         """
         @brief    Base class Object used to store basic data for elements loaded to the screen or
                   running in the background.
@@ -23,9 +23,7 @@ class Sprite(pygame.sprite.Sprite):
         super().__init__()
 
 
-        self.default_surface = pygame.transform.smoothscale(pygame.image.load(os.path.join("media", file_name)).convert_alpha(), (width, height))
-        self.surface = self.default_surface
-        self.image = self.surface
+        self.set_texture(stage, name, file_name, width, height)
 
         self.set_display_x(x)
         self.set_display_y(y)
@@ -62,10 +60,15 @@ class Sprite(pygame.sprite.Sprite):
         self.rect.x = self.display_x() - (self.width // 2)
         self.rect.y = self.display_y() - (self.height // 2)
 
+    def set_texture(self, stage: int, name: str, file_name: str, width: int, height: int):
+        self.default_surface = pygame.transform.smoothscale(pygame.image.load(os.path.join("assets", "tex", name, stage, file_name)).convert_alpha(), (width, height))
+        self.surface = self.default_surface
+        self.image = self.surface
+
 
 class Player(Sprite):
     def __init__(self, height: int, width: int, x: float, y: float,\
-                  r: float, id: int, file_name: str, avatar_name: str):
+                  r: float, id: int, stage: int, file_name: str, avatar_name: str):
         """
         @brief    Player object child of Sprite. Represents the player on screen.
         @param height    The height of the sprite to draw.
@@ -77,7 +80,7 @@ class Player(Sprite):
         @param file_name    The file name of the sprite image.
         @param avatar_name    The name of the avatar.
         """
-        super().__init__(height, width, x, y, r, id, file_name, avatar_name)
+        super().__init__(height, width, x, y, r, id, stage, file_name, avatar_name)
         self.x_pos = x
         self.y_pos = y
         self.ground = y
@@ -95,7 +98,7 @@ class Player(Sprite):
             case 1:
                 self.x_velocity = 10.0
             case 2:
-                if self.y_pos == self.ground: self.y_velocity = 20.0
+                if self.y_pos == self.ground: self.y_velocity = 40.0
 
     def process_physics(self):
 

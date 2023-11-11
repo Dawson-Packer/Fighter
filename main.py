@@ -17,6 +17,7 @@ def main():
     while game.isRunning:
         game.tick()
         time.sleep(game.delay)
+        
     logger.terminate()
     # th1.join()
     

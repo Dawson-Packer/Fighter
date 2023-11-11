@@ -32,13 +32,13 @@ class ProgramLogic:
         self.sprites_list = pygame.sprite.Group()
 
         # Background Object
-        self.background = obj.Sprite(800, 800, 400.0, 400.0, 0.0, -1, "background.png", "Background")
-        self.sprites_list.add(self.background)
+        # self.background = obj.Sprite(800, 800, 400.0, 400.0, 0.0, -1, "d", "background.png", "bg")
+        # self.sprites_list.add(self.background)
 
         # Player 1 Object
-        self.player_1 = obj.Player(64, 64, 200.0, 400.0, 0.0, 1, "Robot.png", "rj")
+        self.player_1 = obj.Player(128, 128, 200.0, 400.0, 0.0, 1, "s", "0.png", "char1")
         self.sprites_list.add(self.player_1)
 
         # Player 2 Object
-        self.player_2 = obj.Player(64, 64, 800.0, 400.0, 0.0, 2, "Robot.png", "rj")
+        self.player_2 = obj.Player(128, 128, 800.0, 400.0, 0.0, 2, "s", "0.png", "char1")
         self.sprites_list.add(self.player_2)
