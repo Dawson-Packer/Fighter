@@ -1,6 +1,5 @@
 from Window import *
 from ProgramLogic import *
-from AnimationHandler import *
 
 class Application:
     def __init__(self, title: str, dim_width: int, dim_height: int):
@@ -15,7 +14,6 @@ class Application:
         self.dimensions = (dim_width, dim_height)
         self.wd = Window(title, (200, 200, 200), self.dimensions[0], self.dimensions[1])
         self.pl = ProgramLogic(dim_width, dim_height, (0, 0))
-        self.an = AnimationHandler()
         self.isRunning = self.wd.isRunning
         self.isPaused = False
         self.delay = 0.050 # seconds
@@ -31,15 +29,8 @@ class Application:
         self.game_tick += 1
         self.window_tick += 1
         
-        
-        self.an.animation_tick()
         if self.game_tick == 1 and not self.isPaused:
             self.process_events()
-            self.an.animate_sprite(self.pl.player_1, "s")
-            if self.pl.player_1.x_velocity != 0.0: self.an.animate_sprite(self.pl.player_1, "w")
-            self.an.animate_sprite(self.pl.player_2, "s")
-            if self.pl.player_2.x_velocity != 0.0: self.an.animate_sprite(self.pl.player_2, "w")
-
             self.pl.tick(self.game_tick * self.delay)
             self.game_tick = 0
         if not self.isRunning: return
@@ -63,6 +54,8 @@ class Application:
             self.pl.player_1.move(1)
         if keys[pygame.K_w]:
             self.pl.player_1.move(2)
+        if keys[pygame.K_SPACE]:
+            pass
 
     def quit(self):
         """
