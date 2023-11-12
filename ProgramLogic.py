@@ -1,4 +1,5 @@
 import pygame as pygame
+import random as random
 import objects.Objects as obj
 
 class ProgramLogic:
@@ -19,6 +20,8 @@ class ProgramLogic:
         @brief    Runs all functions in the program necessary in one iteration.
         @param time_passed    The time passed since last execution.
         """
+        self.sprites_list.empty()
+
         self.player_1.process_physics()
         self.player_2.process_physics()
 
@@ -26,15 +29,19 @@ class ProgramLogic:
         self.player_2.animate(not self.player_2.direction_right, False)
 
 
-        self.player_1.reset_player_status()
-        self.player_2.reset_player_status()
+        self.player_1.tick()
+        self.player_2.tick()
 
+        self.sprites_list.add(self.player_2)
+        self.sprites_list.add(self.player_1)
+        self.sprites_list.add(self.crit_list)
 
         self.sprites_list.update()
        
     def setup(self):
         """Setup specific ProgramLogic class components for this program."""
         self.sprites_list = pygame.sprite.Group()
+        self.crit_list = []
 
         # Background Object
         # self.background = obj.Sprite(800, 800, 400.0, 400.0, 0.0, -1, "d", "background.png", "bg")
@@ -61,5 +68,16 @@ class ProgramLogic:
                                    128
                                    )
 
-        self.sprites_list.add(self.player_2)
-        self.sprites_list.add(self.player_1)
+
+    # def damage_player(self, player, amount):
+    #     if amount < 10.0:
+    #         self.crit_list.append(obj.Crit("yellow_star",
+    #                                        player.x_pos + random.uniform(-64, 64),
+    #                                        player.y_pos + random.uniform(-32, -96),
+    #                                        random.uniform(0, 360.0),
+    #                                        len(self.crit_list),
+    #                                        24,
+    #                                        24
+    #                                        ))
+            
+        

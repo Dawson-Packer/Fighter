@@ -1,5 +1,6 @@
 from Window import *
 from ProgramLogic import *
+from config import *
 
 class Application:
     def __init__(self, title: str, dim_width: int, dim_height: int):
@@ -52,10 +53,29 @@ class Application:
             self.pl.player_1.move(0)
         if keys[pygame.K_d]:
             self.pl.player_1.move(1)
-        if keys[pygame.K_w]:
-            self.pl.player_1.move(2)
         if keys[pygame.K_SPACE]:
-            pass
+            self.pl.player_1.move(2)
+        if keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]:
+            if keys[pygame.K_LSHIFT]:
+                if keys[pygame.K_LEFT]: 
+                    self.pl.player_1.kick(pygame.K_LEFT,
+                                          self.pl.player_2,
+                                          player_stats.KICK_DAMAGE)
+                if keys[pygame.K_RIGHT]: 
+                    self.pl.player_1.kick(pygame.K_RIGHT,
+                                          self.pl.player_2,
+                                          player_stats.KICK_DAMAGE)
+
+            else:
+                # self.pl.damage_player(self.pl.player_2, player_stats.PUNCH_DAMAGE)
+                if keys[pygame.K_LEFT]: 
+                    self.pl.player_1.punch(pygame.K_LEFT,
+                                          self.pl.player_2,
+                                          player_stats.PUNCH_DAMAGE)
+                if keys[pygame.K_RIGHT]: 
+                    self.pl.player_1.punch(pygame.K_RIGHT,
+                                          self.pl.player_2,
+                                          player_stats.PUNCH_DAMAGE)
 
     def quit(self):
         """

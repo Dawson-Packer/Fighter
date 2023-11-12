@@ -120,6 +120,9 @@ class AnimatedSprite(Sprite):
         super().__init__(height, width, x_pos, y_pos, rotation, sprite_id, category, file_name, name)
         self.anim_tick_s = 0
         self.anim_tick_w = 0
+        self.anim_tick_j = 0
+        self.anim_tick_p = -1
+        self.anim_tick_k = -1
 
     
     def animate(self, xFlipped: bool, yFlipped: bool):
@@ -130,14 +133,26 @@ class AnimatedSprite(Sprite):
         @param xFlipped    A boolean indicating whether the texture is flipped horizontally.
         @param yFlipped    A boolean indicating whether the texture is flipped vertically.
         """
+        if self.anim_tick_p != -1: self.status = player_status.PLAYER_PUNCHING
+        if self.anim_tick_k != -1: self.status = player_status.PLAYER_KICKING
 
         match self.status:
             case player_status.PLAYER_STANDING:
-                self.set_texture(self.name, "s", str(self.anim_tick_s) + ".png",
+                self.set_texture(self.name, "s", str(self.anim_tick_s // 4) + ".png",
                                  self.width, self.height)
             case player_status.PLAYER_WALKING:
-                self.set_texture(self.name, "w", str(self.anim_tick_w) + ".png",
+                self.set_texture(self.name, "w", str(self.anim_tick_w // 2) + ".png",
                                  self.width, self.height)
+            case player_status.PLAYER_JUMPING:
+                self.set_texture(self.name, "j", str(self.anim_tick_j) + ".png",
+                                 self.width, self.height)
+            case player_status.PLAYER_PUNCHING:
+                self.set_texture(self.name, "p", str(self.anim_tick_p) + ".png",
+                                 self.width, self.height)
+            case player_status.PLAYER_KICKING:
+                self.set_texture(self.name, "k", str(self.anim_tick_k) + ".png",
+                                 self.width, self.height)
+                
                 
         if xFlipped:
             self.flip_texture(True, False)
@@ -146,7 +161,13 @@ class AnimatedSprite(Sprite):
         self.update_sprite(self.x_pos, self.y_pos)
         # Tick counter
         self.anim_tick_s += 1
-        if self.anim_tick_s == 4: self.anim_tick_s = 0
+        if self.anim_tick_s == 7: self.anim_tick_s = 0
         self.anim_tick_w += 1
-        if self.anim_tick_w == 4: self.anim_tick_w = 0
+        if self.anim_tick_w == 7: self.anim_tick_w = 0
+        self.anim_tick_j += 1
+        if self.anim_tick_j == 4: self.anim_tick_j = 0
+        if self.anim_tick_p >= 0: self.anim_tick_p += 1
+        if self.anim_tick_p == 3: self.anim_tick_p = -1
+        if self.anim_tick_k >= 0: self.anim_tick_k += 1
+        if self.anim_tick_k == 3: self.anim_tick_k = -1
 
