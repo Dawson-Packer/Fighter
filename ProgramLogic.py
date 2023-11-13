@@ -1,5 +1,6 @@
 import pygame as pygame
 import random as random
+import objects.Sprites as Sp
 import objects.Objects as obj
 
 class ProgramLogic:
@@ -32,6 +33,7 @@ class ProgramLogic:
         self.player_1.tick()
         self.player_2.tick()
 
+        self.sprites_list.add(self.background)
         self.sprites_list.add(self.player_2)
         self.sprites_list.add(self.player_1)
         self.sprites_list.add(self.crit_list)
@@ -44,14 +46,14 @@ class ProgramLogic:
         self.crit_list = []
 
         # Background Object
-        # self.background = obj.Sprite(800, 800, 400.0, 400.0, 0.0, -1, "d", "background.png", "bg")
-        # self.sprites_list.add(self.background)
+        self.background = Sp.Sprite(600, 1000, 500.0, 300.0, 0.0, -1, "default", "snow.png", "background")
+        self.sprites_list.add(self.background)
 
         # Player 1 Object
         self.player_1 = obj.Player("stickman",
                                    1,
                                    200.0,
-                                   400.0,
+                                   425.0,
                                    0.0,
                                    1,
                                    128,
@@ -61,7 +63,7 @@ class ProgramLogic:
         self.player_2 = obj.Player("stickman",
                                    2,
                                    800.0,
-                                   400.0,
+                                   425.0,
                                    0.0,
                                    2,
                                    128,
