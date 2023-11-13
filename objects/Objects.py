@@ -3,6 +3,10 @@ import math as math
 import objects.Sprites as Sp
 from config import *
 
+def facing(direction: int, player, object):
+    if object.x_pos > player.x_pos and direction > 0 or\
+    object.x_pos < player.x_pos and direction < 0: return True
+    else: return False
 
 class Player(Sp.AnimatedSprite):
     def __init__(self,
@@ -33,8 +37,11 @@ class Player(Sp.AnimatedSprite):
         self.y_pos = y_pos
         self.ground = y_pos
         self.health = 100.0
+        self.hitbox_height = height - 30
+        self.basic_attack_offset_height = [26, 0]
         self.x_velocity = 0.0
         self.y_velocity = 0.0
+        self.move_cooldown = 0
         self.punch_cooldown = 0
         self.kick_cooldown = 0
 
@@ -60,60 +67,78 @@ class Player(Sp.AnimatedSprite):
                     self.y_velocity = 30.0
 
     # Moves
+    def duck(self):
+        self.status = player_status.PLAYER_DUCKING
 
     def punch(self, direction: int, player, amount):
 
         if self.punch_cooldown == 0:
-            if self.direction_right and direction == pygame.K_LEFT:
+            if self.direction_right and direction == -1:
                 self.direction_right = not self.direction_right
                 self.flip_texture(True, False)
-            elif not self.direction_right and direction == pygame.K_RIGHT:
+                self.move_cooldown = 3
+            elif not self.direction_right and direction == 1:
                 self.direction_right = not self.direction_right
                 self.flip_texture(True, False)
+                self.move_cooldown = 3
             self.status = player_status.PLAYER_PUNCHING
             self.anim_tick_p = 0
-            if abs(player.x_pos - self.x_pos) < 70 and abs(player.y_pos - self.y_pos) < 40:
+            if abs(player.x_pos - self.x_pos) < 70 and\
+            (self.y_pos - self.basic_attack_offset_height[0]) >=\
+                (player.y_pos - player.hitbox_height) and facing(direction, self, player):
                 player.damage(amount)
             self.punch_cooldown = 5
+            print(self.y_pos - self.basic_attack_offset_height[0], player.y_pos - player.hitbox_height)
+            print(abs(player.x_pos - self.x_pos) < 70)
+            print(facing(direction, self, player))
 
     
     def kick(self, direction: int, player, amount):
 
         if self.kick_cooldown == 0:
-            if self.direction_right and direction == pygame.K_LEFT:
+            if self.direction_right and direction == -1:
                 self.direction_right = not self.direction_right
                 self.flip_texture(True, False)
-            elif not self.direction_right and direction == pygame.K_RIGHT:
+                self.move_cooldown = 3
+            elif not self.direction_right and direction == 1:
                 self.direction_right = not self.direction_right
                 self.flip_texture(True, False)
+                self.move_cooldown = 3
             self.status = player_status.PLAYER_KICKING
             self.anim_tick_k = 0
-            if abs(player.x_pos - self.x_pos) < 70 and abs(player.y_pos - self.y_pos) < 50:
+            if abs(player.x_pos - self.x_pos) < 70 and\
+            (self.y_pos - self.basic_attack_offset_height[1]) >=\
+                (player.y_pos - player.hitbox_height) and facing(direction, self, player):
                 player.damage(amount)
             self.kick_cooldown = 20
+        print(self.y_pos - self.basic_attack_offset_height[1], player.y_pos - player.hitbox_height)
 
     def process_physics(self):
         """Change the Player's position due to its velocity."""
 
-        if (self.x_velocity < 0 and self.direction_right) or\
-           (self.x_velocity > 0 and not self.direction_right):
-            self.direction_right = not self.direction_right
-            self.flip_texture(True, False)
-        if self.x_velocity != 0.0: self.status = player_status.PLAYER_WALKING
-        self.x_pos += self.x_velocity
-        self.x_velocity = 0.0
+        if self.move_cooldown == 0:
+            if self.y_velocity != 0.0:
+                self.status = player_status.PLAYER_JUMPING
+            self.y_pos -= self.y_velocity
+            if self.y_pos > self.ground:
+                self.y_pos = self.ground
+                self.y_velocity = 0.0
+            if self.y_pos < self.ground:
+                self.y_velocity -= 9.8
 
-        if self.x_pos - (self.width / 2) < 0.0: self.x_pos = 0.0 + (self.width / 2)
-        elif self.x_pos + (self.width / 2) > 1000.0: self.x_pos = 1000.0 - (self.width / 2)
+            if self.y_velocity == 0.0:
+                if (self.x_velocity < 0 and self.direction_right) or\
+                (self.x_velocity > 0 and not self.direction_right):
+                    self.direction_right = not self.direction_right
+                    self.flip_texture(True, False)
+                if self.x_velocity != 0.0: self.status = player_status.PLAYER_WALKING
+                self.x_pos += self.x_velocity
+                self.x_velocity = 0.0
 
-        if self.y_velocity != 0.0:
-            self.status = player_status.PLAYER_JUMPING
-        self.y_pos -= self.y_velocity
-        if self.y_pos > self.ground:
-            self.y_pos = self.ground
-            self.y_velocity = 0.0
-        if self.y_pos < self.ground:
-            self.y_velocity -= 9.8
+                if self.x_pos - (self.width / 2) < 0.0: self.x_pos = 0.0 + (self.width / 2)
+                elif self.x_pos + (self.width / 2) > 1000.0: self.x_pos = 1000.0 - (self.width / 2)
+
+        
         self.update_sprite(self.x_pos, self.y_pos)
 
     def damage(self, value: float):
@@ -127,6 +152,7 @@ class Player(Sp.AnimatedSprite):
     def tick(self):
         """Execute actions every tick for the player."""
         self.status = player_status.PLAYER_STANDING
+        if self.move_cooldown > 0: self.move_cooldown -= 1
         if self.punch_cooldown > 0: self.punch_cooldown -= 1
         if self.kick_cooldown > 0: self.kick_cooldown -= 1
 

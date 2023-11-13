@@ -55,27 +55,30 @@ class Application:
             self.pl.player_1.move(1)
         if keys[pygame.K_SPACE]:
             self.pl.player_1.move(2)
-        if keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]:
-            if keys[pygame.K_LSHIFT]:
+        if (keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]) and not keys[pygame.K_LSHIFT]:
+                        # self.pl.damage_player(self.pl.player_2, player_stats.PUNCH_DAMAGE)
                 if keys[pygame.K_LEFT]: 
-                    self.pl.player_1.kick(pygame.K_LEFT,
+                    self.pl.player_1.punch(-1,
+                                          self.pl.player_2,
+                                          player_stats.PUNCH_DAMAGE)
+                if keys[pygame.K_RIGHT]: 
+                    self.pl.player_1.punch(1,
+                                          self.pl.player_2,
+                                          player_stats.PUNCH_DAMAGE)
+        if keys[pygame.K_LSHIFT] and (keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]):
+                print("kick")
+                if keys[pygame.K_LEFT]: 
+                    self.pl.player_1.kick(-1,
                                           self.pl.player_2,
                                           player_stats.KICK_DAMAGE)
                 if keys[pygame.K_RIGHT]: 
-                    self.pl.player_1.kick(pygame.K_RIGHT,
+                    self.pl.player_1.kick(1,
                                           self.pl.player_2,
                                           player_stats.KICK_DAMAGE)
+        if keys[pygame.K_LSHIFT] and not (keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]):
+            print("duck")
+            self.pl.player_1.duck()            
 
-            else:
-                # self.pl.damage_player(self.pl.player_2, player_stats.PUNCH_DAMAGE)
-                if keys[pygame.K_LEFT]: 
-                    self.pl.player_1.punch(pygame.K_LEFT,
-                                          self.pl.player_2,
-                                          player_stats.PUNCH_DAMAGE)
-                if keys[pygame.K_RIGHT]: 
-                    self.pl.player_1.punch(pygame.K_RIGHT,
-                                          self.pl.player_2,
-                                          player_stats.PUNCH_DAMAGE)
 
     def quit(self):
         """
