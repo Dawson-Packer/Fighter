@@ -64,11 +64,12 @@ class Player(Sp.AnimatedSprite):
             case 2:
                 if self.y_pos == self.ground:
                     self.anim_tick_j = 0
-                    self.y_velocity = 30.0
+                    self.y_velocity = 35.0
 
     # Moves
     def duck(self):
-        self.status = player_status.PLAYER_DUCKING
+        if self.status != player_status.PLAYER_JUMPING:
+            self.status = player_status.PLAYER_DUCKING
 
     def punch(self, direction: int, player, amount):
 

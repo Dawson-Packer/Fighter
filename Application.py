@@ -76,7 +76,6 @@ class Application:
                                           self.pl.player_2,
                                           player_stats.KICK_DAMAGE)
         if keys[pygame.K_LSHIFT] and not (keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]):
-            print("duck")
             self.pl.player_1.duck()            
 
 
