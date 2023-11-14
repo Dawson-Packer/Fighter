@@ -1,7 +1,6 @@
 from Application import *
 from Logger import *
 import time
-import threading as th
 import os
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))

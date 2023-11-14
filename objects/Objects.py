@@ -35,6 +35,7 @@ class Player(Sp.AnimatedSprite):
         super().__init__(height, width, x_pos, y_pos, rotation, object_id, "s", "0.png", char_name)
         self.direction_right = True
         self.STATUS_CHANGED = False
+        self.status = -1
         self.x_pos = x_pos
         self.y_pos = y_pos
         self.ground = y_pos
@@ -100,9 +101,6 @@ class Player(Sp.AnimatedSprite):
                 audio.punch()
                 player.damage(amount)
             self.punch_cooldown = 5
-            print(self.y_pos - self.basic_attack_offset_height[0], player.y_pos - player.hitbox_height)
-            print(abs(player.x_pos - self.x_pos) < 55)
-            print(facing(direction, self, player))
 
     
     def kick(self, direction: int, player, amount):
@@ -125,7 +123,6 @@ class Player(Sp.AnimatedSprite):
                 audio.kick()
                 player.damage(amount)
             self.kick_cooldown = 20
-        print(self.y_pos - self.basic_attack_offset_height[1], player.y_pos - player.hitbox_height)
 
     def process_physics(self):
         """Change the Player's position due to its velocity."""
@@ -167,31 +164,36 @@ class Player(Sp.AnimatedSprite):
     def die(self):
         print("Player died")
 
+    def reset_status(self):
+        self.status = player_status.PLAYER_STANDING
+
     def update_status(self):
         if self.status == player_status.PLAYER_STANDING:
             self.speed = 15.0
+            self.hitbox_height = self.height - 30
         if self.status == player_status.PLAYER_WALKING:
-            pass
+            self.hitbox_height = self.height - 30
         if self.status == player_status.PLAYER_JUMPING:
-            pass
+            self.hitbox_height = self.height - 30
         if self.status == player_status.PLAYER_PUNCHING:
-            pass
+            self.hitbox_height = self.height - 30
         if self.status == player_status.PLAYER_KICKING:
-            pass
+            self.hitbox_height = self.height - 30
         if self.status == player_status.PLAYER_DUCKING:
-            pass
+            self.hitbox_height = self.height - 60
         if self.status == player_status.PLAYER_CROUCHING:
             self.speed = 5.0
+            self.hitbox_height = self.height - 50
         if self.status == player_status.PLAYER_DEFENDING:
-            pass
+            self.hitbox_height = self.height - 30
         if self.status == player_status.PLAYER_MOVE1:
-            pass
+            self.hitbox_height = self.height - 30
         if self.status == player_status.PLAYER_MOVE2:
-            pass
+            self.hitbox_height = self.height - 30
         if self.status == player_status.PLAYER_MOVE3:
-            pass
+            self.hitbox_height = self.height - 30
         if self.status == player_status.PLAYER_ULTIMATE:
-            pass
+            self.hitbox_height = self.height - 30
 
     def tick(self):
         """Execute actions every tick for the player."""
