@@ -11,6 +11,10 @@ def kick():
     kick_sound = pygame.mixer.Sound("assets/sounds/kick.wav")
     pygame.mixer.Sound.play(kick_sound)
 
+def nero_meow():
+    meow_sound = pygame.mixer.Sound("assets/sounds/nero_meow.wav")
+    pygame.mixer.Sound.play(meow_sound)
+
 def miss():
     pass
 
