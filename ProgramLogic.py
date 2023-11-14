@@ -23,6 +23,9 @@ class ProgramLogic:
         """
         self.sprites_list.empty()
 
+        self.player_1.update_status()
+        self.player_2.update_status()
+
         self.player_1.process_physics()
         self.player_2.process_physics()
 

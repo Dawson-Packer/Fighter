@@ -79,7 +79,13 @@ class Sprite(pygame.sprite.Sprite):
         @param width    The width of the image to load.
         @param height    The height of the image to load.
         """
-        self.image = pygame.transform.smoothscale(pygame.image.load(os.path.join("assets", "texture", char_name, category, file_name)).convert_alpha(), (width, height))
+        self.image = pygame.transform.smoothscale(pygame.image.load(os.path.join("assets",
+                                                                                 "textures",
+                                                                                 char_name,
+                                                                                 category,
+                                                                                 file_name)).
+                                                                                 convert_alpha(),
+                                                                                 (width, height))
         self.rect = self.image.get_rect()
 
 
@@ -124,6 +130,7 @@ class AnimatedSprite(Sprite):
         self.anim_tick_p = -1
         self.anim_tick_k = -1
         self.anim_tick_d = 0
+        self.anim_tick_c = 0
 
     
     def animate(self, xFlipped: bool, yFlipped: bool):
@@ -156,6 +163,9 @@ class AnimatedSprite(Sprite):
             case player_status.PLAYER_DUCKING:
                 self.set_texture(self.name, "d", str(self.anim_tick_d) + ".png",
                                  self.width, self.height)
+            case player_status.PLAYER_CROUCHING:
+                self.set_texture(self.name, "c", str(self.anim_tick_c // 4) + ".png",
+                                 self.width, self.height)
                 
         if xFlipped:
             self.flip_texture(True, False)
@@ -170,9 +180,15 @@ class AnimatedSprite(Sprite):
         self.anim_tick_j += 1
         if self.anim_tick_j == 4: self.anim_tick_j = 0
         if self.anim_tick_p >= 0: self.anim_tick_p += 1
-        if self.anim_tick_p == 3: self.anim_tick_p = -1
+        if self.anim_tick_p == 3:
+            self.status = player_status.PLAYER_STANDING
+            self.anim_tick_p = -1
         if self.anim_tick_k >= 0: self.anim_tick_k += 1
-        if self.anim_tick_k == 3: self.anim_tick_k = -1
+        if self.anim_tick_k == 3:
+            self.status = player_status.PLAYER_STANDING
+            self.anim_tick_k = -1
         self.anim_tick_d += 1
         if self.anim_tick_d == 1: self.anim_tick_d = 0
+        self.anim_tick_c += 1
+        if self.anim_tick_c == 15: self.anim_tick_c = 0
 

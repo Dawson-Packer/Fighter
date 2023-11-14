@@ -49,9 +49,15 @@ class Application:
                 self.quit()
                 return
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_a]:
+        if keys[pygame.K_a] and not keys[pygame.K_LSHIFT]:
             self.pl.player_1.move(0)
-        if keys[pygame.K_d]:
+        if keys[pygame.K_d] and not keys[pygame.K_LSHIFT]:
+            self.pl.player_1.move(1)
+        if keys[pygame.K_a] and keys[pygame.K_LSHIFT]:
+            self.pl.player_1.crouch()
+            self.pl.player_1.move(0)
+        if keys[pygame.K_d] and keys[pygame.K_LSHIFT]:
+            self.pl.player_1.crouch()
             self.pl.player_1.move(1)
         if keys[pygame.K_SPACE]:
             self.pl.player_1.move(2)
@@ -75,7 +81,8 @@ class Application:
                     self.pl.player_1.kick(1,
                                           self.pl.player_2,
                                           player_stats.KICK_DAMAGE)
-        if keys[pygame.K_LSHIFT] and not (keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]):
+        if keys[pygame.K_LSHIFT] and not (keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]) and\
+            not (keys[pygame.K_a] or keys[pygame.K_d]):
             self.pl.player_1.duck()            
 
 
