@@ -18,42 +18,29 @@ class Application:
         self.wd = Window(title, (200, 200, 200), self.dimensions[0], self.dimensions[1])
         self.pl = ProgramLogic(dim_width, dim_height, (0, 0))
         self.isRunning = self.wd.isRunning
-        self.app_stage = 0
         self.isPaused = False
         self.delay = 0.050 # seconds
         self.game_tick = 0
         self.window_tick = 0
-
-        self.cmm = com.Communication()
-        self.cmm.listen_for_connections()
-
-        # self.cmm_conn = th.Thread(target=self.cmm.listen_for_connections)
-        # self.cmm_conn.start()
     
     def tick(self):
         """
         @brief    Executes actions on a gameloop. This function itself does not loop, but is called
                   outside of the class.
         """
-        self.cmm.receive()
 
-        if self.app_stage == 0:
-            direct_connect = input("Direct connect to IP:")
-            self.cmm.direct_connect(direct_connect)
-            self.app_stage += 1
-        elif self.app_stage == 1:
-
-            self.game_tick += 1
-            self.window_tick += 1
-            
-            if self.game_tick == 1 and not self.isPaused:
-                self.process_events()
-                self.pl.tick(self.game_tick * self.delay)
-                self.game_tick = 0
-            if not self.isRunning: return
-            if self.window_tick == 1 and not self.isPaused:
-                self.wd.update(self.pl.sprites_list)
-                self.window_tick = 0
+        self.game_tick += 1
+        self.window_tick += 1
+        
+        if self.game_tick == 1 and not self.isPaused:
+            self.process_events()
+            # self.pl.player_2.duck()
+            self.pl.tick(self.game_tick * self.delay)
+            self.game_tick = 0
+        if not self.isRunning: return
+        if self.window_tick == 1 and not self.isPaused:
+            self.wd.update(self.pl.sprites_list)
+            self.window_tick = 0
 
     def process_events(self):
         """
@@ -115,6 +102,5 @@ class Application:
         """
         @brief    Ends the Window process and cleans up upon exit.
         """
-        # self.cmm_conn.join()
         self.wd.quit()
         self.isRunning = False

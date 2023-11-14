@@ -2,7 +2,8 @@
 
 ## Codebase
 
-This project's code was developed by Dawson Packer, with extensive help from Python docs, Stack Exchange, GeeksforGeeks, and Youtube.
+This project's code was developed by Dawson Packer, with extensive help from Python docs,
+Stack Exchange, GeeksforGeeks, and Youtube.
 
 ## Graphics
 

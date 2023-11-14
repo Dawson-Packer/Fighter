@@ -40,8 +40,8 @@ class Player(Sp.AnimatedSprite):
         self.y_pos = y_pos
         self.ground = y_pos
         self.health = 100.0
-        self.hitbox_height = height - 30
-        self.basic_attack_offset_height = [26, 0]
+        self.hitbox_height = height - 33
+        self.basic_attack_offset_height = [66, 22]
         self.speed = 15.0
         self.x_velocity = 0.0
         self.y_velocity = 0.0
@@ -170,7 +170,7 @@ class Player(Sp.AnimatedSprite):
     def update_status(self):
         if self.status == player_status.PLAYER_STANDING:
             self.speed = 15.0
-            self.hitbox_height = self.height - 30
+            self.hitbox_height = self.height - 26
         if self.status == player_status.PLAYER_WALKING:
             self.hitbox_height = self.height - 30
         if self.status == player_status.PLAYER_JUMPING:
@@ -180,10 +180,10 @@ class Player(Sp.AnimatedSprite):
         if self.status == player_status.PLAYER_KICKING:
             self.hitbox_height = self.height - 30
         if self.status == player_status.PLAYER_DUCKING:
-            self.hitbox_height = self.height - 60
+            self.hitbox_height = self.height - 72
         if self.status == player_status.PLAYER_CROUCHING:
             self.speed = 5.0
-            self.hitbox_height = self.height - 50
+            self.hitbox_height = self.height - 87
         if self.status == player_status.PLAYER_DEFENDING:
             self.hitbox_height = self.height - 30
         if self.status == player_status.PLAYER_MOVE1:
