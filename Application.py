@@ -34,7 +34,6 @@ class Application:
         
         if self.game_tick == 1 and not self.isPaused:
             self.process_events()
-            # self.pl.player_2.duck()
             self.pl.tick(self.game_tick * self.delay)
             self.game_tick = 0
         if not self.isRunning: return
