@@ -1,8 +1,8 @@
 import enum as Enum
 
 class player_stats:
-    PUNCH_DAMAGE = 5.0
-    KICK_DAMAGE = 10.0
+    PUNCH_DAMAGE = 1.0
+    KICK_DAMAGE = 5.0
 
 class player_status(Enum.Enum):
     PLAYER_STANDING = 0
