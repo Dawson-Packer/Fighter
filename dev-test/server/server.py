@@ -23,7 +23,7 @@ class Server:
     
     def next_client_id(self):
         """Return the ID of the next client connected."""
-        return len(self.clients)
+        return len(self.clients) - 1
     
     def run(self, game_type: int):
         """
@@ -41,7 +41,8 @@ class Server:
 
         while not self.num_connections() == 0:
             self.receive()
-            self.send(0)
+            for client, address in self.clients:
+                self.send(client)
 
             time.sleep(1.0)            
 
@@ -62,11 +63,11 @@ class Server:
             print("SERVER could not receive:", message)
         self.parse(msg)
 
-    def send(self, client_id: int):
+    def send(self, client_socket):
         message = ""
 
         try:
-            self.clients[0][0].send(bytes("+$DUMMY", "utf-8"))
+            client_socket.send(bytes("+$DUMMY", "utf-8"))
         except socket.error as message:
             print("SERVER could not send:", message)
 
