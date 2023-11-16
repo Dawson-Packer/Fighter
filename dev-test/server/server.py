@@ -40,8 +40,12 @@ class Server:
                 self.CLIENT_CONNECTIONS_SATURATED = True
 
         while not self.num_connections() == 0:
-            self.receive()
+            print(self.num_connections())
             for client, address in self.clients:
+                print(client)
+                self.receive()
+            for client, address in self.clients:
+                print(client)
                 self.send(client)
 
             time.sleep(1.0)            
@@ -58,13 +62,14 @@ class Server:
     def receive(self):
         try:
             msg = self.clients[0][0].recv(1024).decode("utf-8")
-            # print(msg)
+            print(msg)
+            self.parse(msg)
         except socket.error as message:
             print("SERVER could not receive:", message)
-        self.parse(msg)
 
-    def send(self, client_socket):
-        message = ""
+    def send(self, client_socket: socket, *args, **kwargs):
+        message = kwargs.get('message', "")
+        
 
         try:
             client_socket.send(bytes("+$DUMMY", "utf-8"))
@@ -80,13 +85,20 @@ class Server:
                 contents = packet.split(" ")
                 for index, item in enumerate(contents):
                     if item == "$ID":
-                        client_id = contents[1]
-                        print("Client:", client_id)
+                        client_id = int(contents[1])
+                        print(f"Client {client_id} sent a message")
                     if item == "$DUMMY":
                         # print("Dummy item found on server-side")
                         pass
                     if item == "$QUIT":
-                        pass
+                        self.client_disconnected(client_id)
                     if item == "$USER":
                         print(contents[index+1])
-                        pass
+                        print(client_id)
+                        self.users[client_id] = contents[index+1]
+
+    
+    def client_disconnected(self, client_id: int):
+        for client, address in self.clients:
+            self.send(client, message=f"+$UPDATE {client_id}")
+        self.clients.pop(client_id)

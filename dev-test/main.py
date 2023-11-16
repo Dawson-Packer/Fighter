@@ -8,7 +8,7 @@ from game_config import *
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
-def main():  
+def main():
     server = Server()
     client = Client()
     
@@ -16,12 +16,19 @@ def main():
     th1.start()
 
     client.connect('localhost')
-
-    for _ in range(0, 5):
+    i = 0
+    while client.IS_CONNECTED:
+        i += 1
         client.receive()
-        client.send()
+        msg = ""
+        if i == 5:
+            client.disconnect()
+            continue
 
-        time.sleep(0.5)
+
+        client.send(message=msg)
+
+        time.sleep(0.010)
 
     th1.join()
     # game = Application("Fighter", 1000, 600)
