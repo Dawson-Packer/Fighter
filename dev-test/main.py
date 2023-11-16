@@ -7,6 +7,9 @@ from game_config import *
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
+# Main starts client (with Main Menu elements in Client [replacement to ProgramLogic])
+# If start own game: start Server and connect with Client
+
 
 def main():
     server = Server()
