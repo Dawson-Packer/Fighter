@@ -24,7 +24,7 @@ def main():
         i += 1
         client.receive()
         msg = ""
-        if i == 5:
+        if i == 30:
             client.disconnect()
             continue
 
@@ -32,7 +32,8 @@ def main():
         client.send(message=msg)
 
         time.sleep(0.010)
-
+    while True:
+        pass
     th1.join()
     # game = Application("Fighter", 1000, 600)
 

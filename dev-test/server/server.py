@@ -1,4 +1,5 @@
 import socket
+import threading
 import time
 from game_config import *
 
@@ -7,7 +8,7 @@ class Server:
         """Start local server and bind to port."""
         try:
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.host = 'localhost'
+            self.host = ''
             self.port = 6010
             self.socket.bind((self.host, self.port))
         except socket.error as message:
@@ -30,7 +31,10 @@ class Server:
         Start server operations for the game.
         :param game_type    The game to be hosted on the server.
         """
+        self.listening_thread = threading.Thread
+
         while not self.CLIENT_CONNECTIONS_SATURATED:
+
             self.listen()
             if game_type == game_id.GAME_TEST and self.num_connections() == 1:
                 self.CLIENT_CONNECTIONS_SATURATED = True
@@ -62,7 +66,7 @@ class Server:
     def receive(self):
         try:
             msg = self.clients[0][0].recv(1024).decode("utf-8")
-            print(msg)
+            # print(msg)
             self.parse(msg)
         except socket.error as message:
             print("SERVER could not receive:", message)
@@ -93,8 +97,8 @@ class Server:
                     if item == "$QUIT":
                         self.client_disconnected(client_id)
                     if item == "$USER":
-                        print(contents[index+1])
-                        print(client_id)
+                        # print(contents[index+1])
+                        # print(client_id)
                         self.users[client_id] = contents[index+1]
 
     

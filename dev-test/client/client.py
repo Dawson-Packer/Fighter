@@ -22,6 +22,7 @@ class Client:
         try:
             msg = self.socket.recv(1024).decode("utf-8")
             print(msg)
+            print("yes")
             self.parse(msg)
         except socket.error as message:
             print("CLIENT could not receive:", message)
@@ -31,6 +32,7 @@ class Client:
         # if not self.IS_CONNECTED: return
         message = kwargs.get('message', "")
         message = "+".join([" ".join(["$ID", str(self.client_id)]), message, "$DUMMY"])
+        print(message)
         if not self.IS_CONNECTED:
             message = "+".join([message, "$QUIT"])
             print(message)
