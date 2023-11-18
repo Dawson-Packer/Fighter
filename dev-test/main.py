@@ -15,7 +15,7 @@ def main():
     server = Server()
     client = Client()
     
-    th1 = threading.Thread(target=server.run, args=[game_id.GAME_TEST])
+    th1 = threading.Thread(target=server.run, args=[game_id.GAME_1V1])
     th1.start()
 
     client.connect('localhost')
@@ -24,7 +24,7 @@ def main():
         i += 1
         client.receive()
         msg = ""
-        if i == 30:
+        if i == 300:
             client.disconnect()
             continue
 

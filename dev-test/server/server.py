@@ -6,11 +6,13 @@ from game_config import *
 class Server:
     def __init__(self):
         """Start local server and bind to port."""
+        self.IS_RUNNING = True
         try:
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.host = ''
             self.port = 6010
             self.socket.bind((self.host, self.port))
+            self.socket.settimeout(0.005)
         except socket.error as message:
             print("Socket bind error:", message)
         
@@ -31,49 +33,55 @@ class Server:
         Start server operations for the game.
         :param game_type    The game to be hosted on the server.
         """
-        self.listening_thread = threading.Thread
+        # self.listening_thread = threading.Thread(target=self.listen, args=(game_type,))
+        # self.listening_thread.start()
+        while self.IS_RUNNING:
+            if not self.CLIENT_CONNECTIONS_SATURATED:
+                try:
+                    self.listen()
+                except socket.timeout: pass
+                if game_type == game_id.GAME_TEST and self.num_connections() == 1:
+                    self.CLIENT_CONNECTIONS_SATURATED = True
+                elif game_type == game_id.GAME_1V1 and self.num_connections() == 2:
+                    self.CLIENT_CONNECTIONS_SATURATED = True
+                elif game_type == game_id.GAME_COMPETITION and self.num_connections() == 16:
+                    self.CLIENT_CONNECTIONS_SATURATED = True
+                else: self.CLIENT_CONNECTIONS_SATURATED = False
+            print("yes")
+            if not self.num_connections() == 0:
+                print(self.num_connections())
+                for client, address in self.clients:
+                    print(client)
+                    self.receive()
 
-        while not self.CLIENT_CONNECTIONS_SATURATED:
+                for client, address in self.clients:
+                    print(client)
+                    self.send(client)
 
-            self.listen()
-            if game_type == game_id.GAME_TEST and self.num_connections() == 1:
-                self.CLIENT_CONNECTIONS_SATURATED = True
-            if game_type == game_id.GAME_1V1 and self.num_connections() == 2:
-                self.CLIENT_CONNECTIONS_SATURATED = True
-            if game_type == game_id.GAME_COMPETITION and self.num_connections() == 16:
-                self.CLIENT_CONNECTIONS_SATURATED = True
-
-        while not self.num_connections() == 0:
-            print(self.num_connections())
-            for client, address in self.clients:
-                print(client)
-                self.receive()
-            for client, address in self.clients:
-                print(client)
-                self.send(client)
-
-            time.sleep(1.0)            
+                time.sleep(0.010)            
 
     def listen(self):
         """Listen for connections to the server."""
-        self.socket.listen(1)
-        clientsocket, address = self.socket.accept()
-        self.clients.append((clientsocket, address))
-        self.users.append(str(len(self.clients) - 1))
-        print(f'Client {address} successfully connected!')
-        clientsocket.send(bytes(f"+$ID {self.next_client_id()}", "utf-8"))
+        print("LISTENING")
+        try:
+            self.socket.listen(1)
+            clientsocket, address = self.socket.accept()
+            self.clients.append((clientsocket, address))
+            self.users.append(str(len(self.clients) - 1))
+            print(f'Client {address} successfully connected!')
+            clientsocket.send(bytes(f"+$ID {self.next_client_id()}", "utf-8"))
+        except socket.timeout: pass
 
     def receive(self):
         try:
             msg = self.clients[0][0].recv(1024).decode("utf-8")
-            # print(msg)
+            print(msg)
             self.parse(msg)
         except socket.error as message:
             print("SERVER could not receive:", message)
 
     def send(self, client_socket: socket, *args, **kwargs):
         message = kwargs.get('message', "")
-        
 
         try:
             client_socket.send(bytes("+$DUMMY", "utf-8"))
@@ -106,3 +114,7 @@ class Server:
         for client, address in self.clients:
             self.send(client, message=f"+$UPDATE {client_id}")
         self.clients.pop(client_id)
+
+    
+    def stop(self):
+        self.IS_RUNNING = False
