@@ -19,14 +19,16 @@ def main():
     th1 = threading.Thread(target=hosted_game.tick)
     th1.start()
 
-    client.connect('localhost')
+    IP_Address = 'localhost'
+    success = client.connect(IP_Address)
+    if not success: print("Client failed to connect to {IP_Address}")
     i = 0
     while client.IS_CONNECTED:
         i += 1
         client.receive()
         msg = ""
         if i == 300:
-            client.disconnect()
+            # client.disconnect()
             continue
 
 

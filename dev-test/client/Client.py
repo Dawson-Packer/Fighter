@@ -15,11 +15,15 @@ class Client(Game):
         # States
         self.IS_CONNECTED = False
     
-    def connect(self, address):
+    def connect(self, address) -> bool:
 
-        self.socket.connect((address, self.port))
-        self.socket.send(bytes("", "utf-8"))
-        self.IS_CONNECTED = True
+        try:
+            self.socket.connect((address, self.port))
+            self.socket.send(bytes("", "utf-8"))
+            self.IS_CONNECTED = True
+        except socket.error as message:
+            return False
+        return True
 
     def receive(self):
         if not self.IS_CONNECTED: return

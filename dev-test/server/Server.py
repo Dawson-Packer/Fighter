@@ -113,9 +113,11 @@ class Server:
             message = client.recv(1024).decode("utf-8")
             # self.received_message = self.received_message + "_" + message
             # print(self.received_message)
+            return message
         except socket.error as message:
             print("SERVER could not receive:", message)
-        return message
+            return "$NULL"
+        
 
     def add_packet_to_message(self, packet: list):
         self.message.append(packet)
@@ -136,6 +138,7 @@ class Server:
 
     def stop(self):
         """Stop the server."""
+        print("Stopped server")
         self.IS_RUNNING = False
 
     # def send_object_data(self, objects: list):

@@ -103,13 +103,12 @@ class HostedGame:
         :param message: The entire message sent to the server by all the clients in one tick.
         """
         packets = message.split("+")
-        print(packets)
+        # print(packets)
         for packet in packets:
             contents = packet.split(" ")
             packet_type = contents[0]
-            if packet_type == "$ID":
-                # client_id = int(contents[1])
-                print(f"Client {client_id} sent a message")
+            if packet_type == "$NULL":
+                print(f"Client {client_id} sent NULL request.")
             if packet_type == "$DUMMY":
                 # print("Dummy item found on server-side")
                 pass
