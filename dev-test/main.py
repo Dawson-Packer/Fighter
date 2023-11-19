@@ -1,8 +1,10 @@
-from server.server import Server
-from client.client import Client
 import time
 import threading
 import os
+
+from server.server import Server
+import server.Game as hostedgame
+from client.client import Client
 from game_config import *
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -12,10 +14,10 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
 def main():
-    server = Server()
+    hosted_game = hostedgame.Game(game_id.GAME_TEST)
     client = Client()
     
-    th1 = threading.Thread(target=server.run, args=[game_id.GAME_1V1])
+    th1 = threading.Thread(target=hosted_game.tick)
     th1.start()
 
     client.connect('localhost')
@@ -29,9 +31,9 @@ def main():
             continue
 
 
-        client.send(message=msg)
+        client.send()
 
-        time.sleep(0.010)
+        time.sleep(0.050)
     while True:
         pass
     th1.join()
