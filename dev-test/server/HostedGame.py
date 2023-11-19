@@ -13,6 +13,9 @@ class HostedGame:
             self.server = Server(2)
         elif self.GAME_TYPE == gc.game_id.GAME_COMPETITION:
             self.server = Server(16)
+        self.user_list = []
+        self.player_1 = None
+        self.player_2 = None
         self.objects_list = []
         self.game_tick = -1
 
@@ -37,26 +40,38 @@ class HostedGame:
 
     def tick(self):
         while self.server.IS_RUNNING:
-            self.server.received_message = ""
             start_time = time.time()
-            self.server.run()
-            if self.server.num_connections() == 0:
-                self.server.clients.clear()
-            if not self.server.num_connections() == 0:
-            # print(self.num_connections())
-                # self.received_message = ""
-                for client, address in self.server.clients:
-                    # print(client)
-                    self.server.receive(client)
 
-            self.parse(self.server.received_message)
-            if not self.server.GAME_RUNNING:
-                pass
+            ## * Server Management.
+
+            # Sync user list to server client list.
+            while len(self.server.clients) != len(self.user_list):
+                self.user_list.append("USR" + str(len(self.user_list)))
+
+            # Tick the server.
+            self.server.run()
+
+            ## * Read and process information.
+            if not self.server.num_connections() == 0:
+                # Read data from each client.
+                for client_id, (client, address) in enumerate(self.server.clients):
+                    client_message = self.server.receive(client)
+                    self.parse(client_id, client_message)
+            
+            ## * Start game.
             if self.server.GAME_RUNNING and self.game_tick == -1:
                 self.start_game()
                 self.game_tick += 1
+            
+            ## * Process game physics.
             else:
 
+
+
+
+
+
+                ## * Prepare objects for delivery.
                 object_data = ["$OBJ"]
                 for object in self.objects_list:
                     object_data.append(str(object.id))
@@ -65,42 +80,47 @@ class HostedGame:
                     object_data.append(str(round(object.y_pos)))
                     object_data.append(str(object.direction_right))
                     object_data.append(str(object.status.value))
-                # print(object_data)
                 self.server.add_packet_to_message(object_data)
+
+
 
                 self.game_tick += 1
 
 
+            ## * Send data to clients.
             for client, address in self.server.clients:
-                # print(client)
                 self.server.send(client)
             
+            # Delay tick if execution time is less than 0.010 seconds.
             execution_time = time.time() - start_time
             if 0.010 - execution_time > 0: time.sleep(0.010 - execution_time)
 
-    def parse(self, message: str):
+    def parse(self, client_id: int, message: str):
         """
         Execute actions based on the information delivered in the sent packets.
 
+        :param client_id: The ID of the client sending the message.
         :param message: The entire message sent to the server by all the clients in one tick.
         """
-        for client in message.split("_"):
-            packets = client.split("+")
-            # print(packets)
-            for packet in packets:
-                contents = packet.split(" ")
-                packet_type = contents[0]
-                if packet_type == "$ID":
-                    client_id = int(contents[1])
-                    print(f"Client {client_id} sent a message")
-                if packet_type == "$DUMMY":
-                    # print("Dummy item found on server-side")
-                    pass
-                if packet_type == "$QUIT":
-                    self.server.client_disconnected(client_id)
-                if packet_type == "$USER":
-                    # print(contents[index+1])
-                    # print(client_id)
-                    self.server.users[client_id] = contents[1]
-                if packet_type == "$KEY":
-                    pass
+        packets = message.split("+")
+        print(packets)
+        for packet in packets:
+            contents = packet.split(" ")
+            packet_type = contents[0]
+            if packet_type == "$ID":
+                # client_id = int(contents[1])
+                print(f"Client {client_id} sent a message")
+            if packet_type == "$DUMMY":
+                # print("Dummy item found on server-side")
+                pass
+            if packet_type == "$QUIT":
+                self.server.client_disconnected(client_id)
+                self.user_list.pop(client_id)
+            if packet_type == "$USER":
+                self.user_list[client_id] = contents[1]
+            if packet_type == "$KEY":
+                pass
+    
+    def assign_players(self, client_1: int, client_2: int):
+        self.player_1 = client_1
+        self.player_2 = client_2

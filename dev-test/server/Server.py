@@ -64,6 +64,8 @@ class Server:
         """Run the server operations for the game."""
         # self.listening_thread = threading.Thread(target=self.listen, args=(game_type,))
         # self.listening_thread.start()
+        self.received_message = ""
+        if self.num_connections() == 0: self.clients.clear()
         if not self.CLIENT_CONNECTIONS_SATURATED:
             try:
                 self.listen()
@@ -95,18 +97,25 @@ class Server:
             self.socket.listen(1)
             clientsocket, address = self.socket.accept()
             self.clients.append((clientsocket, address))
-            self.users.append(str(len(self.clients) - 1))
+            # self.users.append(str(len(self.clients) - 1))
             print(f'Client {address} successfully connected!')
             self.send(clientsocket, message=f"$ID {self.next_client_id()}")
         except socket.timeout: pass
 
     def receive(self, client: socket):
+        """
+        Receive message from a client specified.
+
+        :param client: The client socket to read data from.
+        :returns: The decoded message from the client.
+        """
         try:
             message = client.recv(1024).decode("utf-8")
-            self.received_message = self.received_message + "_" + message
-            print(self.received_message)
+            # self.received_message = self.received_message + "_" + message
+            # print(self.received_message)
         except socket.error as message:
             print("SERVER could not receive:", message)
+        return message
 
     def add_packet_to_message(self, packet: list):
         self.message.append(packet)
