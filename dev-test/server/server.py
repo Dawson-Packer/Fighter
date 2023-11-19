@@ -36,17 +36,20 @@ class Server:
         # self.listening_thread = threading.Thread(target=self.listen, args=(game_type,))
         # self.listening_thread.start()
         while self.IS_RUNNING:
+
+            start_time = time.time()
+
             if not self.CLIENT_CONNECTIONS_SATURATED:
                 try:
                     self.listen()
                 except socket.timeout: pass
-                if game_type == game_id.GAME_TEST and self.num_connections() == 1:
-                    self.CLIENT_CONNECTIONS_SATURATED = True
-                elif game_type == game_id.GAME_1V1 and self.num_connections() == 2:
-                    self.CLIENT_CONNECTIONS_SATURATED = True
-                elif game_type == game_id.GAME_COMPETITION and self.num_connections() == 16:
-                    self.CLIENT_CONNECTIONS_SATURATED = True
-                else: self.CLIENT_CONNECTIONS_SATURATED = False
+            if game_type == game_id.GAME_TEST and self.num_connections() == 1:
+                self.CLIENT_CONNECTIONS_SATURATED = True
+            elif game_type == game_id.GAME_1V1 and self.num_connections() == 2:
+                self.CLIENT_CONNECTIONS_SATURATED = True
+            elif game_type == game_id.GAME_COMPETITION and self.num_connections() == 16:
+                self.CLIENT_CONNECTIONS_SATURATED = True
+            else: self.CLIENT_CONNECTIONS_SATURATED = False
             print("yes")
             if not self.num_connections() == 0:
                 print(self.num_connections())
@@ -58,7 +61,8 @@ class Server:
                     print(client)
                     self.send(client)
 
-                time.sleep(0.010)            
+            execution_time = time.time() - start_time
+            if 0.010 - execution_time > 0: time.sleep(0.010 - execution_time)
 
     def listen(self):
         """Listen for connections to the server."""
