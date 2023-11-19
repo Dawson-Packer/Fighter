@@ -55,13 +55,13 @@ class Client(Game):
             contents = packet.split(" ")
             packet_type = contents[0]
             if packet_type == "$ID":
-                self.client_id = contents[1]
+                self.client_id = int(contents[1])
             if packet_type == "$DUMMY":
                 pass
             if packet_type == "$STARTGAME":
                 print(f"{self.client_id} received STARTGAME command")
             if packet_type == "$UPDATE":
-                disconnected_client = contents[1]
+                disconnected_client = int(contents[1])
                 if self.client_id > disconnected_client:
                     self.client_id += 1
             if packet_type == "$OBJ":
