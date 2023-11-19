@@ -1,18 +1,18 @@
 import time
 
-import server.server as sv
+from server.Server import *
 from server.Objects import *
 import game_config as gc
 
-class Game(sv.Server):
+class HostedGame:
     def __init__(self, game_id: int):
         self.GAME_TYPE = game_id
         if self.GAME_TYPE == gc.game_id.GAME_TEST:
-            super().__init__(1)
+            self.server = Server(1)
         elif self.GAME_TYPE == gc.game_id.GAME_1V1:
-            super().__init__(2)    
+            self.server = Server(2)
         elif self.GAME_TYPE == gc.game_id.GAME_COMPETITION:
-            super().__init__(16)
+            self.server = Server(16)
         self.objects_list = []
         self.game_tick = -1
 
@@ -36,24 +36,23 @@ class Game(sv.Server):
                                    ))
 
     def tick(self):
-        while self.IS_RUNNING:
+        while self.server.IS_RUNNING:
+            self.server.received_message = ""
             start_time = time.time()
-            self.run()
-
-            if self.num_connections() == 0:
-                self.clients.clear()
-                self.received_message = ""
-            if not self.num_connections() == 0:
+            self.server.run()
+            if self.server.num_connections() == 0:
+                self.server.clients.clear()
+            if not self.server.num_connections() == 0:
             # print(self.num_connections())
-                self.received_message = ""
-                for client, address in self.clients:
+                # self.received_message = ""
+                for client, address in self.server.clients:
                     # print(client)
-                    self.receive(client)
+                    self.server.receive(client)
 
-            self.parse(self.received_message)
-            if not self.GAME_RUNNING:
+            self.parse(self.server.received_message)
+            if not self.server.GAME_RUNNING:
                 pass
-            if self.GAME_RUNNING and self.game_tick == -1:
+            if self.server.GAME_RUNNING and self.game_tick == -1:
                 self.start_game()
                 self.game_tick += 1
             else:
@@ -67,14 +66,14 @@ class Game(sv.Server):
                     object_data.append(str(object.direction_right))
                     object_data.append(str(object.status.value))
                 # print(object_data)
-                self.add_packet_to_message(object_data)
+                self.server.add_packet_to_message(object_data)
 
                 self.game_tick += 1
 
 
-            for client, address in self.clients:
+            for client, address in self.server.clients:
                 # print(client)
-                self.send(client)
+                self.server.send(client)
             
             execution_time = time.time() - start_time
             if 0.010 - execution_time > 0: time.sleep(0.010 - execution_time)
@@ -87,7 +86,7 @@ class Game(sv.Server):
         """
         for client in message.split("_"):
             packets = client.split("+")
-            print(packets)
+            # print(packets)
             for packet in packets:
                 contents = packet.split(" ")
                 packet_type = contents[0]
@@ -98,10 +97,10 @@ class Game(sv.Server):
                     # print("Dummy item found on server-side")
                     pass
                 if packet_type == "$QUIT":
-                    self.client_disconnected(client_id)
+                    self.server.client_disconnected(client_id)
                 if packet_type == "$USER":
                     # print(contents[index+1])
                     # print(client_id)
-                    self.users[client_id] = contents[1]
+                    self.server.users[client_id] = contents[1]
                 if packet_type == "$KEY":
                     pass

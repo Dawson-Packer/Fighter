@@ -104,7 +104,7 @@ class Server:
         try:
             message = client.recv(1024).decode("utf-8")
             self.received_message = self.received_message + "_" + message
-            # print(self.received_message)
+            print(self.received_message)
         except socket.error as message:
             print("SERVER could not receive:", message)
 

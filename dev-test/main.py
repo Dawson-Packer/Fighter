@@ -2,9 +2,8 @@ import time
 import threading
 import os
 
-from server.server import Server
-import server.Game as hostedgame
-from client.client import Client
+import server.HostedGame as hg
+from client.Client import Client
 from game_config import *
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -14,7 +13,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
 def main():
-    hosted_game = hostedgame.Game(game_id.GAME_TEST)
+    hosted_game = hg.HostedGame(game_id.GAME_TEST)
     client = Client()
     
     th1 = threading.Thread(target=hosted_game.tick)
