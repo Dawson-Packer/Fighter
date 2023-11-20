@@ -45,8 +45,9 @@ class HostedGame:
             ## * Server Management.
 
             # Sync user list to server client list.
-            while len(self.server.clients) != len(self.user_list):
-                self.user_list.append("USR" + str(len(self.user_list)))
+            # while len(self.server.clients) > len(self.user_list):
+            #     self.user_list.append("USR" + str(len(self.user_list)))
+                
 
             # Tick the server.
             self.server.run()
@@ -55,7 +56,7 @@ class HostedGame:
             if not self.server.num_connections() == 0:
                 # Read data from each client.
                 for client_id, (client, address) in enumerate(self.server.clients):
-                    client_message = self.server.receive(client)
+                    client_message = self.server.receive(client_id, client)
                     self.parse(client_id, client_message)
             
             ## * Start game.
@@ -88,12 +89,13 @@ class HostedGame:
 
 
             ## * Send data to clients.
-            for client, address in self.server.clients:
-                self.server.send(client)
+            for client_id, (client, address) in enumerate(self.server.clients):
+                self.server.send(client, client_id=client_id)
             
             # Delay tick if execution time is less than 0.010 seconds.
             execution_time = time.time() - start_time
             if 0.010 - execution_time > 0: time.sleep(0.010 - execution_time)
+        print("Outside HOSTEDGAME tick")
 
     def parse(self, client_id: int, message: str):
         """
@@ -109,12 +111,14 @@ class HostedGame:
             packet_type = contents[0]
             if packet_type == "$NULL":
                 print(f"Client {client_id} sent NULL request.")
+                self.server.client_disconnected(client_id)
+                # self.user_list.pop(client_id)
             if packet_type == "$DUMMY":
                 # print("Dummy item found on server-side")
                 pass
             if packet_type == "$QUIT":
                 self.server.client_disconnected(client_id)
-                self.user_list.pop(client_id)
+                # self.user_list.pop(client_id)
             if packet_type == "$USER":
                 self.user_list[client_id] = contents[1]
             if packet_type == "$KEY":

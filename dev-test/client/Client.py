@@ -40,8 +40,8 @@ class Client(Game):
                 self.socket.send(bytes("+".join([f"+ID {self.client_id}",
                                                  kwargs.get('message', "")]), "utf-8"))
             else:
-                if len(self.message) > 0: self.message.insert(0, [f"$ID {self.client_id}"])
-                else: self.message = [[f"$ID {self.client_id}"]]
+                if len(self.message) > 0: self.message.insert(0, ["$0"])
+                else: self.message = [["$0"]]
                 if not self.IS_CONNECTED:
                     self.message.append(["$QUIT"])
                 # print(self.message)

@@ -12,8 +12,8 @@ class Server:
         :param max_connections: The maximum number of connections allowed on the server.
         """
         self.IS_RUNNING = True
-        self.HOSTED_GAME = None
         self.GAME_RUNNING = False
+        self.GAME_STATE = 0
         self.MAX_CONNECTIONS = max_connections
         self.keypresses = []
         try:
@@ -27,9 +27,11 @@ class Server:
 
         self.received_message = ""
         # TODO: Empty message list default when timeout is set in client
-        self.message = [["+$DUMMY"]]
+        self.message = [["$0"]]
         
         self.clients = []
+        self.ip_addresses = []
+        self.packets_lost = []
         self.users = []
         self.CLIENT_CONNECTIONS_SATURATED = False
 
@@ -46,25 +48,14 @@ class Server:
         Re-sort clients when a client disconnects.
 
         :param client_id: The ID of the client that disconnected."""
+        print("disconnect")
         for client, address in self.clients:
             self.send(client, message=f"+$UPDATE {client_id}")
-        print(len(self.clients))
+        # print(len(self.clients))
         self.clients.pop(client_id) if self.clients else False
-    
-    # def start(self, game_id: int):
-    #     """
-    #     Start the server.
-
-    #     :param game_id: The game to be hosted on the server.
-    #     """
-    #     self.HOSTED_GAME = game_id
-    #     self.run()
 
     def run(self):
         """Run the server operations for the game."""
-        # self.listening_thread = threading.Thread(target=self.listen, args=(game_type,))
-        # self.listening_thread.start()
-        self.received_message = ""
         if self.num_connections() == 0: self.clients.clear()
         if not self.CLIENT_CONNECTIONS_SATURATED:
             try:
@@ -77,69 +68,82 @@ class Server:
             self.add_packet_to_message(["$STARTGAME", "0"])
         else: self.CLIENT_CONNECTIONS_SATURATED = False
 
-        # if not self.num_connections() == 0:
-        #     # print(self.num_connections())
-        #     self.received_message = ""
-        #     for client, address in self.clients:
-        #         # print(client)
-        #         self.receive(client)
-
-
-
-            # for client, address in self.clients:
-            #     # print(client)
-            #     self.send(client)
-
     def listen(self):
         """Listen for connections to the server."""
         # print("LISTENING")
         try:
             self.socket.listen(1)
             clientsocket, address = self.socket.accept()
-            self.clients.append((clientsocket, address))
+            if not address[0] in self.ip_addresses:
+                self.clients.append((clientsocket, address))
+                self.ip_addresses.append(address[0])
+                self.packets_lost.append(0)
+            else:
+                self.packets_lost[self.ip_addresses.index(address[0])] = 0
+                self.clients[self.ip_addresses.index(address[0])] = (clientsocket, address)
             # self.users.append(str(len(self.clients) - 1))
             print(f'Client {address} successfully connected!')
-            self.send(clientsocket, message=f"$ID {self.next_client_id()}")
+            print(address[0])
+            self.send(clientsocket, message=f"$GAME {str(self.GAME_STATE)}")
         except socket.timeout: pass
 
-    def receive(self, client: socket):
+    def receive(self, client_id: int, client: socket):
         """
         Receive message from a client specified.
 
         :param client: The client socket to read data from.
         :returns: The decoded message from the client.
         """
+        if self.lost_connection(client_id): return ""
         try:
+            client.settimeout(0.035)
             message = client.recv(1024).decode("utf-8")
-            # self.received_message = self.received_message + "_" + message
-            # print(self.received_message)
+            self.packets_lost[client_id] = 0
             return message
         except socket.error as message:
-            print("SERVER could not receive:", message)
-            return "$NULL"
+            print(f"Server error on reading from Client {client_id}:", message)
+            self.packets_lost[client_id] += 1
+            return ""
         
-
     def add_packet_to_message(self, packet: list):
+        """
+        Add a packet of information to the global message sent to the clients by the server.
+
+        :param packet: A list of items, starting with the tag ($___) to send as a packet.
+        """
         self.message.append(packet)
+    
+    def lost_connection(self, client_id: int) -> bool:
+        """Return True if the client specified has lost connection to the server."""
+        MAX_PACKET_LOSS_ALLOWABLE = 10
+        if self.packets_lost[client_id] > MAX_PACKET_LOSS_ALLOWABLE: return True
+        else: return False
 
     def send(self, client_socket: socket, *args, **kwargs):
-        # force_message = kwargs.get('message', "")
-        # self.message.append(force_message)
+        """
+        Send a message to a client.
+
+        :param client_socket: The socket of the client to send data to.
+
+        :kwargs:
+         - 'client_id': Specify the client ID to check whether it has lost connection to the server.
+         - 'message': Send a specific message rather than the global message.
+        """
+        if 'client_id' in kwargs:
+            client_id = kwargs.get('client_id', "")
+            if self.lost_connection(client_id): return
+        else: client_id = None
         try:
             if 'message' in kwargs:
                 client_socket.send(bytes("+".join([kwargs.get('message', "")]), "utf-8"))
             else:
-        # try:
                 client_socket.send(bytes("+".join([" ".join(x) for x in self.message]), "utf-8"))
         except socket.error as message:
-            print("SERVER could not send:", message)
+            print(f"Server error sending to Client {client_id}:", message)
         # TODO: Empty message list default (SEE TOP)
-        self.message = [["+$DUMMY"]]
+        self.message = [["+$0"]]
 
     def stop(self):
         """Stop the server."""
         print("Stopped server")
         self.IS_RUNNING = False
-
-    # def send_object_data(self, objects: list):
-        

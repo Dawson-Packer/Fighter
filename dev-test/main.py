@@ -21,7 +21,7 @@ def main():
 
     IP_Address = 'localhost'
     success = client.connect(IP_Address)
-    if not success: print("Client failed to connect to {IP_Address}")
+    if not success: print(f"Client failed to connect to {IP_Address}")
     i = 0
     while client.IS_CONNECTED:
         i += 1
@@ -35,8 +35,7 @@ def main():
         client.send()
 
         time.sleep(0.050)
-    while True:
-        pass
+    print("Outside while loop")
     th1.join()
     # game = Application("Fighter", 1000, 600)
 
