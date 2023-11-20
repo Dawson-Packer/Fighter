@@ -1,8 +1,7 @@
 import socket
 
-from client.Game import Game
 
-class Client(Game):
+class Client:
     def __init__(self):
 
         super().__init__()
@@ -27,12 +26,12 @@ class Client(Game):
         return True
 
     def receive(self):
-        if not self.IS_CONNECTED: return
+        if self.lost_connection(): return
         try:
             message = self.socket.recv(1024).decode("utf-8")
             # print(msg)
             # TODO: Move parse out of receive, make receive return message
-            self.parse(message)
+            # self.parse(message)
             return message
         except socket.error as message:
             print("CLIENT could not receive:", message)
@@ -43,7 +42,7 @@ class Client(Game):
         if not self.IS_CONNECTED: return
         try:
             if 'message' in kwargs:
-                self.socket.send(bytes("+".join([f"+ID {self.client_id}",
+                self.socket.send(bytes("+".join([" ".join(x) for x in 
                                                  kwargs.get('message', "")]), "utf-8"))
             else:
                 if len(self.message) > 0: self.message.insert(0, ["$0"])
@@ -56,26 +55,6 @@ class Client(Game):
         except socket.error as message:
             print("CLIENT could not send:", message)
         self.message = [[]]
-
-    
-    def parse(self, message: str):
-        # print(message)
-        packets = message.split("+")
-        for packet in packets:
-            contents = packet.split(" ")
-            packet_type = contents[0]
-            if packet_type == "$ID":
-                self.client_id = int(contents[1])
-            if packet_type == "$DUMMY":
-                pass
-            if packet_type == "$STARTGAME":
-                print(f"{self.client_id} received STARTGAME command")
-            if packet_type == "$UPDATE":
-                disconnected_client = int(contents[1])
-                if self.client_id > disconnected_client:
-                    self.client_id += 1
-            if packet_type == "$OBJ":
-                pass
     
     def lost_connection(self) -> bool:
         """Return True if the client has lost connection to the server."""
@@ -84,6 +63,14 @@ class Client(Game):
             self.IS_CONNECTED = False
             return True
         else: return False
+    
+    # def add_packet_to_message(self, packet: list):
+    #     """
+    #     Add a packet of information to the global message sent to the server by the client.
+
+    #     :param packet: A list of items, starting with the tag ($___) to send as a packet.
+    #     """
+    #     self.message.append(packet)
 
     def disconnect(self):
         self.IS_CONNECTED = False

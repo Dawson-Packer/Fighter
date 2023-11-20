@@ -1,0 +1,68 @@
+import pygame
+
+from client.Sprites import *
+from client.Button import *
+
+class MainMenu:
+    def __init__(self):
+        self.objects_list = []
+        self.button_list = []
+        self.message = []
+        self.setup()
+
+    def setup(self):
+        background = Sprite(600, 1000, 500, 300,  0.0, -1, "default", "snow_blur.png", "background")
+        self.objects_list.append(background)
+
+        self.host_game_button = Button(50, 100, 200, 300, "Host Game")
+        self.button_list.append(self.host_game_button)
+        self.objects_list.append(self.host_game_button)
+
+class Lobby:
+    def __init__(self):
+        self.objects_list = []
+        self.button_list = []
+        self.IS_HOST = False
+        # self.setup()
+
+    def receive_data(self, message: str):
+        self.parse(message)
+
+    def parse(self, message: str):
+        packets = message.split("+")
+        for packet in packets:
+            contents = packet.split(" ")
+            packet_type = contents[0]
+            if packet_type == "$ID":
+                self.client_id = int(contents[1])
+            if packet_type == "$DUMMY":
+                pass
+            if packet_type == "$UPDATE":
+                disconnected_client = int(contents[1])
+                if self.client_id > disconnected_client:
+                    self.client_id += 1
+            if packet_type == "$OBJ":
+                pass
+
+    def setup(self):
+        background = Sprite(600, 1000, 500, 300,  0.0, -1, "default", "snow_blur.png", "background")
+        self.objects_list.append(background)
+
+        if self.IS_HOST:
+            self.start_button = Button(50, 100, 500, 300, "Start Game")
+            self.button_list.append(self.start_button)
+            self.objects_list.append(self.start_button)
+
+    def tick(self):
+        self.message = []
+        self.add_packet_to_message(["$0"])
+    
+    def get_data_to_send(self): return self.message
+
+    def add_packet_to_message(self, packet: list):
+        """
+        Add a packet of information to the global message sent to the server by the client.
+
+        :param packet: A list of items, starting with the tag ($___) to send as a packet.
+        """
+        self.message.append(packet)

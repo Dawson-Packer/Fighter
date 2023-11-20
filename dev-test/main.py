@@ -5,6 +5,7 @@ import os
 import server.HostedGame as hg
 from client.Client import Client
 from game_config import *
+from client.Application import Application
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -13,30 +14,37 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
 def main():
-    hosted_game = hg.HostedGame(game_id.GAME_TEST)
-    client = Client()
     
-    th1 = threading.Thread(target=hosted_game.tick)
-    th1.start()
+    game = Application("Fighter", 1000, 600)
+    while game.IS_RUNNING:
+        game.tick()
 
-    IP_Address = 'localhost'
-    success = client.connect(IP_Address)
-    if not success: print(f"Client failed to connect to {IP_Address}")
-    i = 0
-    while client.IS_CONNECTED:
-        i += 1
-        client.receive()
-        msg = ""
-        if i == 300:
-            # client.disconnect()
-            continue
+        time.sleep(game.delay)
+
+    # hosted_game = hg.HostedGame()
+    # client = Client()
+    
+    # th1 = threading.Thread(target=hosted_game.tick)
+    # th1.start()
+
+    # IP_Address = 'localhost'
+    # success = client.connect(IP_Address)
+    # if not success: print(f"Client failed to connect to {IP_Address}")
+    # i = 0
+    # while client.IS_CONNECTED:
+    #     i += 1
+    #     client.receive()
+    #     msg = ""
+    #     if i == 300:
+    #         # client.disconnect()
+    #         continue
 
 
-        client.send()
+    #     client.send()
 
-        time.sleep(0.050)
-    print("Outside while loop")
-    th1.join()
+    #     time.sleep(0.050)
+    # print("Outside while loop")
+    # th1.join()
     # game = Application("Fighter", 1000, 600)
 
     # th1 = th.Thread(target=<function name>)

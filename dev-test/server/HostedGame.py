@@ -5,9 +5,9 @@ from server.Objects import *
 import game_config as gc
 
 class HostedGame:
-    def __init__(self, game_id: int):
+    def __init__(self):
 
-        self.GAME_TYPE = game_id
+        # self.GAME_TYPE = game_id
         self.server = Server()
 
 
@@ -18,7 +18,7 @@ class HostedGame:
         self.game_tick = -1
 
     def start_game(self):
-
+        self.server.start_game(0)
         # Player 1 object
         self.objects_list.append(Player("stickman",
                                    0,
@@ -114,6 +114,9 @@ class HostedGame:
             if packet_type == "$DUMMY":
                 # print("Dummy item found on server-side")
                 pass
+            if packet_type == "$START":
+                print("Server received START command")
+                self.start_game()
             if packet_type == "$QUIT":
                 self.server.client_disconnected(client_id)
                 # self.user_list.pop(client_id)

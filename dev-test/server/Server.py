@@ -65,11 +65,11 @@ class Server:
             try:
                 self.listen()
             except socket.timeout: pass
-        if self.MAX_CONNECTIONS == self.num_connections() and\
-            not self.GAME_RUNNING:
-            self.CLIENT_CONNECTIONS_SATURATED = True
-            self.GAME_RUNNING = True
-            self.add_packet_to_message(["$STARTGAME", "0"])
+        # if self.MAX_CONNECTIONS == self.num_connections() and\
+        #     not self.GAME_RUNNING:
+        #     self.CLIENT_CONNECTIONS_SATURATED = True
+        #     self.GAME_RUNNING = True
+        #     self.add_packet_to_message(["$STARTGAME", "0"])
         else: self.CLIENT_CONNECTIONS_SATURATED = False
 
     def listen(self):
@@ -100,7 +100,7 @@ class Server:
         """
         if self.lost_connection(client_id): return ""
         try:
-            client.settimeout(0.035)
+            client.settimeout(0.135)
             message = client.recv(1024).decode("utf-8")
             self.packets_lost[client_id] = 0
             return message
@@ -145,7 +145,12 @@ class Server:
         except socket.error as message:
             print(f"Server error sending to Client {client_id}:", message)
         # TODO: Empty message list default (SEE TOP)
-        self.message = [["+$0"]]
+        self.message = [["$0"]]
+
+    def start_game(self, map_id: int):
+        self.CLIENT_CONNECTIONS_SATURATED = True
+        self.GAME_RUNNING = True
+        self.add_packet_to_message(["$STARTGAME", str(map_id)])
 
     def stop(self):
         """Stop the server."""
