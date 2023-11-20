@@ -9,6 +9,7 @@ class Client(Game):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.port = 6010
         self.client_id = None
+        self.packets_lost = 0
         self.message = [[]]
 
 
@@ -28,13 +29,18 @@ class Client(Game):
     def receive(self):
         if not self.IS_CONNECTED: return
         try:
-            msg = self.socket.recv(1024).decode("utf-8")
+            message = self.socket.recv(1024).decode("utf-8")
             # print(msg)
-            self.parse(msg)
+            # TODO: Move parse out of receive, make receive return message
+            self.parse(message)
+            return message
         except socket.error as message:
             print("CLIENT could not receive:", message)
+            self.packets_lost += 1
+            return ""
 
     def send(self, *args, **kwargs):
+        if not self.IS_CONNECTED: return
         try:
             if 'message' in kwargs:
                 self.socket.send(bytes("+".join([f"+ID {self.client_id}",
@@ -71,6 +77,14 @@ class Client(Game):
             if packet_type == "$OBJ":
                 pass
     
+    def lost_connection(self) -> bool:
+        """Return True if the client has lost connection to the server."""
+        MAX_PACKET_LOSS_ALLOWABLE = 10
+        if self.packets_lost > MAX_PACKET_LOSS_ALLOWABLE:
+            self.IS_CONNECTED = False
+            return True
+        else: return False
+
     def disconnect(self):
         self.IS_CONNECTED = False
         self.send()
