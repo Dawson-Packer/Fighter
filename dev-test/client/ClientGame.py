@@ -1,5 +1,6 @@
 from client.Sprites import *
 from client.Client import *
+from game_config import *
 
 class ClientGame:
     def __init__(self):
@@ -18,6 +19,7 @@ class ClientGame:
         self.parse(message)
 
     def parse(self, message: str):
+        # print(message, "client")
         packets = message.split("+")
         for packet in packets:
             contents = packet.split(" ")
@@ -33,6 +35,16 @@ class ClientGame:
                 disconnected_client = int(contents[1])
                 if self.client_id > disconnected_client:
                     self.client_id += 1
+            if packet_type == "$CROBJ":
+                print("Object created")
+                if contents[1] == object_type.BACKGROUND:
+                    print(contents[1], contents[6], str(contents[7]) + ".png")
+                    self.objects_list.append(Sprite(600, 1000, int(contents[3]), int(contents[4]), 0.0,
+                                                    int(contents[2]), contents[6], str(contents[7]) + ".png", contents[1]))
+                else:
+                    self.objects_list.append(AnimatedSprite(128, 128, int(contents[3]), int(contents[4]),
+                                                            0.0, int(contents[2]), contents[6], "0.png",
+                                                            contents[1]))
             if packet_type == "$OBJ":
                 pass
     

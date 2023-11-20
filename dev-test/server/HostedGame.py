@@ -2,13 +2,17 @@ import time
 
 from server.Server import *
 from server.Objects import *
-import game_config as gc
+from game_config import *
+
+
 
 class HostedGame:
     def __init__(self):
 
         # self.GAME_TYPE = game_id
         self.server = Server()
+
+        self.GAME_STARTING = -1
 
 
         self.user_list = []
@@ -18,7 +22,12 @@ class HostedGame:
         self.game_tick = -1
 
     def start_game(self):
+
+        self.GAME_STARTING = False
         self.server.start_game(0)
+        # Create background object
+        self.create_object(object_type.BACKGROUND, 0, 500, 300, 1, "default", map_id=0)
+
         # Player 1 object
         self.objects_list.append(Player("stickman",
                                    0,
@@ -27,6 +36,9 @@ class HostedGame:
                                    0.0,
                                    0
                                    ))
+        
+        self.create_object(object_type.STICKMAN, 1, 200, 425, 1, "s")
+
         # Player 2 object
         self.objects_list.append(Player("stickman",
                                    1,
@@ -35,6 +47,18 @@ class HostedGame:
                                    0.0,
                                    1
                                    ))
+        
+        self.create_object(object_type.STICKMAN, 2, 800, 425, -1, "s")
+
+    def create_object(self, type: int, object_id: int, x_pos: int,
+                      y_pos: int, direction: int, status: int, **kwargs):
+        if 'map_id' in kwargs:
+            self.server.add_packet_to_message(["$CROBJ", str(type), str(object_id), str(x_pos),
+                                           str(y_pos), str(direction), str(status),
+                                           str(kwargs.get('map_id', ""))])
+        else:
+            self.server.add_packet_to_message(["$CROBJ", str(type), str(object_id), str(x_pos),
+                                           str(y_pos), str(direction), str(status)])
 
     def tick(self):
         while self.server.IS_RUNNING:
@@ -50,6 +74,9 @@ class HostedGame:
             # Tick the server.
             self.server.run()
 
+            ## * Start the game
+            if self.GAME_STARTING == 5: self.start_game()
+            if self.GAME_STARTING >= 0: self.GAME_STARTING += 1
             ## * Read and process information.
             if not self.server.num_connections() == 0:
                 # Read data from each client.
@@ -58,9 +85,9 @@ class HostedGame:
                     self.parse(client_id, client_message)
             
             ## * Start game.
-            if self.server.GAME_RUNNING and self.game_tick == -1:
-                self.start_game()
-                self.game_tick += 1
+            # if self.server.GAME_RUNNING and self.game_tick == -1:
+            #     self.start_game()
+            #     self.game_tick += 1
             
             ## * Process game physics.
             else:
@@ -79,7 +106,7 @@ class HostedGame:
                     object_data.append(str(round(object.y_pos)))
                     object_data.append(str(object.direction_right))
                     object_data.append(str(object.status.value))
-                self.server.add_packet_to_message(object_data)
+                # self.server.add_packet_to_message(object_data)
 
 
 
@@ -116,7 +143,7 @@ class HostedGame:
                 pass
             if packet_type == "$START":
                 print("Server received START command")
-                self.start_game()
+                self.GAME_STARTING = 0
             if packet_type == "$QUIT":
                 self.server.client_disconnected(client_id)
                 # self.user_list.pop(client_id)

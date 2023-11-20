@@ -5,6 +5,10 @@ class game_id:
     GAME_TEST = 0
     GAME_1V1 = 1
     GAME_COMPETITION = 2
+    
+class object_type:
+    BACKGROUND = "background"
+    STICKMAN = "stickman"
 
 class player_stats:
     PUNCH_DAMAGE = 1.0

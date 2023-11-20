@@ -39,6 +39,7 @@ class Lobby:
             contents = packet.split(" ")
             packet_type = contents[0]
             if packet_type == "$STARTGAME":
+                print("Lobby received START command")
                 self.GAME_IS_STARTING = True
 
     def setup(self):

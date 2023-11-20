@@ -57,23 +57,23 @@ class ProgramLogic:
                     IP_Address = '192.168.1.15'
                     success = self.client.connect(IP_Address)
                     if not success: print(f"Client failed to connect to {IP_Address}")
-        if self.scene == 1 and self.last_scene == 1:
+        elif self.scene == 1 and self.last_scene == 1:
             self.sprites_list.empty()
             for object in self.lobby.objects_list:
                 self.sprites_list.add(object)
             self.lobby.receive_data(self.client.receive())
-            if self.lobby.start_button.button_pressed():
+            if self.IS_HOSTING and self.lobby.start_button.button_pressed():
                 self.lobby.start_button.IS_PRESSED = False
                 self.client.send(message=[["$START"]])
             if self.lobby.GAME_IS_STARTING:
                 self.scene = 2
-                self.game.load_map()
+                # self.game.load_map()
             
 
             self.lobby.tick()
 
             self.client.send(message=self.lobby.get_data_to_send())
-        if self.scene == 2 and self.last_scene == 2:
+        elif self.scene == 2 and self.last_scene == 2:
             self.sprites_list.empty()
             self.game.receive_data(self.client.receive())
 

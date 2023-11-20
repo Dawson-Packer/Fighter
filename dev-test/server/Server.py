@@ -141,6 +141,7 @@ class Server:
             if 'message' in kwargs:
                 client_socket.send(bytes("+".join([kwargs.get('message', "")]), "utf-8"))
             else:
+                print("+".join([" ".join(x) for x in self.message]))
                 client_socket.send(bytes("+".join([" ".join(x) for x in self.message]), "utf-8"))
         except socket.error as message:
             print(f"Server error sending to Client {client_id}:", message)

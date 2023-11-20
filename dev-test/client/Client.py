@@ -32,6 +32,7 @@ class Client:
             # print(msg)
             # TODO: Move parse out of receive, make receive return message
             # self.parse(message)
+            # print(message)
             return message
         except socket.error as message:
             print("CLIENT could not receive:", message)
