@@ -36,30 +36,43 @@ class ProgramLogic:
             self.sprites_list.empty()
             for object in self.main_menu.objects_list:
                 self.sprites_list.add(object)
-                if self.main_menu.host_game_button.button_pressed():
-                    self.scene = 1
-                    if not self.IS_HOSTING:
-                        self.hosted_game = HostedGame()
-                        self.host_thread = threading.Thread(target=self.hosted_game.tick)
-                        self.host_thread.start()
-                        self.IS_HOSTING = True
-                        self.lobby.IS_HOST = True
-                        self.lobby.setup()
-                    while not self.client.IS_CONNECTED:
-                        IP_Address = 'localhost'
-                        success = self.client.connect(IP_Address)
-                        if not success: print(f"Client failed to connect to {IP_Address}")
+            if self.main_menu.host_game_button.button_pressed():
+                self.main_menu.host_game_button.IS_PRESSED = False
+                self.scene = 1
+                if not self.IS_HOSTING:
+                    self.hosted_game = HostedGame()
+                    self.host_thread = threading.Thread(target=self.hosted_game.tick)
+                    self.host_thread.start()
+                    self.IS_HOSTING = True
+                    self.lobby.IS_HOST = True
+                    self.lobby.setup()
+                while not self.client.IS_CONNECTED:
+                    IP_Address = 'localhost'
+                    success = self.client.connect(IP_Address)
+                    if not success: print(f"Client failed to connect to {IP_Address}")
+            if self.main_menu.direct_connect_button.button_pressed():
+                self.main_menu.direct_connect_button.IS_PRESSED = False
+                self.scene = 1
+                while not self.client.IS_CONNECTED:
+                    IP_Address = '192.168.1.15'
+                    success = self.client.connect(IP_Address)
+                    if not success: print(f"Client failed to connect to {IP_Address}")
         if self.scene == 1 and self.last_scene == 1:
             self.sprites_list.empty()
             for object in self.lobby.objects_list:
                 self.sprites_list.add(object)
-                if self.lobby.start_button.button_pressed():
-                    self.client.send(message=[["$START"]])
-                    self.scene = 2
+            self.lobby.receive_data(self.client.receive())
+            if self.lobby.start_button.button_pressed():
+                self.lobby.start_button.IS_PRESSED = False
+                self.client.send(message=[["$START"]])
+            if self.lobby.GAME_IS_STARTING:
+                self.scene = 2
+                self.game.load_map()
+            
 
-                self.lobby.tick()
+            self.lobby.tick()
 
-                self.client.send(message=self.lobby.get_data_to_send())
+            self.client.send(message=self.lobby.get_data_to_send())
         if self.scene == 2 and self.last_scene == 2:
             self.sprites_list.empty()
             self.game.receive_data(self.client.receive())

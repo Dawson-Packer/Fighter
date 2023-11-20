@@ -58,3 +58,13 @@ class Button(pygame.sprite.Sprite):
                                                                                  (self.width, self.height))
         self.rect = self.image.get_rect()
         self.update_sprite()
+    
+    def depress(self):
+        self.image = pygame.transform.smoothscale(pygame.image.load(os.path.join("assets",
+                                                                                 "textures",
+                                                                                 "button",
+                                                                                 "button.png")).
+                                                                                 convert_alpha(),
+                                                                                 (self.width, self.height))
+        self.rect = self.image.get_rect()
+        self.update_sprite()

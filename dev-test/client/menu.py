@@ -18,11 +18,16 @@ class MainMenu:
         self.button_list.append(self.host_game_button)
         self.objects_list.append(self.host_game_button)
 
+        self.direct_connect_button = Button(50, 100, 600, 300, "Direct Connect")
+        self.button_list.append(self.direct_connect_button)
+        self.objects_list.append(self.direct_connect_button)
+
 class Lobby:
     def __init__(self):
         self.objects_list = []
         self.button_list = []
         self.IS_HOST = False
+        self.GAME_IS_STARTING = False
         # self.setup()
 
     def receive_data(self, message: str):
@@ -33,16 +38,8 @@ class Lobby:
         for packet in packets:
             contents = packet.split(" ")
             packet_type = contents[0]
-            if packet_type == "$ID":
-                self.client_id = int(contents[1])
-            if packet_type == "$DUMMY":
-                pass
-            if packet_type == "$UPDATE":
-                disconnected_client = int(contents[1])
-                if self.client_id > disconnected_client:
-                    self.client_id += 1
-            if packet_type == "$OBJ":
-                pass
+            if packet_type == "$STARTGAME":
+                self.GAME_IS_STARTING = True
 
     def setup(self):
         background = Sprite(600, 1000, 500, 300,  0.0, -1, "default", "snow_blur.png", "background")

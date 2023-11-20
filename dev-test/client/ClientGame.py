@@ -5,6 +5,7 @@ class ClientGame:
     def __init__(self):
         self.objects_list = []
         self.message = []
+        self.map_id = 0
 
     def connect(self, ip_address: str):
         try:
@@ -27,10 +28,7 @@ class ClientGame:
                 pass
             if packet_type == "$STARTGAME":
                 print("Client received STARTGAME command")
-                if int(contents[1]) == 0:
-                    self.objects_list.append(Sprite(600, 1000, 500, 300,  0.0, -1, "default",
-                                                    "snow.png", "background"))
-
+                pass
             if packet_type == "$UPDATE":
                 disconnected_client = int(contents[1])
                 if self.client_id > disconnected_client:
@@ -51,3 +49,10 @@ class ClientGame:
         :param packet: A list of items, starting with the tag ($___) to send as a packet.
         """
         self.message.append(packet)
+
+    def load_map(self):
+        print("Loading map")
+        self.map_id = 0
+
+        self.objects_list.append(Sprite(600, 1000, 500, 300,  0.0, -1, "default",
+                                                    str(self.map_id) + ".png", "background"))
