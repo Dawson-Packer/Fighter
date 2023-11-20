@@ -6,13 +6,11 @@ import game_config as gc
 
 class HostedGame:
     def __init__(self, game_id: int):
+
         self.GAME_TYPE = game_id
-        if self.GAME_TYPE == gc.game_id.GAME_TEST:
-            self.server = Server(1)
-        elif self.GAME_TYPE == gc.game_id.GAME_1V1:
-            self.server = Server(2)
-        elif self.GAME_TYPE == gc.game_id.GAME_COMPETITION:
-            self.server = Server(16)
+        self.server = Server()
+
+
         self.user_list = []
         self.player_1 = None
         self.player_2 = None
@@ -72,7 +70,7 @@ class HostedGame:
 
 
 
-                ## * Prepare objects for delivery.
+                # Prepare objects for delivery.
                 object_data = ["$OBJ"]
                 for object in self.objects_list:
                     object_data.append(str(object.id))

@@ -5,7 +5,7 @@ from game_config import *
 
 
 class Server:
-    def __init__(self, max_connections: int):
+    def __init__(self):
         """
         Start local server and bind to port.
 
@@ -14,7 +14,7 @@ class Server:
         self.IS_RUNNING = True
         self.GAME_RUNNING = False
         self.GAME_STATE = 0
-        self.MAX_CONNECTIONS = max_connections
+        self.MAX_CONNECTIONS = 20
         self.keypresses = []
         try:
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -34,6 +34,10 @@ class Server:
         self.packets_lost = []
         self.users = []
         self.CLIENT_CONNECTIONS_SATURATED = False
+
+    def set_max_connections(self, max_num: int):
+        """Set the maximum number of connections to the server."""
+        self.MAX_CONNECTIONS = max_num
 
     def num_connections(self):
         """Return the number of clients connected to the server."""
