@@ -53,6 +53,7 @@ class ProgramLogic:
             if self.main_menu.direct_connect_button.button_pressed():
                 self.main_menu.direct_connect_button.IS_PRESSED = False
                 self.scene = 1
+                self.lobby.setup()
                 while not self.client.IS_CONNECTED:
                     IP_Address = '192.168.1.175'
                     success = self.client.connect(IP_Address)

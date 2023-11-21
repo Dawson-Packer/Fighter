@@ -2,6 +2,7 @@ import pygame
 
 from client.Sprites import *
 from client.Button import *
+from client.client_global import *
 
 class MainMenu:
     def __init__(self):
@@ -35,6 +36,7 @@ class Lobby:
 
     def parse(self, message: str):
         packets = message.split("+")
+        log.enter_data([" ", message])
         print(packets)
         for packet in packets:
             contents = packet.split(" ")

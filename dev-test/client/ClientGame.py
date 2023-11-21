@@ -1,7 +1,7 @@
 from client.Sprites import *
 from client.Client import *
 from game_config import *
-from client.Logger import Logger
+from client.client_global import *
 
 class ClientGame:
     def __init__(self):
@@ -10,7 +10,6 @@ class ClientGame:
         # self.map_id = 0
         self.tick = 0
         self.setup()
-        self.log = Logger(["Timestamp", "Received Message"])
 
     def connect(self, ip_address: str):
         try:
@@ -24,7 +23,7 @@ class ClientGame:
 
     def parse(self, message: str):
         print(message)
-        self.log.enter_data([self.tick, message])
+        log.enter_data([self.tick, message])
         packets = message.split("+")
         for packet in packets:
             contents = packet.split(" ")
@@ -55,7 +54,7 @@ class ClientGame:
 
     def run(self):
         self.message = []
-        self.add_packet_to_message(["R" + str(self.tick)])
+        self.add_packet_to_message(["$R" + str(self.tick)])
 
         self.tick += 1
     
