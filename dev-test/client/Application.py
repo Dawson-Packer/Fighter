@@ -118,4 +118,6 @@ class Application:
         """Ends the Window process and cleans up upon exit."""
         self.wd.quit()
         self.pl.host_thread.join()
+        self.pl.hosted_game.log.terminate()
+        self.pl.game.log.terminate()
         self.IS_RUNNING = False

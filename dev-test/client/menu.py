@@ -35,6 +35,7 @@ class Lobby:
 
     def parse(self, message: str):
         packets = message.split("+")
+        print(packets)
         for packet in packets:
             contents = packet.split(" ")
             packet_type = contents[0]

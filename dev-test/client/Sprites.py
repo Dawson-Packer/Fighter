@@ -1,6 +1,8 @@
 import os as os
 import pygame as pygame
 
+from game_config import *
+
 class Sprite(pygame.sprite.Sprite):
     def __init__(self, height: int,
                  width: int,
@@ -27,7 +29,7 @@ class Sprite(pygame.sprite.Sprite):
         :param name: The display name of the Sprite.
         """
         super().__init__()
-        print("Sprite created")
+        # print("Sprite created")
 
 
         self.set_texture(name, category, file_name, width, height)
@@ -35,6 +37,7 @@ class Sprite(pygame.sprite.Sprite):
         self.x_pos = x_pos
         self.y_pos = y_pos
         self.rotation = None
+        print("WIDTH:", width)
         self.width = width
         self.height = height
         self.set_rotation(rotation)
@@ -71,7 +74,7 @@ class Sprite(pygame.sprite.Sprite):
         :param width: The width of the image to load.
         :param height: The height of the image to load.
         """
-        print(char_name, category, file_name)
+        # print(char_name, category, file_name)
         self.image = pygame.transform.smoothscale(pygame.image.load(os.path.join("assets",
                                                                                  "textures",
                                                                                  char_name,

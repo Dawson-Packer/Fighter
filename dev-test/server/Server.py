@@ -16,6 +16,7 @@ class Server:
         self.GAME_STATE = 0
         self.MAX_CONNECTIONS = 20
         self.keypresses = []
+        self.tick = 0
         try:
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.host = ''
@@ -27,7 +28,7 @@ class Server:
 
         self.received_message = ""
         # TODO: Empty message list default when timeout is set in client
-        self.message = [["$0"]]
+        self.message = [["$T" + str(self.tick)]]
         
         self.clients = []
         self.ip_addresses = []
@@ -71,6 +72,7 @@ class Server:
         #     self.GAME_RUNNING = True
         #     self.add_packet_to_message(["$STARTGAME", "0"])
         else: self.CLIENT_CONNECTIONS_SATURATED = False
+        self.tick += 1
 
     def listen(self):
         """Listen for connections to the server."""
@@ -141,12 +143,11 @@ class Server:
             if 'message' in kwargs:
                 client_socket.send(bytes("+".join([kwargs.get('message', "")]), "utf-8"))
             else:
-                print("+".join([" ".join(x) for x in self.message]))
                 client_socket.send(bytes("+".join([" ".join(x) for x in self.message]), "utf-8"))
         except socket.error as message:
             print(f"Server error sending to Client {client_id}:", message)
         # TODO: Empty message list default (SEE TOP)
-        self.message = [["$0"]]
+        self.message = [["$T" + str(self.tick)]]
 
     def start_game(self, map_id: int):
         self.CLIENT_CONNECTIONS_SATURATED = True

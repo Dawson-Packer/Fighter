@@ -41,7 +41,7 @@ class ProgramLogic:
                 self.scene = 1
                 if not self.IS_HOSTING:
                     self.hosted_game = HostedGame()
-                    self.host_thread = threading.Thread(target=self.hosted_game.tick)
+                    self.host_thread = threading.Thread(target=self.hosted_game.run)
                     self.host_thread.start()
                     self.IS_HOSTING = True
                     self.lobby.IS_HOST = True
@@ -54,7 +54,7 @@ class ProgramLogic:
                 self.main_menu.direct_connect_button.IS_PRESSED = False
                 self.scene = 1
                 while not self.client.IS_CONNECTED:
-                    IP_Address = '192.168.1.15'
+                    IP_Address = '192.168.1.175'
                     success = self.client.connect(IP_Address)
                     if not success: print(f"Client failed to connect to {IP_Address}")
         elif self.scene == 1 and self.last_scene == 1:
@@ -65,6 +65,7 @@ class ProgramLogic:
             if self.IS_HOSTING and self.lobby.start_button.button_pressed():
                 self.lobby.start_button.IS_PRESSED = False
                 self.client.send(message=[["$START"]])
+                print("Sent start message")
             if self.lobby.GAME_IS_STARTING:
                 self.scene = 2
                 # self.game.load_map()
@@ -77,7 +78,7 @@ class ProgramLogic:
             self.sprites_list.empty()
             self.game.receive_data(self.client.receive())
 
-            self.game.tick()
+            self.game.run()
 
             self.client.send(message=self.game.get_data_to_send())
             for object in self.game.objects_list:
