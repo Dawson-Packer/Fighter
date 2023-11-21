@@ -1,7 +1,6 @@
 import pygame
 
 from client.Sprites import *
-from client.Button import *
 from client.client_global import *
 
 class MainMenu:
@@ -12,7 +11,7 @@ class MainMenu:
         self.setup()
 
     def setup(self):
-        background = Sprite(600, 1000, 500, 300,  0.0, -1, "default", "snow_blur.png", "background")
+        background = Map(600, 1000, 500, 300, "snow_blur")
         self.objects_list.append(background)
 
         self.host_game_button = Button(50, 100, 200, 300, "Host Game")
@@ -37,7 +36,7 @@ class Lobby:
     def parse(self, message: str):
         packets = message.split("+")
         log.enter_data([" ", message])
-        print(packets)
+        # print(packets)
         for packet in packets:
             contents = packet.split(" ")
             packet_type = contents[0]
@@ -46,7 +45,7 @@ class Lobby:
                 self.GAME_IS_STARTING = True
 
     def setup(self):
-        background = Sprite(600, 1000, 500, 300,  0.0, -1, "default", "snow_blur.png", "background")
+        background = Map(600, 1000, 500, 300, "snow_blur")
         self.objects_list.append(background)
 
         if self.IS_HOST:

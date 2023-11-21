@@ -12,10 +12,11 @@ class game_state(Enum.Enum):
     GAME_WAIT_FOR_CLIENTS_TO_LOAD2 = 2
     GAME_STARTING = 3
     GAME_RUNNING = 4
-    
-class object_type:
-    BACKGROUND = "background"
-    STICKMAN = "stickman"
+
+class sprite_type:
+    PLAYER = 0
+    MAP = 1
+    GUI = 2 
 
 class player_stats:
     PUNCH_DAMAGE = 1.0

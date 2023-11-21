@@ -122,6 +122,7 @@ class HostedGame:
             ## * Send data to clients.
             for client_id, (client, address) in enumerate(self.server.clients):
                 self.server.send(client, client_id=client_id)
+            self.server.reset_message()
             
             self.tick += 1
             # Delay tick if execution time is less than 0.010 seconds.

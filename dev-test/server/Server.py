@@ -137,16 +137,19 @@ class Server:
         """
         if 'client_id' in kwargs:
             client_id = kwargs.get('client_id', "")
+            print(client_id)
             if self.lost_connection(client_id): return
         else: client_id = None
         try:
             if 'message' in kwargs:
                 client_socket.send(bytes("+".join([kwargs.get('message', "")]), "utf-8"))
             else:
+                print("+".join([" ".join(x) for x in self.message]))
                 client_socket.send(bytes("+".join([" ".join(x) for x in self.message]), "utf-8"))
         except socket.error as message:
             print(f"Server error sending to Client {client_id}:", message)
-        # TODO: Empty message list default (SEE TOP)
+
+    def reset_message(self):
         self.message = [["$T" + str(self.tick)]]
 
     def start_game(self, map_id: int):

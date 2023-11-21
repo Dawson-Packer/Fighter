@@ -8,11 +8,10 @@ class Sprite(pygame.sprite.Sprite):
                  width: int,
                  x_pos: int,
                  y_pos: int,\
-                rotation: float,
-                sprite_id: int,
-                category: int,
-                file_name: str,
-                name: str
+                 rotation: float,
+                 sprite_id: int,
+                 type: int,
+                 **kwargs
                 ):
         """
         Initializes a base class Sprite used to store basic data for elements loaded to
@@ -24,16 +23,19 @@ class Sprite(pygame.sprite.Sprite):
         :param y_pos: The y-position on the screen of the Sprite (top-down).
         :param rotation: The rotational value of the Sprite.
         :param sprite_id: The ID of the Sprite.
-        :param category: The category of the texture of the Sprite.
-        :param file_name: The file name of the Sprite image.
-        :param name: The display name of the Sprite.
+        :param type: The type of sprite (player, map, gui).
         """
         super().__init__()
-        # print("Sprite created")
 
-
-        self.set_texture(name, category, file_name, width, height)
-
+        if 'character' in kwargs:
+            self.character = kwargs.get('character', "")
+        if 'state' in kwargs:
+            self.texture_state = kwargs.get('state', "")
+        if 'map' in kwargs:
+            self.map = kwargs.get('map', "")
+        if 'button' in kwargs:
+            self.button = kwargs.get('button', "")
+        self.set_texture(type, width, height)
         self.x_pos = x_pos
         self.y_pos = y_pos
         self.rotation = None
@@ -41,8 +43,7 @@ class Sprite(pygame.sprite.Sprite):
         self.width = width
         self.height = height
         self.set_rotation(rotation)
-        self.ID = sprite_id
-        self.name = name
+        self.id = sprite_id
 
         self.update_sprite()
 
@@ -64,24 +65,38 @@ class Sprite(pygame.sprite.Sprite):
         self.rect.y = self.y_pos - (self.height // 2)
 
 
-    def set_texture(self, char_name: str, category: str, file_name: str, width: int, height: int):
+    def set_texture(self, type: int, width: int, height: int):
         """
         Sets the texture of the Sprite to the texture specified by the parameters.
 
-        :param char_name: The name of the character to pull the texture from.
-        :param category: The category of the image.
-        :param file_name: The name of the file to load.
+        :param type: The type of sprite to add a texture to.
         :param width: The width of the image to load.
         :param height: The height of the image to load.
         """
-        # print(char_name, category, file_name)
-        self.image = pygame.transform.smoothscale(pygame.image.load(os.path.join("assets",
-                                                                                 "textures",
-                                                                                 char_name,
-                                                                                 category,
-                                                                                 file_name)).
-                                                                                 convert_alpha(),
-                                                                                 (width, height))
+        if type == sprite_type.PLAYER:
+            self.image = pygame.transform.smoothscale(pygame.image.load(os.path.join("assets",
+                                                                                    "textures",
+                                                                                    self.character,
+                                                                                    self.texture_state,
+                                                                                    "0.png")).
+                                                                                    convert_alpha(),
+                                                                                    (width, height))
+        elif type == sprite_type.MAP:
+            self.image = pygame.transform.smoothscale(pygame.image.load(os.path.join("assets",
+                                                                                     "textures",
+                                                                                     "map",
+                                                                                     str(self.map) +
+                                                                                     ".png")).
+                                                                                     convert_alpha(),
+                                                                                     (width, height))
+        elif type == sprite_type.GUI:
+            self.image = pygame.transform.smoothscale(pygame.image.load(os.path.join("assets",
+                                                                                     "textures",
+                                                                                     "gui",
+                                                                                     str(self.button) +
+                                                                                     ".png")).
+                                                                                     convert_alpha(),
+                                                                                     (width, height))
         self.rect = self.image.get_rect()
 
 
@@ -215,3 +230,62 @@ class Player(AnimatedSprite):
         self.direction_right = True
         self.STATUS_CHANGED = False
         self.status = -1
+
+class Map(Sprite):
+    def __init__(self, height: int,
+                 width: int,
+                 x_pos: int,
+                 y_pos: int,
+                 map_id
+                ):
+        """
+        Initializes an Button object used to operate the GUI.
+
+        :param height: The height of the Button to draw.
+        :param width: The width of the Button to draw.
+        :param x_pos: The x-position on the screen of the Button.
+        :param y_pos: The y-position on the screen of the Button (top-down).
+        :param map_id: The ID of the map to display.
+        """
+        super().__init__(height, width, x_pos, y_pos, 0.0, -1, sprite_type.MAP, map=map_id)
+
+        self.map_id = map_id
+
+class Button(Sprite):
+    def __init__(self, height: int,
+                 width: int,
+                 x_pos: int,
+                 y_pos: int,
+                contents: str
+                ):
+        """
+        Initializes an Button object used to operate the GUI.
+
+        :param height: The height of the Button to draw.
+        :param width: The width of the Button to draw.
+        :param x_pos: The x-position on the screen of the Button.
+        :param y_pos: The y-position on the screen of the Button (top-down).
+        :param contents: The display name of the Button.
+        """
+        super().__init__(height, width, x_pos, y_pos, 0.0, -1, sprite_type.GUI, button='button')
+
+        self.name = contents
+        self.IS_PRESSED = False
+
+    def button_pressed(self) -> bool:
+        """Return whether the Button is pressed."""
+        return self.IS_PRESSED
+    
+    def check_button(self, cursor_position: tuple):
+        if cursor_position[0] > self.x_pos - (self.width / 2) and cursor_position[0] < self.x_pos +\
+        (self.width / 2) and cursor_position[1] > self.y_pos - (self.height / 2) and\
+        cursor_position[1] < self.y_pos + (self.height / 2):
+            self.IS_PRESSED = True
+            self.button += "_pressed"
+        self.rect = self.image.get_rect()
+        self.update_sprite()
+    
+    def depress(self):
+        self.button.replace("_pressed", '')
+        self.rect = self.image.get_rect()
+        self.update_sprite()

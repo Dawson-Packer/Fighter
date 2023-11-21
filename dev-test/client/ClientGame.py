@@ -22,7 +22,7 @@ class ClientGame:
         self.parse(message)
 
     def parse(self, message: str):
-        print(message)
+        # print(message)
         log.enter_data([self.tick, message])
         packets = message.split("+")
         for packet in packets:
@@ -70,9 +70,7 @@ class ClientGame:
         print("Loading map")
         self.objects_list.clear()
 
-        self.objects_list.append(Sprite(600, 1000, 500, 300,  0.0, -1, "default",
-                                        str(map_id) + ".png", "background"))
+        self.objects_list.append(Map(600, 1000, 500, 300, map_id))
     
     def setup(self):
-        self.objects_list.append(Sprite(600, 1000, 500, 300, 0.0, -1, "default",
-                                        "snow_blur.png", "background"))
+        self.objects_list.append(Map(600, 1000, 500, 300, "snow_blur"))

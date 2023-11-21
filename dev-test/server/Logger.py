@@ -26,7 +26,6 @@ class Logger:
             for index, entry in enumerate(data):
                 data[index] = str(entry)
             data_entries = ", ".join(data)
-            print(data_entries)
         else:
             data_entries = str(data[0])
         data_entries = data_entries + '\n'
