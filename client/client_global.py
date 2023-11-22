@@ -3,4 +3,4 @@ import os
 
 os.chdir(os.path.dirname(os.path.abspath(__file__ + "/..")))
 
-log = Logger(["Timestamp", "Received Message"])
+# log = Logger(["Timestamp", "Received Message"])

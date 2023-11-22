@@ -112,7 +112,7 @@ class Application:
     def quit(self):
         """Ends the Window process and cleans up upon exit."""
         self.wd.quit()
-        self.pl.host_thread.join()
-        self.pl.hosted_game.log.terminate()
-        self.pl.game.log.terminate()
+        self.pl.client_manager.host_thread.join()
+        self.pl.client_manager.hosted_game.log.terminate()
+        # self.pl.game.log.terminate()
         self.IS_RUNNING = False

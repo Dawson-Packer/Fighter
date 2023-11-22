@@ -3,7 +3,6 @@ import time
 from server.Server import *
 from logic.Objects import *
 # from game_config import *
-from server.Logger import *
 
 
 
@@ -12,7 +11,6 @@ class GameManager:
 
         # self.GAME_TYPE = game_id
         self.server = Server()
-        self.log = Logger(["Timestamp", "Source Client", "Message Received"])
 
         self.state = -1
 
@@ -137,8 +135,8 @@ class GameManager:
         :param client_id: The ID of the client sending the message.
         :param message: The entire message sent to the server by all the clients in one tick.
         """
+        if not message: return
         print(message)
-        self.log.enter_data([self.tick, client_id, message])
         packets = message.split("+")
         
         for packet in packets:

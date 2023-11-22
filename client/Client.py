@@ -1,5 +1,7 @@
 import socket
 
+from client.Logger import Logger
+
 
 class Client:
     def __init__(self):
@@ -11,6 +13,7 @@ class Client:
         self.packets_lost = 0
         self.message = [[]]
 
+        self.log = Logger(["Timestamp", "Message Received"])
 
         # States
         self.IS_CONNECTED = False
@@ -25,14 +28,11 @@ class Client:
             return False
         return True
 
-    def receive(self):
+    def receive(self, tick: int):
         if self.lost_connection(): return
         try:
             message = self.socket.recv(1024).decode("utf-8")
-            # print(msg)
-            # TODO: Move parse out of receive, make receive return message
-            # self.parse(message)
-            # print(message)
+            self.log.enter_data([tick, message])
             return message
         except socket.error as message:
             print("CLIENT could not receive:", message)
@@ -46,8 +46,8 @@ class Client:
                 self.socket.send(bytes("+".join([" ".join(x) for x in 
                                                  kwargs.get('message', "")]), "utf-8"))
             else:
-                if len(self.message) > 0: self.message.insert(0, ["$0"])
-                else: self.message = [["$0"]]
+                # if len(self.message) > 0: self.message.insert(0, ["$R" + str(tick)])
+                # else: self.message = [["$R" + str(tick)]]
                 if not self.IS_CONNECTED:
                     self.message.append(["$QUIT"])
                 # print(self.message)
@@ -65,13 +65,16 @@ class Client:
             return True
         else: return False
     
-    # def add_packet_to_message(self, packet: list):
-    #     """
-    #     Add a packet of information to the global message sent to the server by the client.
+    def add_packet_to_message(self, packet: list):
+        """
+        Add a packet of information to the global message sent to the server by the client.
 
-    #     :param packet: A list of items, starting with the tag ($___) to send as a packet.
-    #     """
-    #     self.message.append(packet)
+        :param packet: A list of items, starting with the tag ($___) to send as a packet.
+        """
+        self.message.append(packet)
+
+    def reset_message(self):
+        self.message.clear()
 
     def disconnect(self):
         self.IS_CONNECTED = False

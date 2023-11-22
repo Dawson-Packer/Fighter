@@ -5,7 +5,6 @@ import threading
 
 import client.menu as menu
 from ClientManager import ClientManager
-from logic.GameManager import GameManager
 
 class ProgramLogic:
     def __init__(self, field_width: int, field_height: int, offset: tuple):

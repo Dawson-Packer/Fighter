@@ -279,13 +279,11 @@ class Button(Sprite):
         return self.IS_PRESSED
     
     def check_button(self, cursor_position: tuple, MOUSE_CLICKED: bool):
-        print(self.press_state)
         if self.press_state == 0:
             self.IS_PRESSED = False
             if cursor_position[0] > self.x_pos - (self.width / 2) and cursor_position[0] < self.x_pos +\
             (self.width / 2) and cursor_position[1] > self.y_pos - (self.height / 2) and\
             cursor_position[1] < self.y_pos + (self.height / 2) and MOUSE_CLICKED:
-                print("Clicked!")
                 self.press_state += 1
                 self.set_texture()
                 self.update_sprite()
@@ -297,7 +295,6 @@ class Button(Sprite):
             self.press_state += 1
         elif self.press_state == 4: self.press_state += 1
         elif self.press_state == 5:
-            print("depress")
             self.press_state += 1
             self.depress()
         elif self.press_state == 6:
@@ -307,5 +304,4 @@ class Button(Sprite):
     
     def depress(self):
         self.gui_element = self.gui_element[:-8]
-        print(self.gui_element)
         self.set_texture()

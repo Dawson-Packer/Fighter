@@ -1,6 +1,8 @@
 import socket
 import time
 
+from server.Logger import Logger
+
 
 class Server:
     def __init__(self):
@@ -9,12 +11,15 @@ class Server:
 
         :param max_connections: The maximum number of connections allowed on the server.
         """
+        print("Server started")
         self.IS_RUNNING = True
         self.GAME_RUNNING = False
         self.GAME_STATE = 0
         self.MAX_CONNECTIONS = 20
         self.keypresses = []
         self.tick = 0
+
+        self.log = Logger(["Timestamp", "Client ID", "Message Received"])
         try:
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.host = ''
@@ -74,7 +79,6 @@ class Server:
 
     def listen(self):
         """Listen for connections to the server."""
-        # print("LISTENING")
         try:
             self.socket.listen(1)
             clientsocket, address = self.socket.accept()
@@ -82,12 +86,11 @@ class Server:
                 self.clients.append((clientsocket, address))
                 self.ip_addresses.append(address[0])
                 self.packets_lost.append(0)
-            else:
+            elif self.lost_connection(self.ip_addresses.index(address[0])):
                 self.packets_lost[self.ip_addresses.index(address[0])] = 0
                 self.clients[self.ip_addresses.index(address[0])] = (clientsocket, address)
             # self.users.append(str(len(self.clients) - 1))
             print(f'Client {address} successfully connected!')
-            print(address[0])
             self.send(clientsocket, message=f"$GAME {str(self.GAME_STATE)}")
         except socket.timeout: pass
 
@@ -100,9 +103,10 @@ class Server:
         """
         if self.lost_connection(client_id): return ""
         try:
-            client.settimeout(0.135)
+            client.settimeout(0.200)
             message = client.recv(1024).decode("utf-8")
             self.packets_lost[client_id] = 0
+            self.log.enter_data([self.tick, client_id, message])
             return message
         except socket.error as message:
             print(f"Server error on reading from Client {client_id}:", message)
@@ -135,14 +139,12 @@ class Server:
         """
         if 'client_id' in kwargs:
             client_id = kwargs.get('client_id', "")
-            print(client_id)
             if self.lost_connection(client_id): return
         else: client_id = None
         try:
             if 'message' in kwargs:
                 client_socket.send(bytes("+".join([kwargs.get('message', "")]), "utf-8"))
             else:
-                print("+".join([" ".join(x) for x in self.message]))
                 client_socket.send(bytes("+".join([" ".join(x) for x in self.message]), "utf-8"))
         except socket.error as message:
             print(f"Server error sending to Client {client_id}:", message)
