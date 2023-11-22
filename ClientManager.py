@@ -45,7 +45,7 @@ class ClientManager:
             if packet_type == "$DUMMY":
                 pass
             if packet_type == "$STARTGAME":
-                # print("Client received STARTGAME command")
+                self.gui_overlay_state = gui_overlay.NONE
                 pass
             if packet_type == "$UPDATE":
                 disconnected_client = int(contents[1])
@@ -129,8 +129,18 @@ class ClientManager:
                     print("Joining game")
                     self.connect('192.168.1.175')
                     self.gui_overlay_state = gui_overlay.LOBBY
+        if self.gui_overlay_state == gui_overlay.LOBBY:
+            for button in self.lobby.buttons_list:
+                button.check_button(cursor_position, MOUSE_CLICKED)
+                if button.function == button_type.START_GAME and button.IS_PRESSED:
+                    print("Starting game")
+                    self.start()
+        if self.gui_overlay_state == gui_overlay.PAUSE_SCREEN:
+            pass
 
-                
+
+    def start(self):
+        self.client.add_packet_to_message(["$START"])
     
     def setup(self):
         self.objects_list.append(Map("snow_blur"))

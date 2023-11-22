@@ -12,7 +12,6 @@ class GameManager:
         # self.GAME_TYPE = game_id
         self.server = Server()
 
-        self.state = -1
 
 
         self.user_list = []
@@ -25,7 +24,6 @@ class GameManager:
     def start_game(self):
 
         print("Started game", 1)
-        self.state = -1
         # Create background object
         self.load_map(0)
 
@@ -78,9 +76,6 @@ class GameManager:
             # Tick the server.
             self.server.run()
 
-            ## * Start the game
-            if self.state == 5: self.start_game()
-            if self.state >= 0: self.state += 1
             ## * Read and process information.
             if not self.server.num_connections() == 0:
                 # Read data from each client.
@@ -151,8 +146,8 @@ class GameManager:
                 pass
             if packet_type == "$START":
                 print("Server received START command")
+                self.start_game()
                 self.server.start_game(0)
-                self.state = 0
             if packet_type == "$QUIT":
                 self.server.client_disconnected(client_id)
                 # self.user_list.pop(client_id)

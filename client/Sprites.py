@@ -279,6 +279,7 @@ class Button(Sprite):
         return self.IS_PRESSED
     
     def check_button(self, cursor_position: tuple, MOUSE_CLICKED: bool):
+        print("checked")
         if self.press_state == 0:
             self.IS_PRESSED = False
             if cursor_position[0] > self.x_pos - (self.width / 2) and cursor_position[0] < self.x_pos +\
@@ -298,6 +299,7 @@ class Button(Sprite):
             self.press_state += 1
             self.depress()
         elif self.press_state == 6:
+            print("Pressed")
             self.IS_PRESSED = True
             self.press_state = 0
             

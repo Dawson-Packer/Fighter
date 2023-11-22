@@ -19,6 +19,7 @@ class sprite_type:
     GUI = 2
 
 class gui_overlay(Enum.Enum):
-    MAIN_MENU = 0
-    LOBBY = 1
-    PAUSE_SCREEN = 2
+    NONE = 0
+    MAIN_MENU = 1
+    LOBBY = 2
+    PAUSE_SCREEN = 3
