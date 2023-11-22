@@ -1,4 +1,4 @@
-from client.Sprites import *
+from graphics.Sprites import *
 from client_config import *
 
 class main_menu:

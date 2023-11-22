@@ -1,12 +1,12 @@
-import threading as th
 from Window import *
-from ProgramLogic import *
+from ClientManager import *
 
 class Application:
+    """Application class for communicating between Events, program logic, and the
+        renderer."""
     def __init__(self, title: str, dim_width: int, dim_height: int):
         """
-        Application class for communicating between Events, program logic, and the
-        renderer.
+        Initializes an Application object.
 
         :param title: The title to use on the titlebar of the window.
         :param dim_width: The width of the window to display.
@@ -15,7 +15,7 @@ class Application:
         self.title = title
         self.dimensions = (dim_width, dim_height)
         self.wd = Window(title, (200, 200, 200), self.dimensions[0], self.dimensions[1])
-        self.pl = ProgramLogic(dim_width, dim_height, (0, 0))
+        self.manager = ClientManager(dim_width, dim_height, (0, 0))
         self.IS_RUNNING = self.wd.IS_RUNNING
         self.IS_PAUSED = False
         self.delay = 0.050 # seconds
@@ -33,11 +33,11 @@ class Application:
         
         if self.game_tick == 1 and not self.IS_PAUSED:
             self.process_events()
-            self.pl.tick()
+            self.manager.run()
             self.game_tick = 0
         if not self.IS_RUNNING: return
         if self.window_tick == 1 and not self.IS_PAUSED:
-            self.wd.update(self.pl.sprites_list)
+            self.wd.update(self.manager.sprites_list)
             self.window_tick = 0
 
     def process_events(self):
@@ -51,7 +51,7 @@ class Application:
                 return
             mouse_buttons_state = pygame.mouse.get_pressed(num_buttons=3)
             if mouse_buttons_state[0]:
-                self.pl.client_manager.check_buttons(pygame.mouse.get_pos(), True)
+                self.manager.check_buttons(pygame.mouse.get_pos(), True)
         keys = pygame.key.get_pressed()
         KEY_PRESSED = False
         if keys[pygame.K_a] and not keys[pygame.K_LSHIFT]:
@@ -112,7 +112,8 @@ class Application:
     def quit(self):
         """Ends the Window process and cleans up upon exit."""
         self.wd.quit()
-        self.pl.client_manager.host_thread.join()
-        self.pl.client_manager.hosted_game.log.terminate()
+        self.manager.host_thread.join()
+        self.manager.hosted_game.server.incoming_log.terminate()
+        self.manager.hosted_game.server.outgoing_log.terminate()
         # self.pl.game.log.terminate()
         self.IS_RUNNING = False
