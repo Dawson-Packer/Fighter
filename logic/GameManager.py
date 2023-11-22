@@ -7,7 +7,7 @@ from logic.Objects import *
 
 
 class GameManager:
-    def __init__(self):
+    def __init__(self, field_height: int, field_width: int):
 
         # self.GAME_TYPE = game_id
         self.server = Server()
@@ -15,14 +15,17 @@ class GameManager:
 
 
         self.user_list = []
-        self.player_1 = None
-        self.player_2 = None
+        self.client_list = []
         self.objects_list = []
         self.game_tick = -1
         self.tick = 0
 
+        self.FIELD_HEIGHT = field_height
+        self.FIELD_WIDTH = field_width
+
     def start_game(self):
 
+        self.assign_players(self.client_list[0], self.client_list[1])
         print("Started game", 1)
         # Create background object
         self.load_map(0)
@@ -67,12 +70,13 @@ class GameManager:
             start_time = time.time()
 
             ## * Server Management.
-
+            # Sync client list to server client list
+            while len(self.client_list) < len(self.server.clients):
+                self.client_list.append(len(self.client_list) - 1)
             # Sync user list to server client list.
-            # while len(self.server.clients) > len(self.user_list):
-            #     self.user_list.append("USR" + str(len(self.user_list)))
+            while len(self.server.clients) > len(self.user_list):
+                self.user_list.append("USR" + str(len(self.user_list)))
                 
-
             # Tick the server.
             self.server.run()
 
@@ -81,18 +85,12 @@ class GameManager:
                 # Read data from each client.
                 for client_id, (client, address) in enumerate(self.server.clients):
                     client_message = self.server.receive(client_id, client)
-                    self.parse(client_id, client_message)
-            
-            ## * Start game.
-            # if self.server.GAME_RUNNING and self.game_tick == -1:
-            #     self.start_game()
-            #     self.game_tick += 1
-            
+                    self.parse(client_id, client_message)            
             ## * Process game physics.
             else:
 
 
-
+                # Process physics
 
 
 
@@ -100,17 +98,13 @@ class GameManager:
                 object_data = ["$OBJ"]
                 for object in self.objects_list:
                     object_data.append(str(object.id))
-                    object_data.append(str(object.character))
-                    object_data.append(str(round(object.x_pos)))
-                    object_data.append(str(round(object.y_pos)))
-                    object_data.append(str(object.direction_right))
+                    object_data.append(str(round(self.FIELD_WIDTH - object.x_pos)))
+                    object_data.append(str(round(self.FIELD_HEIGHT - object.y_pos)))
+                    object_data.append(str(object.direction))
                     object_data.append(str(object.status.value))
-                # self.server.add_packet_to_message(object_data)
-
-
-
+                    object_data.append(str(object.secondary_status.value))
+                # Increment game tick
                 self.game_tick += 1
-
 
             ## * Send data to clients.
             for client_id, (client, address) in enumerate(self.server.clients):
@@ -154,8 +148,13 @@ class GameManager:
             if packet_type == "$USER":
                 self.user_list[client_id] = contents[1]
             if packet_type == "$KEY":
-                pass
+                if client_id == self.player_1: self.handle_inputs(0)
+                elif client_id == self.player_2: self.handle_inputs(1)
+                else: print("Viewing client pressed key")
     
     def assign_players(self, client_1: int, client_2: int):
         self.player_1 = client_1
         self.player_2 = client_2
+    
+    def handle_inputs(self, player):
+        pass
