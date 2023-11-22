@@ -1,7 +1,11 @@
 import pygame as pygame
 import random as random
-import objects.Sprites as Sp
-import objects.Objects as obj
+import time
+import threading
+
+import client.menu as menu
+from ClientManager import ClientManager
+from logic.GameManager import GameManager
 
 class ProgramLogic:
     def __init__(self, field_width: int, field_height: int, offset: tuple):
@@ -12,77 +16,110 @@ class ProgramLogic:
         @param offset    The x and y offset from the corner of the screen to set the local
                          coordinate axii.
         """
-        self.isRunning = True
-
-        self.setup()
-
-    def tick(self, time_passed: int):
-        """
-        @brief    Runs all functions in the program necessary in one iteration.
-        @param time_passed    The time passed since last execution.
-        """
-        self.sprites_list.empty()
-
-        self.player_1.update_status()
-        self.player_2.update_status()
-
-        self.player_1.process_physics()
-        self.player_2.process_physics()
-
-        self.player_1.animate(not self.player_1.direction_right, False)
-        self.player_2.animate(not self.player_2.direction_right, False)
-
-
-        self.player_1.tick()
-        self.player_2.tick()
-
-        self.sprites_list.add(self.background)
-        self.sprites_list.add(self.player_2)
-        self.sprites_list.add(self.player_1)
-        self.sprites_list.add(self.crit_list)
-
-        self.sprites_list.update()
-       
-    def setup(self):
-        """Setup specific ProgramLogic class components for this program."""
+        self.IS_RUNNING = True
+        self.IS_HOSTING = False
+        self.client_manager = ClientManager()
         self.sprites_list = pygame.sprite.Group()
-        self.crit_list = []
 
-        # Background Object
-        self.background = Sp.Sprite(600, 1000, 500.0, 300.0, 0.0, -1, "default", "snow.png", "background")
-        self.sprites_list.add(self.background)
-
-        # Player 1 Object
-        self.player_1 = obj.Player("stickman",
-                                   1,
-                                   200.0,
-                                   425.0,
-                                   0.0,
-                                   1,
-                                   128,
-                                   128
-                                   )
-        # Player 2 Object
-        self.player_2 = obj.Player("stickman",
-                                   2,
-                                   800.0,
-                                   425.0,
-                                   0.0,
-                                   2,
-                                   128,
-                                   128
-                                   )
-
-
-    # def damage_player(self, player, amount):
-    #     if amount < 10.0:
-    #         self.crit_list.append(obj.Crit("yellow_star",
-    #                                        player.x_pos + random.uniform(-64, 64),
-    #                                        player.y_pos + random.uniform(-32, -96),
-    #                                        random.uniform(0, 360.0),
-    #                                        len(self.crit_list),
-    #                                        24,
-    #                                        24
-    #                                        ))
-            
+    def tick(self):
+        """Runs all functions in the program necessary in one iteration."""
+        self.client_manager.run()
         
+
+
+
+
+
+
+        
+        for object in self.client_manager.objects_list:
+            self.sprites_list.add(object)
+        for element in self.client_manager.gui_items_list:
+            self.sprites_list.add(element)
+        self.sprites_list.update()
+
+
+
+        # self.last_scene = self.scene
+
+        # Main Menu
+        # if self.scene == 0 and self.last_scene == 0:
+        #     self.sprites_list.empty()
+        #     for object in self.main_menu.objects_list:
+        #         self.sprites_list.add(object)
+        #     if self.main_menu.host_game_button.button_pressed():
+        #         self.main_menu.host_game_button.IS_PRESSED = False
+        #         self.scene = 1
+        #         if not self.IS_HOSTING:
+        #             self.hosted_game = GameManager()
+        #             self.host_thread = threading.Thread(target=self.hosted_game.run)
+        #             self.host_thread.start()
+        #             self.IS_HOSTING = True
+        #             self.lobby.IS_HOST = True
+        #             self.lobby.setup()
+        #         while not self.client.IS_CONNECTED:
+        #             IP_Address = 'localhost'
+        #             success = self.client.connect(IP_Address)
+        #             if not success: print(f"Client failed to connect to {IP_Address}")
+        #     if self.main_menu.host_game_button.IS_PRESSING:
+        #         self.main_menu.host_game_button.depress()
+        #     if self.main_menu.direct_connect_button.button_pressed():
+        #         self.main_menu.direct_connect_button.IS_PRESSED = False
+        #         self.scene = 1
+        #         self.lobby.setup()
+        #         while not self.client.IS_CONNECTED:
+        #             IP_Address = '192.168.1.175'
+        #             success = self.client.connect(IP_Address)
+        #             if not success: print(f"Client failed to connect to {IP_Address}")
+        #     if self.main_menu.direct_connect_button.IS_PRESSING:
+        #         self.main_menu.direct_connect_button.depress()
+        # elif self.scene == 1 and self.last_scene == 1:
+        #     self.sprites_list.empty()
+        #     for object in self.lobby.objects_list:
+        #         self.sprites_list.add(object)
+        #     self.lobby.receive_data(self.client.receive())
+        #     if self.IS_HOSTING and self.lobby.start_button.button_pressed():
+        #         self.lobby.start_button.IS_PRESSED = False
+        #         self.client.send(message=[["$START"]])
+        #         print("Sent start message")
+        #     if self.IS_HOSTING and self.lobby.start_button.IS_PRESSING:
+        #         self.lobby.start_button.depress()
+        #     if self.lobby.GAME_IS_STARTING:
+        #         self.scene = 2
+                # self.game.load_map()
+            
+
+        #     self.lobby.tick()
+
+        #     self.client.send(message=self.lobby.get_data_to_send())
+        # elif self.scene == 2 and self.last_scene == 2:
+        #     self.sprites_list.empty()
+        #     self.game.receive_data(self.client.receive())
+
+        #     self.game.run()
+
+        #     self.client.send(message=self.game.get_data_to_send())
+        #     for object in self.game.objects_list:
+        #         self.sprites_list.add(object)
+
+
+
+
+
+
+
+
+
+
+
+        # self.player_1.animate(not self.player_1.direction_right, False)
+        # self.player_2.animate(not self.player_2.direction_right, False)
+
+
+        # self.player_1.tick()
+        # self.player_2.tick()
+
+        # self.sprites_list.add(self.background)
+        # self.sprites_list.add(self.player_2)
+        # self.sprites_list.add(self.player_1)
+        # self.sprites_list.add(self.crit_list)

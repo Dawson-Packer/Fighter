@@ -1,105 +1,118 @@
 import threading as th
 from Window import *
 from ProgramLogic import *
-from config import *
-import Comm as com
 
 class Application:
     def __init__(self, title: str, dim_width: int, dim_height: int):
         """
-        @brief    Application class for communicating between Events, program logic, and the
-                  renderer.
-        @param title    The title to use on the titlebar of the window.
-        @param dim_width    The width of the window to display.
-        @param dim_height    The height of the window to display.
+        Application class for communicating between Events, program logic, and the
+        renderer.
+
+        :param title: The title to use on the titlebar of the window.
+        :param dim_width: The width of the window to display.
+        :param dim_height: The height of the window to display.
         """
         self.title = title
         self.dimensions = (dim_width, dim_height)
         self.wd = Window(title, (200, 200, 200), self.dimensions[0], self.dimensions[1])
         self.pl = ProgramLogic(dim_width, dim_height, (0, 0))
-        self.isRunning = self.wd.isRunning
-        self.isPaused = False
+        self.IS_RUNNING = self.wd.IS_RUNNING
+        self.IS_PAUSED = False
         self.delay = 0.050 # seconds
         self.game_tick = 0
         self.window_tick = 0
     
     def tick(self):
         """
-        @brief    Executes actions on a gameloop. This function itself does not loop, but is called
-                  outside of the class.
+        Executes actions on a gameloop. This function itself does not loop, but is called
+        outside of the class.
         """
 
         self.game_tick += 1
         self.window_tick += 1
         
-        if self.game_tick == 1 and not self.isPaused:
+        if self.game_tick == 1 and not self.IS_PAUSED:
             self.process_events()
-            self.pl.tick(self.game_tick * self.delay)
+            self.pl.tick()
             self.game_tick = 0
-        if not self.isRunning: return
-        if self.window_tick == 1 and not self.isPaused:
+        if not self.IS_RUNNING: return
+        if self.window_tick == 1 and not self.IS_PAUSED:
             self.wd.update(self.pl.sprites_list)
             self.window_tick = 0
 
     def process_events(self):
         """
-        @brief    Pings events like system calls and user input, and executes actions depending
-                  on the type.
+        Pings events like system calls and user input, and executes actions depending
+        on the type.
         """
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.quit()
                 return
+            mouse_buttons_state = pygame.mouse.get_pressed(num_buttons=3)
+            if mouse_buttons_state[0]:
+                self.pl.client_manager.check_buttons(pygame.mouse.get_pos(), True)
         keys = pygame.key.get_pressed()
         KEY_PRESSED = False
         if keys[pygame.K_a] and not keys[pygame.K_LSHIFT]:
             KEY_PRESSED = True
-            self.pl.player_1.move(0)
+            # self.pl.player_1.move(0)
+            pass
         if keys[pygame.K_d] and not keys[pygame.K_LSHIFT]:
             KEY_PRESSED = True
-            self.pl.player_1.move(1)
+            # self.pl.player_1.move(1)
+            pass
         if keys[pygame.K_a] and keys[pygame.K_LSHIFT]:
             KEY_PRESSED = True
-            self.pl.player_1.crouch()
-            self.pl.player_1.move(0)
+            # self.pl.player_1.crouch()
+            # self.pl.player_1.move(0)
+            pass
         if keys[pygame.K_d] and keys[pygame.K_LSHIFT]:
             KEY_PRESSED = True
-            self.pl.player_1.crouch()
-            self.pl.player_1.move(1)
+            # self.pl.player_1.crouch()
+            # self.pl.player_1.move(1)
+            pass
         if keys[pygame.K_SPACE]:
             KEY_PRESSED = True
-            self.pl.player_1.move(2)
+            # self.pl.player_1.move(2)
+            pass
         if (keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]) and not keys[pygame.K_LSHIFT]:
             KEY_PRESSED = True
             if keys[pygame.K_LEFT]: 
-                self.pl.player_1.punch(-1,
-                                        self.pl.player_2,
-                                        player_stats.PUNCH_DAMAGE)
+                # self.pl.player_1.punch(-1,
+                #                         self.pl.player_2,
+                #                         player_stats.PUNCH_DAMAGE)
+                pass
             if keys[pygame.K_RIGHT]: 
-                self.pl.player_1.punch(1,
-                                        self.pl.player_2,
-                                        player_stats.PUNCH_DAMAGE)
+                # self.pl.player_1.punch(1,
+                #                         self.pl.player_2,
+                #                         player_stats.PUNCH_DAMAGE)
+                pass
         if keys[pygame.K_LSHIFT] and (keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]):
             KEY_PRESSED = True
             if keys[pygame.K_LEFT]: 
-                self.pl.player_1.kick(-1,
-                                        self.pl.player_2,
-                                        player_stats.KICK_DAMAGE)
+                # self.pl.player_1.kick(-1,
+                #                         self.pl.player_2,
+                #                         player_stats.KICK_DAMAGE)
+                pass
             if keys[pygame.K_RIGHT]: 
-                self.pl.player_1.kick(1,
-                                        self.pl.player_2,
-                                        player_stats.KICK_DAMAGE)
+                # self.pl.player_1.kick(1,
+                #                         self.pl.player_2,
+                #                         player_stats.KICK_DAMAGE)
+                pass
         if keys[pygame.K_LSHIFT] and not (keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]) and\
             not (keys[pygame.K_a] or keys[pygame.K_d]):
             KEY_PRESSED = True
-            self.pl.player_1.duck()       
+            # self.pl.player_1.duck()
+            pass       
 
-        if not KEY_PRESSED: self.pl.player_1.reset_status()     
+        # if not KEY_PRESSED: self.pl.player_1.reset_status()     
 
 
     def quit(self):
-        """
-        @brief    Ends the Window process and cleans up upon exit.
-        """
+        """Ends the Window process and cleans up upon exit."""
         self.wd.quit()
-        self.isRunning = False
+        self.pl.host_thread.join()
+        self.pl.hosted_game.log.terminate()
+        self.pl.game.log.terminate()
+        self.IS_RUNNING = False

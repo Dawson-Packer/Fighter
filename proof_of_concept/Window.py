@@ -16,7 +16,7 @@ class Window:
         self.screen = pygame.display.set_mode(self.dimensions, pygame.RESIZABLE)
         pygame.display.set_caption(title)
         self.tick = pygame.time.Clock()
-        self.IS_RUNNING = True
+        self.isRunning = True
 
     def update(self, sprite_list: pygame.sprite.Group()):
         """
