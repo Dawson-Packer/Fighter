@@ -54,7 +54,8 @@ class Server:
         """
         Re-sorts clients when a client disconnects.
 
-        :param client_id: The ID of the client that disconnected."""
+        :param client_id: The ID of the client that disconnected.
+        """
         for client, address in self.clients:
             self.send(client, message=f"+$UPDATE {client_id}")
         self.clients.pop(client_id) if self.clients else False
