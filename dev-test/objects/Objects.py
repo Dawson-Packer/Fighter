@@ -102,7 +102,6 @@ class Player(Sp.AnimatedSprite):
                 player.damage(amount)
             self.punch_cooldown = 5
 
-    
     def kick(self, direction: int, player, amount):
 
         if self.kick_cooldown == 0:

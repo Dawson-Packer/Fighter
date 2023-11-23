@@ -1,10 +1,10 @@
 import enum as Enum
 
 
-class game_id:
-    GAME_TEST = 0
-    GAME_1V1 = 1
-    GAME_COMPETITION = 2
+class object_type(Enum.Enum):
+    PLAYER = 0
+    PROJECTILE = 1
+    PLATFORM = 2
 
 class game_state(Enum.Enum):
     GAME_SETUP = 0
@@ -30,3 +30,4 @@ class player_status(Enum.Enum):
     PLAYER_MOVE2 = 9
     PLAYER_MOVE3 = 10
     PLAYER_ULTIMATE = 11
+    PLAYER_DROPPING_IN = 12

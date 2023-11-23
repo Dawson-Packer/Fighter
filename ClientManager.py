@@ -5,6 +5,7 @@ import threading
 from client_config import *
 from Client import *
 from game.GameManager import GameManager
+from game.game_config import *
 from graphics.gfx_config import *
 from graphics.gui_overlays import *
 from graphics.Sprites import *
@@ -85,6 +86,10 @@ class ClientManager:
             if packet_type == "$MAP":
                 self.load_map(contents[1])
             if packet_type == "$CROBJ":
+                if contents[1] == object_type.PLAYER:
+                    self.objects_list.append(AnimatedSprite(128, 128, int(contents[3]),
+                                                            contents[4], 0.0, contents[2]))
+
                 self.objects_list.append(AnimatedSprite(128, 128, int(contents[3]), int(contents[4]),
                                                         0.0, int(contents[2]), contents[6], "0.png",
                                                         contents[1]))
@@ -169,7 +174,6 @@ class ClientManager:
                     self.start()
         if self.gui_overlay_state == gui_overlay.PAUSE_SCREEN:
             pass
-
 
     def start(self):
         """Sends start message to server."""

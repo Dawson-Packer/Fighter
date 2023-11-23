@@ -1,7 +1,7 @@
 import time
 
 from game.Server import *
-from game.Objects import *
+from game.objects.Objects import *
 # from game_config import *
 
 
@@ -17,6 +17,7 @@ class GameManager:
         """
         self.server = Server()
 
+        self.next_object_id = 0
         self.user_list = []
         self.client_list = []
         self.objects_list = []
@@ -36,13 +37,10 @@ class GameManager:
         self.load_map(0)
 
         # Player 1 object
-        # self.objects_list.append(Player("stickman",
-        #                            0,
-        #                            200.0,
-        #                            425.0,
-        #                            0.0,
-        #                            0
-        #                            ))
+        self.objects_list.append(StickmanCharacter(400.0, 175, True, 0.0, 0.0))
+        self.create_object(0, self.next_object_id, 400.0, 175.0,
+                           True, player_status.PLAYER_DROPPING_IN)
+        self.next_object_id += 1
         
         # self.create_object(object_type.STICKMAN, 1, 200, 425, 1, "s")
 
