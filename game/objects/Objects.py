@@ -51,7 +51,7 @@ class Player(PhysicsObject):
         """
         super().__init__(x_pos, y_pos, x_velocity, y_velocity, object_type.PLAYER)
 
-        self.status = player_status.PLAYER_DROPPING_IN
+        self.status = player_status.DROPPING_IN
         self.direction = direction
         self.health = 100.0
         self.speed = 15.0

@@ -1,5 +1,6 @@
 import time
 
+from graphics.gfx_config import *
 from game.Server import *
 from game.objects.Objects import *
 # from game_config import *
@@ -35,12 +36,6 @@ class GameManager:
         else: self.assign_players(self.client_list[0], -1)
         # Create background object
         self.load_map(0)
-
-        # Player 1 object
-        self.objects_list.append(StickmanCharacter(400.0, 175, True, 0.0, 0.0))
-        self.create_object(0, self.next_object_id, 400.0, 175.0,
-                           True, player_status.PLAYER_DROPPING_IN)
-        self.next_object_id += 1
         
         # self.create_object(object_type.STICKMAN, 1, 200, 425, 1, "s")
 
@@ -51,9 +46,18 @@ class GameManager:
         :param map_id: The ID of the map to load.
         """
         self.server.add_packet_to_message(["$MAP", str(map_id)])
+    
+    def load_players(self):
+        # Player 1 object
+        # TODO: Change STANDING to DROPPING_IN, and start like 20 pixels above normal location
+        self.objects_list.append(StickmanCharacter(400.0, 175, True, 0.0, 0.0))
+        self.create_object(object_type.PLAYER, self.next_object_id, (200),
+                           (600 - 175), direction=1, status=player_status.STANDING.value,
+                           character='stickman')
+        self.next_object_id += 1
 
     def create_object(self, type: int, object_id: int, x_pos: int,
-                      y_pos: int, direction: int, status: int):
+                      y_pos: int, **kwargs):
         """
         Tells the clients to create the object specified.
 
@@ -64,8 +68,16 @@ class GameManager:
         :param direction: The initial direction of the object (True = right, False = left).
         :param status: The status of the object.
         """
-        self.server.add_packet_to_message(["$CROBJ", str(type), str(object_id), str(x_pos),
-                                           str(y_pos), str(direction), str(status)])
+        if type == object_type.PLAYER:
+            self.server.add_packet_to_message(["$CROBJ",
+                                               str(sprite_type.PLAYER.value),
+                                               str(object_id),
+                                               str(x_pos),
+                                               str(y_pos),
+                                               str(kwargs.get('direction', "")),
+                                               str(kwargs.get('status', "")),
+                                               str(kwargs.get('character', ""))
+                                               ])
 
     def run(self):
         """Runs all ongoing game management functions in a single tick."""
@@ -141,6 +153,7 @@ class GameManager:
                 print("Server received START command")
                 self.start_game()
                 self.server.start_game()
+                self.load_players()
             if packet_type == "$QUIT":
                 self.server.client_disconnected(client_id)
                 # self.user_list.pop(client_id)

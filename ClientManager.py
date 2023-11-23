@@ -86,22 +86,30 @@ class ClientManager:
             if packet_type == "$MAP":
                 self.load_map(contents[1])
             if packet_type == "$CROBJ":
-                if contents[1] == object_type.PLAYER:
-                    self.objects_list.append(AnimatedSprite(128, 128, int(contents[3]),
-                                                            contents[4], 0.0, contents[2]))
-
-                self.objects_list.append(AnimatedSprite(128, 128, int(contents[3]), int(contents[4]),
-                                                        0.0, int(contents[2]), contents[6], "0.png",
-                                                        contents[1]))
+                if int(contents[1]) == sprite_type.PLAYER.value:
+                    print("Created player")
+                    self.objects_list.append(PlayerSprite(int(contents[2]),
+                                                          contents[7],
+                                                          int(contents[6]),
+                                                          128,
+                                                          128,
+                                                          int(contents[3]),
+                                                          int(contents[4]),
+                                                          0.0,
+                                                          int(contents[5])
+                                                          ))
             if packet_type == "$OBJ":
                 pass
     
     def get_data_to_send(self): return self.message
 
+    def next_sprite_id(self): return len(self.objects_list) - 1
+
     def run(self):
         """Runs all ongoing Client Manager functions in a single tick."""
         self.client.reset_message()
-        self.objects_list.clear()
+        # self.objects_list.clear()
+        self.sprites_list.empty()
         self.gui_items_list.clear()
         self.buttons_list.clear()
         self.message = []
@@ -121,9 +129,14 @@ class ClientManager:
             for button in buttons:
                 self.buttons_list.append(button)
 
+        
+
 
         self.check_buttons((-1, -1), False)
 
+
+        for object in self.objects_list:
+            object.tick()
 
 
 
@@ -144,7 +157,7 @@ class ClientManager:
         :param map_id: The ID of the map to load.
         """
         self.objects_list.clear()
-        self.objects_list.append(Map(map_id))
+        self.objects_list.append(Map(self.next_sprite_id, map_id))
 
     def check_buttons(self, cursor_position: tuple, MOUSE_CLICKED: bool):
         """
