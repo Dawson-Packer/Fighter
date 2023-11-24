@@ -2,21 +2,23 @@ import socket
 import pygame
 import threading
 
+from game.Server import Server
+from game.ClientComms import ClientComms
 from client_config import *
-from Client import *
+from Client import Client
 from ServerComms import ServerComms
-from game.GameManager import GameManager
+from game.ObjectManager import ObjectManager
 from game.game_config import *
 from graphics.gfx_config import *
 from graphics.gui_overlays import *
 from graphics.Sprites import *
 
 
-class ClientManager:
-    """A manager class that runs the Client and interacts with the graphics."""
+class Game:
+    """A game class that interacts with the ObjectManager and layers the sprites."""
     def __init__(self, field_width: int, field_height: int, offset: tuple):
         """
-        Initializes a ClientManager Object.
+        Initializes a Game Object.
         
         :param field_width: The width of the field to draw sprites on.
         :param field_height: The height of the field to draw sprites on.
@@ -28,29 +30,17 @@ class ClientManager:
         self.buttons_list = []
         self.message = []
         self.gui_overlay_state = gui_overlay.MAIN_MENU
-        self.client = Client()
-        self.comms = ServerComms(self.client)
+        self.server = None
+        self.server_comms = None
+        self.client = None
+        self.client_comms = None
+        self.competitor_client_id = None
         self.main_menu = main_menu()
+        self.object_manager = ObjectManager()
         self.lobby = lobby()
         self.tick = 0
         self.IS_RUNNING = True
         self.IS_HOST = False
-        self.keys_presses = {
-            'W': False,
-            'A': False,
-            'S': False,
-            'D': False,
-            'SPACE': False,
-            'LSHIFT': False,
-            'LCTRL': False,
-            'UP': False,
-            'DOWN': False,
-            'RIGHT': False,
-            'LEFT': False
-        }
-
-        self.FIELD_HEIGHT = field_dimensions.HEIGHT
-        self.FIELD_WIDTH = field_dimensions.WIDTH
         self.sprites_list = pygame.sprite.Group()
 
     def connect(self, ip_address: str):
@@ -69,7 +59,7 @@ class ClientManager:
 
     def receive_data(self, message: str):
         """
-        Handles the data received by the Client.
+        Handles the data received by the Server or Client.
 
         :param message: The message to parse.
         """
@@ -88,30 +78,11 @@ class ClientManager:
             packet_type = contents[0]
             if packet_type == "$ID":
                 self.client_id = int(contents[1])
-            if packet_type == "$DUMMY":
-                pass
             if packet_type == "$STARTGAME":
                 self.gui_overlay_state = gui_overlay.NONE
                 pass
-            if packet_type == "$UPDATE":
-                disconnected_client = int(contents[1])
-                if self.client_id > disconnected_client:
-                    self.client_id += 1
-                print("Useless UPDATE tag")
             if packet_type == "$MAP":
                 self.load_map(contents[1])
-            if packet_type == "$CROBJ":
-                if int(contents[1]) == sprite_type.PLAYER:
-                    self.objects_list[int(contents[2])] = PlayerSprite(int(contents[2]),
-                                                                       contents[7],
-                                                                       int(contents[6]),
-                                                                       128,
-                                                                       128,
-                                                                       int(contents[3]),
-                                                                       int(contents[4]),
-                                                                       0.0,
-                                                                       bool(contents[5])
-                                                                       )
             if packet_type == "$UPP":
                 self.objects_list[int(contents[1])].x_pos = int(contents[2])
                 self.objects_list[int(contents[1])].y_pos = int(contents[3])
@@ -126,16 +97,26 @@ class ClientManager:
     def next_sprite_id(self): return len(self.objects_list.items()) - 1
 
     def run(self):
-        """Runs all ongoing Client Manager functions in a single tick."""
-        self.client.reset_message()
-        # self.objects_list.clear()
+        """Runs all ongoing Game functions in a single tick."""
+        # self.client.reset_message()
         self.sprites_list.empty()
         self.gui_items_list.clear()
         self.buttons_list.clear()
-        self.message = []
+        # self.message = []
 
-        if self.client.IS_CONNECTED: self.receive_data(self.client.receive(self.tick))
-        self.client.add_packet_to_message(["$R" + str(self.tick)])
+        # * Networking
+        if self.IS_HOST:
+            self.receive_data(self.server.receive(self.competitor_client_id,
+                                                               self.server.clients[self.competitor_client_id][0]))
+            self.server.add_packet_to_message(["$T" + str(self.tick)])
+        if not self.IS_HOST:
+            self.receive_data(self.client.receive(self.tick))
+            self.client.add_packet_to_message(["$R" + str(self.tick)])
+
+        # * Run ObjectManager
+        self.object_manager.run(self.tick)
+
+        # * Load GUI Elements
         if self.gui_overlay_state == gui_overlay.MAIN_MENU:
             elements, buttons = self.main_menu.load_elements()
             for element in elements + buttons:
@@ -148,29 +129,34 @@ class ClientManager:
                 self.gui_items_list.append(element)
             for button in buttons:
                 self.buttons_list.append(button)
-
-        
-
-
         self.check_buttons((-1, -1), False)
-
-
-        for key, object in self.objects_list.items():
-            object.tick()
 
 
 
         self.tick += 1
     
-        for key, object in self.objects_list.items():
+        for _, object in self.object_manager.background_list.items():
+            self.sprites_list.add(object)
+        for _, object in self.object_manager.bottom_particles.items():
+            self.sprites_list.add(object)
+        for _, object in self.object_manager.players.items():
+            self.sprites_list.add(object)
+        for _, object in self.object_manager.other_objects.items():
+            self.sprites_list.add(object)
+        for _, object in self.object_manager.top_particles.items():
+            self.sprites_list.add(object)
+        for _, object in self.object_manager.in_game_ui.items():
             self.sprites_list.add(object)
         for element in self.gui_items_list:
             self.sprites_list.add(element)
         self.sprites_list.update()
 
-        self.comms.send_keys([item for _, item in self.keys_presses.items()])
-
-        if self.client.IS_CONNECTED: self.client.send(self.tick)
+        if self.IS_HOST:
+            # Send message to all clients in ClientComms
+            pass
+        if not self.IS_HOST:
+            # Send message to server in ServerComms
+            pass
 
     def load_map(self, map_id: int):
         """
@@ -194,13 +180,16 @@ class ClientManager:
                 if button.function == button_type.HOST_GAME and button.IS_PRESSED:
                     self.IS_HOST = True
                     self.lobby.set_host_state(self.IS_HOST)
-                    self.hosted_game = GameManager(self.FIELD_WIDTH, self.FIELD_HEIGHT)
-                    self.host_thread = threading.Thread(target=self.hosted_game.run)
-                    self.host_thread.start()
-                    self.connect(socket.gethostname())
+                    self.server = Server()
+                    self.server_comms = ServerComms(self.client)
+                    # self.host_thread = threading.Thread(target=self.hosted_game.run)
+                    # self.host_thread.start()
+                    # self.connect(socket.gethostname())
                     self.gui_overlay_state = gui_overlay.LOBBY
                 if button.function == button_type.DIRECT_CONNECT and button.IS_PRESSED:
-                    self.connect('192.168.1.175')
+                    self.client = Client()
+                    self.client_comms = ClientComms(self.server)
+                    self.connect('192.168.1.15')
                     self.gui_overlay_state = gui_overlay.LOBBY
         if self.gui_overlay_state == gui_overlay.LOBBY:
             for button in self.lobby.buttons_list:
@@ -216,18 +205,3 @@ class ClientManager:
     
     def send_input(self, key: str):
         self.keys_presses[key] = True
-
-    def reset_keys(self):
-        self.keys_presses = {
-            'W': False,
-            'A': False,
-            'S': False,
-            'D': False,
-            'SPACE': False,
-            'LSHIFT': False,
-            'LCTRL': False,
-            'UP': False,
-            'DOWN': False,
-            'RIGHT': False,
-            'LEFT': False
-        }

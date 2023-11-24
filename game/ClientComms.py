@@ -4,7 +4,7 @@ from graphics.gfx_config import *
 
 class ClientComms:
     """Client Communication class that defines functions for sending data to the clients."""
-    def __init__(self, server: Server, field_height, field_width):
+    def __init__(self, server: Server):
         """
         Initializes a ClientComms object.
 
@@ -13,8 +13,8 @@ class ClientComms:
         :param field_width: The width of the playable field.
         """
         self.server = server
-        self.FIELD_HEIGHT = field_height
-        self.FIELD_WIDTH = field_width
+        self.FIELD_HEIGHT = field_dimensions.HEIGHT
+        self.FIELD_WIDTH = field_dimensions.WIDTH
     
     def load_map(self, map_id: int):
         """
