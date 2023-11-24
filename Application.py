@@ -32,6 +32,7 @@ class Application:
         self.window_tick += 1
         
         if self.game_tick == 1 and not self.IS_PAUSED:
+            self.manager.reset_keys()
             self.process_events()
             self.manager.run()
             self.game_tick = 0
@@ -54,6 +55,17 @@ class Application:
                 self.manager.check_buttons(pygame.mouse.get_pos(), True)
         keys = pygame.key.get_pressed()
         KEY_PRESSED = False
+        if keys[pygame.K_w]: self.manager.send_input('W')
+        if keys[pygame.K_a]: self.manager.send_input('A')
+        if keys[pygame.K_s]: self.manager.send_input('S')
+        if keys[pygame.K_d]: self.manager.send_input('D')
+        if keys[pygame.K_SPACE]: self.manager.send_input('SPACE')
+        if keys[pygame.K_LSHIFT]: self.manager.send_input('LSHIFT')
+        if keys[pygame.K_LCTRL]: self.manager.send_input('LCTRL')
+        if keys[pygame.K_UP]: self.manager.send_input('UP')
+        if keys[pygame.K_DOWN]: self.manager.send_input('DOWN')
+        if keys[pygame.K_RIGHT]: self.manager.send_input('RIGHT')
+        if keys[pygame.K_LEFT]: self.manager.send_input('LEFT')
         if keys[pygame.K_a] and not keys[pygame.K_LSHIFT]:
             KEY_PRESSED = True
             # self.pl.player_1.move(0)

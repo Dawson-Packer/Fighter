@@ -51,6 +51,7 @@ class GameManager:
         self.comms.create_object(object_type.PLAYER, self.next_object_id, 200.0,
                            175.0, direction=True, status=player_status.APPEAR,
                            character='stickman')
+        self.player_list[0].connected_client = self.client_list[0]
         self.next_object_id += 1
 
     def run(self):
@@ -60,8 +61,8 @@ class GameManager:
 
             ## * Server Management.
             # Sync client list to server client list
-            while len(self.client_list) < len(self.server.clients):
-                self.client_list.append(len(self.client_list) - 1)
+            while len(self.client_list) < len(self.server.clients) and len(self.server.clients) > 0:
+                self.client_list.append(len(self.server.clients) - 1)
             # Sync user list to server client list.
             while len(self.server.clients) > len(self.user_list):
                 self.user_list.append("USR" + str(len(self.user_list)))
@@ -104,7 +105,7 @@ class GameManager:
             self.tick += 1
             # Delay tick if execution time is less than 0.010 seconds.
             execution_time = time.time() - start_time
-            if 0.010 - execution_time > 0: time.sleep(0.010 - execution_time)
+            if 0.005 - execution_time > 0: time.sleep(0.005 - execution_time)
 
     def parse(self, client_id: int, message: str):
         """
@@ -134,14 +135,42 @@ class GameManager:
                 # self.user_list.pop(client_id)
             if packet_type == "$USER":
                 self.user_list[client_id] = contents[1]
-            if packet_type == "$KEY":
-                if client_id == self.player_1: self.handle_inputs(0)
-                elif client_id == self.player_2: self.handle_inputs(1)
-                else: print("Viewing client pressed key")
+            if packet_type == "$KEYS":
+                for player in self.player_list:
+                    if player.connected_client == client_id:
+                        self.handle_inputs(player, contents[1:12]) # * Change 12 to how every many keys + 1
     
     def assign_players(self, client_1: int, client_2: int):
         self.player_1 = client_1
         self.player_2 = client_2
     
-    def handle_inputs(self, player):
-        pass
+    def handle_inputs(self, player: Player, inputs: list):
+        key_W = bool(int(inputs[0]))
+        key_A = bool(int(inputs[1]))
+        key_S = bool(int(inputs[2]))
+        key_D = bool(int(inputs[3]))
+        key_SPACE = bool(int(inputs[4]))
+        key_LSHIFT = bool(int(inputs[5]))
+        key_LCTRL = bool(int(inputs[6]))
+        key_UP = bool(int(inputs[7]))
+        key_DOWN = bool(int(inputs[8]))
+        key_RIGHT = bool(int(inputs[9]))
+        key_LEFT = bool(int(inputs[10]))
+
+        if key_A and not key_D:
+            player.move(0)
+        if key_D and not key_A:
+            player.move(1)
+        if key_SPACE:
+            player.move(2)
+        if not key_A and not key_D and not key_SPACE:
+            player.status = player_status.IDLE
+        
+
+        if key_LSHIFT:
+            if key_A or key_D: player.crouch()
+            elif key_LEFT or key_RIGHT: player.kick(key_RIGHT)
+            else:
+                player.duck()
+        if key_LEFT or key_RIGHT and not key_LSHIFT:
+            player.punch(key_RIGHT)

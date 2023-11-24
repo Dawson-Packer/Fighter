@@ -27,9 +27,12 @@ class PhysicsObject(Object):
         :param hitbox_height: The height of the PhysicsObject's hitbox.
         :param hitbox_width: The width of the PhysicsObject's hitbox.
         """
+        can_change_status = True
+        if status == player_status.PUNCHING or status == player_status.KICKING:
+            can_change_status = False
         if self.move_cooldown == 0:
             if self.y_velocity != 0.0:
-                status = player_status.IN_AIR
+                if can_change_status: status = player_status.IN_AIR
             self.y_pos += self.y_velocity
             if self.y_pos < self.ground:
                 self.y_pos = self.ground
@@ -39,8 +42,8 @@ class PhysicsObject(Object):
 
             if self.y_velocity == 0.0 and self.x_velocity != 0.0:
                 if status != player_status.MOVING_SLOW:
-                    status = player_status.MOVING
-            self.x_pos += self.x_velocity
+                    if can_change_status: status = player_status.MOVING
+                self.x_pos += self.x_velocity
             self.x_velocity = 0.0
 
             # TODO: Replace hardcoded boundaries
@@ -90,8 +93,9 @@ class Player(PhysicsObject):
         self.hitbox_height = hitbox_height
         self.hitbox_width = hitbox_width
         self.server = server
+        self.connected_client = None
         self.comms = ClientComms(self.server, field_dimensions.HEIGHT, field_dimensions.WIDTH)
-        self.status = player_status.APPEAR
+        self.status = player_status.IDLE
         self.status_effect = 0 # TODO: Replace with config value
         self.direction = direction
         self.health = 100.0
@@ -113,18 +117,29 @@ class Player(PhysicsObject):
                 if not self.direction: self.direction = True
             case 2:
                 if self.y_pos == self.ground: self.y_velocity = 35.0
+        self.speed = 15.0
+        self.status = player_status.MOVING
 
     def crouch(self):
-        pass
+        self.status = player_status.MOVING_SLOW
+        self.speed = 5.0
 
     def duck(self):
-        pass
+        self.status = player_status.DUCKING
 
-    def punch(self):
-        pass
+    def punch(self, facing_right: bool):
+        self.status = player_status.PUNCHING
+        if self.direction and not facing_right:
+            self.direction = False
+        elif not self.direction and facing_right:
+            self.direction = True
         
-    def kick(self):
-        pass
+    def kick(self, facing_right: bool):
+        self.status = player_status.KICKING
+        if self.direction and not facing_right:
+            self.direction = False
+        elif not self.direction and facing_right:
+            self.direction = True
 
 
 class StickmanCharacter(Player):

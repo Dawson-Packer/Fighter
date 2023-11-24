@@ -4,6 +4,7 @@ import threading
 
 from client_config import *
 from Client import *
+from ServerComms import ServerComms
 from game.GameManager import GameManager
 from game.game_config import *
 from graphics.gfx_config import *
@@ -28,11 +29,25 @@ class ClientManager:
         self.message = []
         self.gui_overlay_state = gui_overlay.MAIN_MENU
         self.client = Client()
+        self.comms = ServerComms(self.client)
         self.main_menu = main_menu()
         self.lobby = lobby()
         self.tick = 0
         self.IS_RUNNING = True
         self.IS_HOST = False
+        self.keys_presses = {
+            'W': False,
+            'A': False,
+            'S': False,
+            'D': False,
+            'SPACE': False,
+            'LSHIFT': False,
+            'LCTRL': False,
+            'UP': False,
+            'DOWN': False,
+            'RIGHT': False,
+            'LEFT': False
+        }
 
         self.FIELD_HEIGHT = field_dimensions.HEIGHT
         self.FIELD_WIDTH = field_dimensions.WIDTH
@@ -99,6 +114,7 @@ class ClientManager:
                                                                        bool(contents[5])
                                                                        )
             if packet_type == "$UPP":
+                print(int(contents[5]))
                 self.objects_list[int(contents[1])].x_pos = int(contents[2])
                 self.objects_list[int(contents[1])].y_pos = int(contents[3])
                 self.objects_list[int(contents[1])].direction = bool(int(contents[4]))
@@ -154,6 +170,8 @@ class ClientManager:
             self.sprites_list.add(element)
         self.sprites_list.update()
 
+        self.comms.send_keys([item for _, item in self.keys_presses.items()])
+
         if self.client.IS_CONNECTED: self.client.send(self.tick)
 
     def load_map(self, map_id: int):
@@ -197,3 +215,21 @@ class ClientManager:
     def start(self):
         """Sends start message to server."""
         self.client.add_packet_to_message(["$START"])
+    
+    def send_input(self, key: str):
+        self.keys_presses[key] = True
+
+    def reset_keys(self):
+        self.keys_presses = {
+            'W': False,
+            'A': False,
+            'S': False,
+            'D': False,
+            'SPACE': False,
+            'LSHIFT': False,
+            'LCTRL': False,
+            'UP': False,
+            'DOWN': False,
+            'RIGHT': False,
+            'LEFT': False
+        }

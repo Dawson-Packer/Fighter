@@ -86,7 +86,7 @@ class AnimatedSprite(Sprite):
         self.animation_tick += 1
         if self.animation_tick == cycle_end: self.animation_tick = 0
     
-    def reset_tick(self):
+    def reset_animation_tick(self):
         self.animation_tick = 0
 
 class PlayerSprite(AnimatedSprite):
@@ -104,6 +104,7 @@ class PlayerSprite(AnimatedSprite):
         super().__init__(sprite_id, height, width, x_pos, y_pos, rotation, "blank/blank")
         self.character = character
         self.status = status
+        self.last_status = status
         self.status_effect = None
         self.direction = direction
         self.last_direction = direction
@@ -112,7 +113,9 @@ class PlayerSprite(AnimatedSprite):
 
     def tick(self):
         """Ticks the Player to change attributes in time."""
+        # print(self.status)
         # * Animation
+        if self.last_status != self.status: self.reset_animation_tick()
         if self.status ==  player_status.IDLE:
             self.animate("player/" + self.character + "/" + str(player_status.IDLE) + "/", 4, 7, self.direction)
         elif self.status == player_status.MOVING:
@@ -144,6 +147,7 @@ class PlayerSprite(AnimatedSprite):
         # Change orientation
         if self.direction != self.last_direction:
             self.flip_texture(True, False)
+        self.last_status = self.status
         self.last_direction = self.direction
 
 
