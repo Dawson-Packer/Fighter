@@ -1,6 +1,6 @@
 import enum as Enum
 
-class sprite_type(Enum.Enum):
+class sprite_type:
     PLAYER = 0
     COLLIDABLE = 1
     MAP = 2

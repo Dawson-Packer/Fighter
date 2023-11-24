@@ -6,6 +6,10 @@ class object_type(Enum.Enum):
     PROJECTILE = 1
     PLATFORM = 2
 
+class field_dimensions:
+    HEIGHT = 600
+    WIDTH = 1000
+
 class game_state(Enum.Enum):
     GAME_SETUP = 0
     GAME_WAIT_FOR_CLIENTS_TO_LOAD = 1
@@ -18,17 +22,17 @@ class stats:
     KICK_DAMAGE = 5.0
 
 # TODO: Change from enum back to regular int and propagate through code
-class player_status(Enum.Enum):
-    STANDING = 0
-    WALKING = 1
-    JUMPING = 2
+class player_status:
+    IDLE = 0
+    MOVING = 1
+    IN_AIR = 2
     PUNCHING = 3
     KICKING = 4
     DUCKING = 5
-    CROUCHING = 6
+    MOVING_SLOW = 6
     DEFENDING = 7
     MOVE1 = 8
     MOVE2 = 9
     MOVE3 = 10
     ULTIMATE = 11
-    DROPPING_IN = 12
+    APPEAR = 12

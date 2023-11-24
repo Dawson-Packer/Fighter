@@ -56,6 +56,7 @@ class Sprite(pygame.sprite.Sprite):
         if y_axis:
             self.image = pygame.transform.flip(self.image, False, True)
         self.rect = self.image.get_rect()
+        self.update_sprite()
 
     def update_sprite(self):
         self.rect.x = self.x_pos - (self.width // 2)
@@ -78,8 +79,10 @@ class AnimatedSprite(Sprite):
         super().__init__(sprite_id, height, width, x_pos, y_pos, rotation, file_path)
         self.animation_tick = 0
 
-    def animate(self, dir: str, divisor: int, cycle_end: int):
+    def animate(self, dir: str, divisor: int, cycle_end: int, facing_right: bool):
         self.set_texture(dir + str(self.animation_tick // divisor))
+        if not facing_right:
+            self.flip_texture(True, False)
         self.animation_tick += 1
         if self.animation_tick == cycle_end: self.animation_tick = 0
     
@@ -96,45 +99,46 @@ class PlayerSprite(AnimatedSprite):
                  x_pos: int,
                  y_pos: int,
                  rotation: float,
-                 direction: int
+                 direction: bool
                  ):
         super().__init__(sprite_id, height, width, x_pos, y_pos, rotation, "blank/blank")
         self.character = character
         self.status = status
+        self.status_effect = None
         self.direction = direction
         self.last_direction = direction
-        if self.direction == -1:
+        if not self.direction:
             self.flip_texture(True, False)
 
     def tick(self):
-
+        """Ticks the Player to change attributes in time."""
         # * Animation
-        if self.status ==  player_status.STANDING.value:
-            self.animate("player/" + self.character + "/" + str(player_status.STANDING.value) + "/", 4, 7)
-        if self.status == player_status.WALKING.value:
-            self.animate(self.character + "/" + str(player_status.WALKING.value) + "/", 2, 7)
-        if self.status == player_status.JUMPING.value:
-            self.animate(self.character + "/" + str(player_status.JUMPING.value) + "/", 1, 4)
-        if self.status == player_status.PUNCHING.value:
-            self.animate(self.character + "/" + str(player_status.PUNCHING.value) + "/", 1, 3)
-        if self.status == player_status.KICKING.value:
-            self.animate(self.character + "/" + str(player_status.KICKING.value) + "/", 1, 3)
-        if self.status == player_status.DUCKING.value:
-            self.animate(self.character + "/" + str(player_status.DUCKING.value) + "/", 1, 1)
-        if self.status == player_status.CROUCHING.value:
-            self.animate(self.character + "/" + str(player_status.CROUCHING.value) + "/", 4, 15)
-        if self.status == player_status.DEFENDING.value:
-            self.animate(self.character + "/" + str(player_status.DEFENDING.value) + "/", 1, 1)
-        if self.status == player_status.MOVE1.value:
-            self.animate(self.character + "/" + str(player_status.MOVE1.value) + "/", 1, 1)
-        if self.status == player_status.MOVE2.value:
-            self.animate(self.character + "/" + str(player_status.MOVE2.value) + "/", 1, 1)
-        if self.status == player_status.MOVE3.value:
-            self.animate(self.character + "/" + str(player_status.MOVE3.value) + "/", 1, 1)
-        if self.status == player_status.ULTIMATE.value:
-            self.animate(self.character + "/" + str(player_status.ULTIMATE.value) + "/", 1, 1)
-        if self.status == player_status.DROPPING_IN.value:
-            self.animate(self.character + "/" + str(player_status.DROPPING_IN.value) + "/", 1, 1)
+        if self.status ==  player_status.IDLE:
+            self.animate("player/" + self.character + "/" + str(player_status.IDLE) + "/", 4, 7, self.direction)
+        elif self.status == player_status.MOVING:
+            self.animate("player/" + self.character + "/" + str(player_status.MOVING) + "/", 2, 7, self.direction)
+        elif self.status == player_status.IN_AIR:
+            self.animate("player/" + self.character + "/" + str(player_status.IN_AIR) + "/", 1, 4, self.direction)
+        elif self.status == player_status.PUNCHING:
+            self.animate("player/" + self.character + "/" + str(player_status.PUNCHING) + "/", 1, 3, self.direction)
+        elif self.status == player_status.KICKING:
+            self.animate("player/" + self.character + "/" + str(player_status.KICKING) + "/", 1, 3, self.direction)
+        elif self.status == player_status.DUCKING:
+            self.animate("player/" + self.character + "/" + str(player_status.DUCKING) + "/", 1, 1, self.direction)
+        elif self.status == player_status.MOVING_SLOW:
+            self.animate("player/" + self.character + "/" + str(player_status.MOVING_SLOW) + "/", 4, 15, self.direction)
+        elif self.status == player_status.DEFENDING:
+            self.animate("player/" + self.character + "/" + str(player_status.DEFENDING) + "/", 1, 1, self.direction)
+        elif self.status == player_status.MOVE1:
+            self.animate("player/" + self.character + "/" + str(player_status.MOVE1) + "/", 1, 1, self.direction)
+        elif self.status == player_status.MOVE2:
+            self.animate("player/" + self.character + "/" + str(player_status.MOVE2) + "/", 1, 1, self.direction)
+        elif self.status == player_status.MOVE3:
+            self.animate("player/" + self.character + "/" + str(player_status.MOVE3) + "/", 1, 1, self.direction)
+        elif self.status == player_status.ULTIMATE:
+            self.animate("player/" + self.character + "/" + str(player_status.ULTIMATE) + "/", 1, 1, self.direction)
+        elif self.status == player_status.APPEAR:
+            self.animate("player/" + self.character + "/" + str(player_status.APPEAR) + "/", 1, 1, self.direction)
 
         
         # Change orientation

@@ -1,8 +1,10 @@
 import time
 
+from .game_config import *
 from graphics.gfx_config import *
-from game.Server import *
-from game.objects.Objects import *
+from .ClientComms import *
+from .Server import *
+from .objects.Objects import *
 # from game_config import *
 
 
@@ -19,14 +21,18 @@ class GameManager:
         self.server = Server()
 
         self.next_object_id = 0
+        self.player_1 = None
+        self.player_2 = None
+        self.player_list = []
         self.user_list = []
         self.client_list = []
-        self.objects_list = []
+        self.objects_list = {}
         self.game_tick = -1
         self.tick = 0
 
-        self.FIELD_HEIGHT = field_height
-        self.FIELD_WIDTH = field_width
+        self.FIELD_HEIGHT = field_dimensions.HEIGHT
+        self.FIELD_WIDTH = field_dimensions.WIDTH
+        self.comms = ClientComms(self.server, self.FIELD_HEIGHT, self.FIELD_WIDTH)
 
     def start_game(self):
         """Starts the game."""
@@ -34,50 +40,18 @@ class GameManager:
         if len(self.client_list) >= 2:
             self.assign_players(self.client_list[0], self.client_list[1])
         else: self.assign_players(self.client_list[0], -1)
-        # Create background object
-        self.load_map(0)
-        
-        # self.create_object(object_type.STICKMAN, 1, 200, 425, 1, "s")
-
-    def load_map(self, map_id: int):
-        """
-        Tells the clients to load the map specified.
-
-        :param map_id: The ID of the map to load.
-        """
-        self.server.add_packet_to_message(["$MAP", str(map_id)])
+        self.comms.load_map(0)
     
     def load_players(self):
         # Player 1 object
         # TODO: Change STANDING to DROPPING_IN, and start like 20 pixels above normal location
-        self.objects_list.append(StickmanCharacter(400.0, 175, True, 0.0, 0.0))
-        self.create_object(object_type.PLAYER, self.next_object_id, (200),
-                           (600 - 175), direction=1, status=player_status.STANDING.value,
+        # self.player_list.append()
+        # self.objects_list[self.next_object_id] = StickmanCharacter(self.next_object_id, 400.0, 175, True, 0.0, 0.0)
+        self.player_list.append(StickmanCharacter(self.next_object_id, self.server, 200.0, 175.0, True, 0.0, 0.0))
+        self.comms.create_object(object_type.PLAYER, self.next_object_id, 200.0,
+                           175.0, direction=True, status=player_status.APPEAR,
                            character='stickman')
         self.next_object_id += 1
-
-    def create_object(self, type: int, object_id: int, x_pos: int,
-                      y_pos: int, **kwargs):
-        """
-        Tells the clients to create the object specified.
-
-        :param type: The type of object to create.
-        :param object_id: The ID of the object for communication.
-        :param x_pos: The initial x=position of the object.
-        :param y_pos: The initial y-position of the object.
-        :param direction: The initial direction of the object (True = right, False = left).
-        :param status: The status of the object.
-        """
-        if type == object_type.PLAYER:
-            self.server.add_packet_to_message(["$CROBJ",
-                                               str(sprite_type.PLAYER.value),
-                                               str(object_id),
-                                               str(x_pos),
-                                               str(y_pos),
-                                               str(kwargs.get('direction', "")),
-                                               str(kwargs.get('status', "")),
-                                               str(kwargs.get('character', ""))
-                                               ])
 
     def run(self):
         """Runs all ongoing game management functions in a single tick."""
@@ -102,22 +76,23 @@ class GameManager:
                     client_message = self.server.receive(client_id, client)
                     self.parse(client_id, client_message)            
             ## * Process game physics.
-            else:
 
 
-                # Process physics
-
-
-
-                # Prepare objects for delivery.
-                object_data = ["$OBJ"]
-                for object in self.objects_list:
-                    object_data.append(str(object.id))
-                    object_data.append(str(round(self.FIELD_WIDTH - object.x_pos)))
-                    object_data.append(str(round(self.FIELD_HEIGHT - object.y_pos)))
-                    object_data.append(str(object.direction))
-                    object_data.append(str(object.status.value))
-                    object_data.append(str(object.secondary_status.value))
+                for player in self.player_list:
+                    player.status = player.process_physics(player.status,
+                                                           player.hitbox_height,
+                                                           player.hitbox_width
+                                                           )
+            
+                
+                for player in self.player_list:
+                    self.comms.update_player(player.object_id,
+                                             player.x_pos,
+                                             player.y_pos,
+                                             player.direction,
+                                             player.status,
+                                             player.status_effect
+                                             )
                 # Increment game tick
                 self.game_tick += 1
 

@@ -113,7 +113,6 @@ class Server:
 
         :param packet: A list of items, starting with the tag ($___) to send as a packet.
         """
-        print(packet)
         self.message.append(packet)
     
     def lost_connection(self, client_id: int) -> bool:

@@ -23,7 +23,7 @@ class ClientManager:
                        (offset from top right corner).
         """
         self.gui_items_list = []
-        self.objects_list = []
+        self.objects_list = {}
         self.buttons_list = []
         self.message = []
         self.gui_overlay_state = gui_overlay.MAIN_MENU
@@ -34,8 +34,8 @@ class ClientManager:
         self.IS_RUNNING = True
         self.IS_HOST = False
 
-        self.FIELD_WIDTH = field_width
-        self.FIELD_HEIGHT = field_height
+        self.FIELD_HEIGHT = field_dimensions.HEIGHT
+        self.FIELD_WIDTH = field_dimensions.WIDTH
         self.sprites_list = pygame.sprite.Group()
 
     def connect(self, ip_address: str):
@@ -86,24 +86,30 @@ class ClientManager:
             if packet_type == "$MAP":
                 self.load_map(contents[1])
             if packet_type == "$CROBJ":
-                if int(contents[1]) == sprite_type.PLAYER.value:
+                if int(contents[1]) == sprite_type.PLAYER:
                     print("Created player")
-                    self.objects_list.append(PlayerSprite(int(contents[2]),
-                                                          contents[7],
-                                                          int(contents[6]),
-                                                          128,
-                                                          128,
-                                                          int(contents[3]),
-                                                          int(contents[4]),
-                                                          0.0,
-                                                          int(contents[5])
-                                                          ))
+                    self.objects_list[int(contents[2])] = PlayerSprite(int(contents[2]),
+                                                                       contents[7],
+                                                                       int(contents[6]),
+                                                                       128,
+                                                                       128,
+                                                                       int(contents[3]),
+                                                                       int(contents[4]),
+                                                                       0.0,
+                                                                       bool(contents[5])
+                                                                       )
+            if packet_type == "$UPP":
+                self.objects_list[int(contents[1])].x_pos = int(contents[2])
+                self.objects_list[int(contents[1])].y_pos = int(contents[3])
+                self.objects_list[int(contents[1])].direction = bool(int(contents[4]))
+                self.objects_list[int(contents[1])].status = int(contents[5])
+                self.objects_list[int(contents[1])].status_effect = int(contents[6])
             if packet_type == "$OBJ":
                 pass
     
     def get_data_to_send(self): return self.message
 
-    def next_sprite_id(self): return len(self.objects_list) - 1
+    def next_sprite_id(self): return len(self.objects_list.items()) - 1
 
     def run(self):
         """Runs all ongoing Client Manager functions in a single tick."""
@@ -135,14 +141,14 @@ class ClientManager:
         self.check_buttons((-1, -1), False)
 
 
-        for object in self.objects_list:
+        for key, object in self.objects_list.items():
             object.tick()
 
 
 
         self.tick += 1
     
-        for object in self.objects_list:
+        for key, object in self.objects_list.items():
             self.sprites_list.add(object)
         for element in self.gui_items_list:
             self.sprites_list.add(element)
@@ -157,7 +163,7 @@ class ClientManager:
         :param map_id: The ID of the map to load.
         """
         self.objects_list.clear()
-        self.objects_list.append(Map(self.next_sprite_id, map_id))
+        self.objects_list[self.next_sprite_id()] = Map(self.next_sprite_id, map_id)
 
     def check_buttons(self, cursor_position: tuple, MOUSE_CLICKED: bool):
         """
