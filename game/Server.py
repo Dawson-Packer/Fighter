@@ -1,4 +1,5 @@
 import socket
+import time
 
 from Logger import Logger
 
@@ -95,12 +96,14 @@ class Server:
         :param client: The client socket to read data from.
         :returns: The decoded message from the client.
         """
+        start_time = time.time()
         if self.lost_connection(client_id): return ""
         try:
-            client.settimeout(0.200)
+            client.settimeout(0.050)
             message = client.recv(1024).decode("utf-8")
             self.packets_lost[client_id] = 0
             self.incoming_log.enter_data([self.tick, client_id, message])
+            # print(time.time() - start_time)
             return message
         except socket.error as message:
             print(f"Server error on reading from Client {client_id}:", message)
@@ -148,7 +151,7 @@ class Server:
 
     def reset_message(self):
         """Resets the global message of the Server."""
-        self.message = [["$T" + str(self.tick)]]
+        self.message = [[" $T" + str(self.tick)]]
 
     def start_game(self):
         """Sends a STARTGAME command to the clients."""

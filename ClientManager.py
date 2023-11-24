@@ -114,7 +114,6 @@ class ClientManager:
                                                                        bool(contents[5])
                                                                        )
             if packet_type == "$UPP":
-                print(int(contents[5]))
                 self.objects_list[int(contents[1])].x_pos = int(contents[2])
                 self.objects_list[int(contents[1])].y_pos = int(contents[3])
                 self.objects_list[int(contents[1])].direction = bool(int(contents[4]))

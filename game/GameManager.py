@@ -47,11 +47,18 @@ class GameManager:
         # TODO: Change STANDING to DROPPING_IN, and start like 20 pixels above normal location
         # self.player_list.append()
         # self.objects_list[self.next_object_id] = StickmanCharacter(self.next_object_id, 400.0, 175, True, 0.0, 0.0)
-        self.player_list.append(StickmanCharacter(self.next_object_id, self.server, 200.0, 175.0, True, 0.0, 0.0))
+        self.player_list.append(StickmanCharacter(self.next_object_id, self.server, 200.0, 200.0, True, 0.0, 0.0))
         self.comms.create_object(object_type.PLAYER, self.next_object_id, 200.0,
                            175.0, direction=True, status=player_status.APPEAR,
                            character='stickman')
-        self.player_list[0].connected_client = self.client_list[0]
+        self.player_list[0].connected_client = 0
+        self.next_object_id += 1
+
+        self.player_list.append(StickmanCharacter(self.next_object_id, self.server, 800.0, 200.0, False, 0.0, 0.0))
+        self.comms.create_object(object_type.PLAYER, self.next_object_id, 200.0,
+                           175.0, direction=True, status=player_status.APPEAR,
+                           character='stickman')
+        self.player_list[1].connected_client = 1
         self.next_object_id += 1
 
     def run(self):
@@ -84,6 +91,7 @@ class GameManager:
                                                            player.hitbox_height,
                                                            player.hitbox_width
                                                            )
+                    player.tick()
             
                 
                 for player in self.player_list:
@@ -105,6 +113,7 @@ class GameManager:
             self.tick += 1
             # Delay tick if execution time is less than 0.010 seconds.
             execution_time = time.time() - start_time
+            # print(execution_time)
             if 0.005 - execution_time > 0: time.sleep(0.005 - execution_time)
 
     def parse(self, client_id: int, message: str):
@@ -168,9 +177,11 @@ class GameManager:
         
 
         if key_LSHIFT:
-            if key_A or key_D: player.crouch()
+            if key_A or key_D and player.punch_timer == 0 and\
+            player.kick_timer == 0:
+                player.crouch()
             elif key_LEFT or key_RIGHT: player.kick(key_RIGHT)
-            else:
+            elif player.punch_timer == 0 and player.kick_timer == 0:
                 player.duck()
         if key_LEFT or key_RIGHT and not key_LSHIFT:
             player.punch(key_RIGHT)

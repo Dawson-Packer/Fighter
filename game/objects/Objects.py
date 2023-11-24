@@ -44,11 +44,13 @@ class PhysicsObject(Object):
                 if status != player_status.MOVING_SLOW:
                     if can_change_status: status = player_status.MOVING
                 self.x_pos += self.x_velocity
+            elif self.y_velocity == 0.0 and self.x_velocity == 0.0 and not status == player_status.DUCKING:
+                if can_change_status: status = player_status.IDLE
             self.x_velocity = 0.0
 
             # TODO: Replace hardcoded boundaries
-            if self.x_pos - (hitbox_width / 2) < 0.0: self.x_pos = 0.0 + (hitbox_width / 2)
-            elif self.x_pos + (hitbox_width / 2) > 1000.0: self.x_pos = 1000.0 - (hitbox_width / 2)
+        if self.x_pos - (hitbox_width / 2) < 0.0: self.x_pos = 0.0 + (hitbox_width / 2)
+        elif self.x_pos + (hitbox_width / 2) > 1000.0: self.x_pos = 1000.0 - (hitbox_width / 2)
         return status
 
 
@@ -101,6 +103,19 @@ class Player(PhysicsObject):
         self.health = 100.0
         self.speed = 15.0
 
+        self.move_cooldown = 0
+        self.punch_cooldown = 0
+        self.punch_timer = 0
+        self.kick_cooldown = 0
+        self.kick_timer = 0
+
+    def tick(self):
+        if self.move_cooldown > 0: self.move_cooldown -= 1
+        if self.punch_cooldown > 0: self.punch_cooldown -= 1
+        if self.punch_timer > 0: self.punch_timer -= 1
+        if self.kick_cooldown > 0: self.kick_cooldown -= 1
+        if self.kick_timer > 0: self.kick_timer -= 1
+
     def move(self, direction: int):
         """
         Sets the player's velocity components based on the direction specified.
@@ -128,18 +143,26 @@ class Player(PhysicsObject):
         self.status = player_status.DUCKING
 
     def punch(self, facing_right: bool):
-        self.status = player_status.PUNCHING
-        if self.direction and not facing_right:
-            self.direction = False
-        elif not self.direction and facing_right:
-            self.direction = True
+        if self.punch_cooldown == 0:
+            self.status = player_status.PUNCHING
+            if self.direction and not facing_right:
+                self.direction = False
+            elif not self.direction and facing_right:
+                self.direction = True
+            self.move_cooldown = 3
+            self.punch_cooldown = 5
+            self.punch_timer = 3
         
     def kick(self, facing_right: bool):
-        self.status = player_status.KICKING
-        if self.direction and not facing_right:
-            self.direction = False
-        elif not self.direction and facing_right:
-            self.direction = True
+        if self.kick_cooldown == 0:
+            self.status = player_status.KICKING
+            if self.direction and not facing_right:
+                self.direction = False
+            elif not self.direction and facing_right:
+                self.direction = True
+            self.move_cooldown = 3
+            self.kick_cooldown = 10
+            self.kick_timer = 3
 
 
 class StickmanCharacter(Player):
