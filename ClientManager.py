@@ -102,7 +102,6 @@ class ClientManager:
                 self.load_map(contents[1])
             if packet_type == "$CROBJ":
                 if int(contents[1]) == sprite_type.PLAYER:
-                    print("Created player")
                     self.objects_list[int(contents[2])] = PlayerSprite(int(contents[2]),
                                                                        contents[7],
                                                                        int(contents[6]),

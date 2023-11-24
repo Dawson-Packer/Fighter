@@ -115,39 +115,50 @@ class PlayerSprite(AnimatedSprite):
         """Ticks the Player to change attributes in time."""
         # print(self.status)
         # * Animation
-        if self.last_status != self.status: self.reset_animation_tick()
+        current_status = self.status
+        if self.last_status != current_status: self.reset_animation_tick()
         if self.status ==  player_status.IDLE:
             self.animate("player/" + self.character + "/" + str(player_status.IDLE) + "/", 4, 7, self.direction)
         elif self.status == player_status.MOVING:
             self.animate("player/" + self.character + "/" + str(player_status.MOVING) + "/", 2, 7, self.direction)
+            self.status = player_status.IDLE
         elif self.status == player_status.IN_AIR:
             self.animate("player/" + self.character + "/" + str(player_status.IN_AIR) + "/", 1, 4, self.direction)
+            self.status = player_status.IDLE
         elif self.status == player_status.PUNCHING:
             self.animate("player/" + self.character + "/" + str(player_status.PUNCHING) + "/", 1, 3, self.direction)
+            if self.animation_tick == 0: self.status = player_status.IDLE
         elif self.status == player_status.KICKING:
             self.animate("player/" + self.character + "/" + str(player_status.KICKING) + "/", 1, 3, self.direction)
+            if self.animation_tick == 0: self.status = player_status.IDLE
         elif self.status == player_status.DUCKING:
             self.animate("player/" + self.character + "/" + str(player_status.DUCKING) + "/", 1, 1, self.direction)
+            self.status = player_status.IDLE
         elif self.status == player_status.MOVING_SLOW:
             self.animate("player/" + self.character + "/" + str(player_status.MOVING_SLOW) + "/", 4, 15, self.direction)
+            self.status = player_status.IDLE
         elif self.status == player_status.DEFENDING:
             self.animate("player/" + self.character + "/" + str(player_status.DEFENDING) + "/", 1, 1, self.direction)
         elif self.status == player_status.MOVE1:
             self.animate("player/" + self.character + "/" + str(player_status.MOVE1) + "/", 1, 1, self.direction)
+            if self.animation_tick == 0: self.status = player_status.IDLE
         elif self.status == player_status.MOVE2:
             self.animate("player/" + self.character + "/" + str(player_status.MOVE2) + "/", 1, 1, self.direction)
+            if self.animation_tick == 0: self.status = player_status.IDLE
         elif self.status == player_status.MOVE3:
             self.animate("player/" + self.character + "/" + str(player_status.MOVE3) + "/", 1, 1, self.direction)
+            if self.animation_tick == 0: self.status = player_status.IDLE
         elif self.status == player_status.ULTIMATE:
             self.animate("player/" + self.character + "/" + str(player_status.ULTIMATE) + "/", 1, 1, self.direction)
+            if self.animation_tick == 0: self.status = player_status.IDLE
         elif self.status == player_status.APPEAR:
             self.animate("player/" + self.character + "/" + str(player_status.APPEAR) + "/", 1, 1, self.direction)
+            if self.animation_tick == 0: self.status = player_status.IDLE
 
-        
         # Change orientation
         if self.direction != self.last_direction:
             self.flip_texture(True, False)
-        self.last_status = self.status
+        self.last_status = current_status
         self.last_direction = self.direction
 
 

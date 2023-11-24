@@ -172,12 +172,12 @@ class GameManager:
             player.move(1)
         if key_SPACE:
             player.move(2)
-        if not key_A and not key_D and not key_SPACE:
+        if not key_A and not key_D and not key_SPACE and player.punch_timer == 0 and player.kick_timer == 0:
             player.status = player_status.IDLE
         
 
         if key_LSHIFT:
-            if key_A or key_D and player.punch_timer == 0 and\
+            if key_A or key_D and player.punch_timer == 0 and player.punch_timer == 0 and\
             player.kick_timer == 0:
                 player.crouch()
             elif key_LEFT or key_RIGHT: player.kick(key_RIGHT)
