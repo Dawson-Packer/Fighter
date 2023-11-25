@@ -3,15 +3,14 @@ import pygame
 import threading
 
 from game.Server import Server
-from game.ClientComms import ClientComms
 from client_config import *
 from Client import Client
-from ServerComms import ServerComms
-from game.ObjectManager import ObjectManager
+from Comms import Comms
+from objects.ObjectManager import ObjectManager
 from game.game_config import *
 from graphics.gfx_config import *
-from graphics.gui_overlays import *
-from graphics.Sprites import *
+from objects.gui_overlays import *
+from objects.Sprites import *
 
 
 class Game:
@@ -34,9 +33,10 @@ class Game:
         self.server_comms = None
         self.client = None
         self.client_comms = None
+        self.comms = Comms()
         self.competitor_client_id = None
         self.main_menu = main_menu()
-        self.object_manager = ObjectManager()
+        self.object_manager = ObjectManager(self.comms)
         self.lobby = lobby()
         self.tick = 0
         self.IS_RUNNING = True
@@ -105,13 +105,13 @@ class Game:
         # self.message = []
 
         # * Networking
-        if self.IS_HOST:
-            self.receive_data(self.server.receive(self.competitor_client_id,
-                                                               self.server.clients[self.competitor_client_id][0]))
-            self.server.add_packet_to_message(["$T" + str(self.tick)])
-        if not self.IS_HOST:
-            self.receive_data(self.client.receive(self.tick))
-            self.client.add_packet_to_message(["$R" + str(self.tick)])
+        # if self.IS_HOST:
+        #     self.receive_data(self.server.receive(self.competitor_client_id,
+        #                                                        self.server.clients[self.competitor_client_id][0]))
+        #     self.server.add_packet_to_message(["$T" + str(self.tick)])
+        # if not self.IS_HOST:
+        #     self.receive_data(self.client.receive(self.tick))
+        #     self.client.add_packet_to_message(["$R" + str(self.tick)])
 
         # * Run ObjectManager
         self.object_manager.run(self.tick)
@@ -201,7 +201,8 @@ class Game:
 
     def start(self):
         """Sends start message to server."""
-        self.client.add_packet_to_message(["$START"])
+        # self.client.add_packet_to_message(["$START"])
+        pass
     
     def send_input(self, key: str):
         self.keys_presses[key] = True

@@ -32,7 +32,6 @@ class Application:
         self.window_tick += 1
         
         if self.game_tick == 1 and not self.IS_PAUSED:
-            self.game.reset_keys()
             self.process_events()
             self.game.run()
             self.game_tick = 0
@@ -55,68 +54,68 @@ class Application:
                 self.game.check_buttons(pygame.mouse.get_pos(), True)
         keys = pygame.key.get_pressed()
         KEY_PRESSED = False
-        if keys[pygame.K_w]: self.game.send_input('W')
-        if keys[pygame.K_a]: self.game.send_input('A')
-        if keys[pygame.K_s]: self.game.send_input('S')
-        if keys[pygame.K_d]: self.game.send_input('D')
-        if keys[pygame.K_SPACE]: self.game.send_input('SPACE')
-        if keys[pygame.K_LSHIFT]: self.game.send_input('LSHIFT')
-        if keys[pygame.K_LCTRL]: self.game.send_input('LCTRL')
-        if keys[pygame.K_UP]: self.game.send_input('UP')
-        if keys[pygame.K_DOWN]: self.game.send_input('DOWN')
-        if keys[pygame.K_RIGHT]: self.game.send_input('RIGHT')
-        if keys[pygame.K_LEFT]: self.game.send_input('LEFT')
-        if keys[pygame.K_a] and not keys[pygame.K_LSHIFT]:
-            KEY_PRESSED = True
-            # self.pl.player_1.move(0)
-            pass
-        if keys[pygame.K_d] and not keys[pygame.K_LSHIFT]:
-            KEY_PRESSED = True
-            # self.pl.player_1.move(1)
-            pass
-        if keys[pygame.K_a] and keys[pygame.K_LSHIFT]:
-            KEY_PRESSED = True
-            # self.pl.player_1.crouch()
-            # self.pl.player_1.move(0)
-            pass
-        if keys[pygame.K_d] and keys[pygame.K_LSHIFT]:
-            KEY_PRESSED = True
-            # self.pl.player_1.crouch()
-            # self.pl.player_1.move(1)
-            pass
-        if keys[pygame.K_SPACE]:
-            KEY_PRESSED = True
-            # self.pl.player_1.move(2)
-            pass
-        if (keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]) and not keys[pygame.K_LSHIFT]:
-            KEY_PRESSED = True
-            if keys[pygame.K_LEFT]: 
-                # self.pl.player_1.punch(-1,
-                #                         self.pl.player_2,
-                #                         player_stats.PUNCH_DAMAGE)
-                pass
-            if keys[pygame.K_RIGHT]: 
-                # self.pl.player_1.punch(1,
-                #                         self.pl.player_2,
-                #                         player_stats.PUNCH_DAMAGE)
-                pass
-        if keys[pygame.K_LSHIFT] and (keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]):
-            KEY_PRESSED = True
-            if keys[pygame.K_LEFT]: 
-                # self.pl.player_1.kick(-1,
-                #                         self.pl.player_2,
-                #                         player_stats.KICK_DAMAGE)
-                pass
-            if keys[pygame.K_RIGHT]: 
-                # self.pl.player_1.kick(1,
-                #                         self.pl.player_2,
-                #                         player_stats.KICK_DAMAGE)
-                pass
-        if keys[pygame.K_LSHIFT] and not (keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]) and\
-            not (keys[pygame.K_a] or keys[pygame.K_d]):
-            KEY_PRESSED = True
-            # self.pl.player_1.duck()
-            pass       
+        # if keys[pygame.K_w]: self.game.send_input('W')
+        # if keys[pygame.K_a]: self.game.send_input('A')
+        # if keys[pygame.K_s]: self.game.send_input('S')
+        # if keys[pygame.K_d]: self.game.send_input('D')
+        # if keys[pygame.K_SPACE]: self.game.send_input('SPACE')
+        # if keys[pygame.K_LSHIFT]: self.game.send_input('LSHIFT')
+        # if keys[pygame.K_LCTRL]: self.game.send_input('LCTRL')
+        # if keys[pygame.K_UP]: self.game.send_input('UP')
+        # if keys[pygame.K_DOWN]: self.game.send_input('DOWN')
+        # if keys[pygame.K_RIGHT]: self.game.send_input('RIGHT')
+        # if keys[pygame.K_LEFT]: self.game.send_input('LEFT')
+        # if keys[pygame.K_a] and not keys[pygame.K_LSHIFT]:
+        #     KEY_PRESSED = True
+        #     # self.pl.player_1.move(0)
+        #     pass
+        # if keys[pygame.K_d] and not keys[pygame.K_LSHIFT]:
+        #     KEY_PRESSED = True
+        #     # self.pl.player_1.move(1)
+        #     pass
+        # if keys[pygame.K_a] and keys[pygame.K_LSHIFT]:
+        #     KEY_PRESSED = True
+        #     # self.pl.player_1.crouch()
+        #     # self.pl.player_1.move(0)
+        #     pass
+        # if keys[pygame.K_d] and keys[pygame.K_LSHIFT]:
+        #     KEY_PRESSED = True
+        #     # self.pl.player_1.crouch()
+        #     # self.pl.player_1.move(1)
+        #     pass
+        # if keys[pygame.K_SPACE]:
+        #     KEY_PRESSED = True
+        #     # self.pl.player_1.move(2)
+        #     pass
+        # if (keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]) and not keys[pygame.K_LSHIFT]:
+        #     KEY_PRESSED = True
+        #     if keys[pygame.K_LEFT]: 
+        #         # self.pl.player_1.punch(-1,
+        #         #                         self.pl.player_2,
+        #         #                         player_stats.PUNCH_DAMAGE)
+        #         pass
+        #     if keys[pygame.K_RIGHT]: 
+        #         # self.pl.player_1.punch(1,
+        #         #                         self.pl.player_2,
+        #         #                         player_stats.PUNCH_DAMAGE)
+        #         pass
+        # if keys[pygame.K_LSHIFT] and (keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]):
+        #     KEY_PRESSED = True
+        #     if keys[pygame.K_LEFT]: 
+        #         # self.pl.player_1.kick(-1,
+        #         #                         self.pl.player_2,
+        #         #                         player_stats.KICK_DAMAGE)
+        #         pass
+        #     if keys[pygame.K_RIGHT]: 
+        #         # self.pl.player_1.kick(1,
+        #         #                         self.pl.player_2,
+        #         #                         player_stats.KICK_DAMAGE)
+        #         pass
+        # if keys[pygame.K_LSHIFT] and not (keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]) and\
+        #     not (keys[pygame.K_a] or keys[pygame.K_d]):
+        #     KEY_PRESSED = True
+        #     # self.pl.player_1.duck()
+        #     pass       
 
         # if not KEY_PRESSED: self.pl.player_1.reset_status()     
 

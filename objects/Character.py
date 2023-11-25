@@ -1,16 +1,17 @@
 from .GameObjects import *
+from Comms import Comms
 
 
 class StickmanCharacter(Player):
     """Stickman Character Object that stores data for unique character functions."""
-    def __init__(self, object_id: int, server: Server, x_pos: float, y_pos: float, direction: bool,
+    def __init__(self, object_id: int, comms: Comms, x_pos: float, y_pos: float, direction: bool,
                  x_velocity: float, y_velocity: float, sprite_height: int, sprite_width: int,
                  rotation: float):
         """
         Initializes a StickmanCharacter object.
 
         :param object_id: The ID of the Object.
-        :param server: The server the Player is hosted on.
+        :param comms: The communication service to use.
         :param x_pos: The x-position of the Player.
         :param y_pos: The y-position of the Player.
         :param direction: The initial direction of the Player.
@@ -22,7 +23,7 @@ class StickmanCharacter(Player):
         """
         hitbox_height = 50
         hitbox_width = 20
-        super().__init__(object_id, server, x_pos, y_pos, direction, x_velocity, y_velocity, hitbox_height,
+        super().__init__(object_id, comms, x_pos, y_pos, direction, x_velocity, y_velocity, hitbox_height,
                          hitbox_width, sprite_height, sprite_width, "stickman", rotation)
 
     def move_1(self):

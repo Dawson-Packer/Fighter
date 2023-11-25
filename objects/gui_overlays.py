@@ -1,4 +1,4 @@
-from graphics.Sprites import *
+from .GameObjects import *
 from client_config import *
 
 class main_menu:

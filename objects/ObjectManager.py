@@ -1,24 +1,27 @@
 import time
 import random
 
-from .game_config import *
+from game.game_config import *
 from graphics.gfx_config import *
-from .objects.Objects import *
+from .GameObjects import *
+from .Character import *
+from Comms import Comms
 # from game_config import *
 
 
 
 class ObjectManager:
     """A manager class that runs the game logic and interacts with the game objects."""
-    def __init__(self):
+    def __init__(self, comms: Comms):
         """
         Initializes an ObjectManager object.
         
+        :param comms: The communication service to use.
         :param field_width: The width of the field to contain the game objects.
         :param field_height: The height of the field to contain the game objects.
         """
-        self.server = Server()
 
+        self.comms = comms
         self.next_object_id = 0
         self.player_1 = None
         self.player_2 = None
@@ -53,7 +56,7 @@ class ObjectManager:
 
         # Player 0 object
         self.players[self.next_object_id] = StickmanCharacter(self.next_object_id,
-                                                              self.server,
+                                                              self.comms,
                                                               200.0,
                                                               200.0,
                                                               True,
@@ -63,7 +66,7 @@ class ObjectManager:
         self.next_object_id += 1
         # Player 1 object
         self.players[self.next_object_id] = StickmanCharacter(self.next_object_id,
-                                                              self.server,
+                                                              self.comms,
                                                               800.0,
                                                               200.0,
                                                               False,

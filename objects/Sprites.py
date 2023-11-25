@@ -1,7 +1,7 @@
 import os as os
 import pygame as pygame
 
-from ..graphics.gfx_config import *
+from graphics.gfx_config import *
 from client_config import *
 from game.game_config import *
 
@@ -35,7 +35,7 @@ class Sprite(pygame.sprite.Sprite):
         self.height = height
         self.width = width
         self.display_x_pos = x_pos
-        self.y_pdisplay_y_posos = y_pos
+        self.display_y_pos = y_pos
         self.default_file_path = file_path
         self.rotation = rotation
         self.rect = None
@@ -70,8 +70,10 @@ class Sprite(pygame.sprite.Sprite):
          - 0: The x-position of the Object.
          - 1: The y-position of the Object.
         """
-        self.display_x_pos = round(args[0])
-        self.display_y_pos = round(field_dimensions.HEIGHT - args[1])
+        if len(args) > 0:
+            print(args[0], args[1])
+            self.display_x_pos = round(args[0])
+            self.display_y_pos = round(field_dimensions.HEIGHT - args[1])
         self.rect.x = self.display_x_pos - (self.width // 2)
         self.rect.y = self.display_y_pos - (self.height // 2)
 
