@@ -1,5 +1,5 @@
 from .GameObjects import *
-from Comms import Comms
+from comms.Comms import Comms
 
 
 class StickmanCharacter(Player):

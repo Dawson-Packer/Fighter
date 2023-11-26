@@ -54,7 +54,7 @@ class Application:
                 self.game.check_buttons(pygame.mouse.get_pos(), True)
         keys = pygame.key.get_pressed()
         KEY_PRESSED = False
-        # if keys[pygame.K_w]: self.game.send_input('W')
+        if keys[pygame.K_w]: self.game.quit()
         # if keys[pygame.K_a]: self.game.send_input('A')
         # if keys[pygame.K_s]: self.game.send_input('S')
         # if keys[pygame.K_d]: self.game.send_input('D')
@@ -122,9 +122,9 @@ class Application:
 
     def quit(self):
         """Ends the Window process and cleans up upon exit."""
+        self.game.quit()
         self.wd.quit()
-        self.game.host_thread.join()
-        self.game.hosted_game.server.incoming_log.terminate()
-        self.game.hosted_game.server.outgoing_log.terminate()
+        self.game.hosted_game_thread.join()
+        self.game.comms_thread.join()
         # self.pl.game.log.terminate()
         self.IS_RUNNING = False

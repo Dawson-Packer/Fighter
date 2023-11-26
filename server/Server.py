@@ -88,7 +88,7 @@ class Server:
         except socket.timeout: pass
         if len(self.clients) > self.MAX_CONNECTIONS: self.CLIENT_CONNECTIONS_SATURATED = True
 
-    def receive(self, client_id: int, client: socket):
+    def receive(self, client_id: int, client: socket) -> str:
         """
         Receives a message from a client specified.
 
@@ -151,7 +151,7 @@ class Server:
 
     def reset_message(self):
         """Resets the global message of the Server."""
-        self.message = [[" $T" + str(self.tick)]]
+        self.message = [["$T" + str(self.tick)]]
 
     def start_game(self):
         """Sends a STARTGAME command to the clients."""

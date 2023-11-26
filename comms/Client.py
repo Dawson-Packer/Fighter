@@ -45,6 +45,7 @@ class Client:
         if self.lost_connection(): return
         try:
             message = self.socket.recv(1024).decode("utf-8")
+            print(tick, message)
             self.incoming_log.enter_data([tick, message])
             return message
         except socket.error as message:
@@ -60,7 +61,6 @@ class Client:
         :kwargs:
          - 'message': A message to send directly to the server (overrides normal packet string).
         """
-        if not self.IS_CONNECTED: return
         try:
             if 'message' in kwargs:
                 self.socket.send(bytes(" ".join(["+".join(x) for x in 
@@ -76,7 +76,6 @@ class Client:
                 self.outgoing_log.enter_data([tick, " ".join(["+".join(x) for x in self.message])])
         except socket.error as message:
             print("CLIENT could not send:", message)
-        self.message = [[]]
     
     def lost_connection(self) -> bool:
         """Returns True if the client has lost connection to the server."""
@@ -94,9 +93,9 @@ class Client:
         """
         self.message.append(packet)
 
-    def reset_message(self):
+    def reset_message(self, tick: int):
         """Resets the global message of the Client."""
-        self.message.clear()
+        self.message = [["$R" + str(tick)]]
 
     def disconnect(self):
         """Disconnects the Client from the server."""

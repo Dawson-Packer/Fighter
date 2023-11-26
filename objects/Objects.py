@@ -1,4 +1,4 @@
-from Comms import *
+from comms.Comms import Comms
 from .Sprites import *
 
 class Object:
