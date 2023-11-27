@@ -12,9 +12,9 @@ directory, run:
     python main.py
 
 ## Usage
-As of 11/11/2023, the game is not playable by two players. The left player may be moved by pressing
-the keys **A**, **D**, and **SPACE**, with kicking and punching a combination of **LSHIFT**,
-**ARROW LEFT**, and **ARROW RIGHT**. Partial functionality is implemented for both players, but
-future plans mean that the right player will not be movable from keyboard input.
+As of 11/26/2023, the game is playable by two players, however excessive server lag makes the user
+experience a little lacking. The left player may be moved by pressing the keys **A**, **D**, and 
+**SPACE**, with kicking and punching a combination of **LSHIFT**, **ARROW LEFT**, and
+**ARROW RIGHT**. More moves will be added later but right now the latency is top priority.
 <br>
 **Stay tuned!**

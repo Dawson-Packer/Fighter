@@ -22,18 +22,27 @@ class Server:
                                    ["Timestamp", "Client ID", "Message Received"])
         self.outgoing_log = Logger("logs/server_outgoing", ["Timestamp", "Message Sent"])
         try:
-            self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.host = ''
-            self.port = 6010
-            self.socket.bind((self.host, self.port))
-            self.socket.settimeout(0.005)
+            self.port = 60010
+            self.tcp_socket.bind((self.host, self.port))
+            self.tcp_socket.settimeout(0.005)
         except socket.error as message:
-            print("Socket bind error:", message)
+            print("TCP Socket bind error:", message)
+        try:
+            self.udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            self.host = ''
+            self.port = 60020
+            self.udp_socket.bind((self.host, self.port))
+            self.udp_socket.settimeout(0.005)
+        except socket.error as message:
+            print("UDP Socket bind error:", message)
 
         self.received_message = ""
         self.message = [["$T" + str(self.tick)]]
         
         self.clients = []
+        self.addresses = []
         self.ip_addresses = []
         self.packets_lost = []
         self.users = []
@@ -74,10 +83,11 @@ class Server:
     def listen(self):
         """Listens for connections to the server."""
         try:
-            self.socket.listen(1)
-            clientsocket, address = self.socket.accept()
+            self.tcp_socket.listen(1)
+            clientsocket, address = self.tcp_socket.accept()
             if not address[0] in self.ip_addresses:
-                self.clients.append((clientsocket, address))
+                self.clients.append(clientsocket)
+                self.addresses.append(address)
                 self.ip_addresses.append(address[0])
                 self.packets_lost.append(0)
                 self.send(clientsocket, message=f"$ID+{len(self.clients) - 1}")
@@ -110,6 +120,14 @@ class Server:
         except socket.error as message:
             print(f"Server error on reading from Client {client_id}:", message)
             self.packets_lost[client_id] += 1
+            return ""
+        
+    def receivefrom(self): # TODO: Integrate this method into normal use for UPP packets
+        try:
+            message, address = self.udp_socket.recvfrom(1024)
+            return message.decode("utf-8")
+        except socket.error as message:
+            print(f"UDP Server error on reading from client:", message)
             return ""
         
     def add_packet_to_message(self, packet: list):
@@ -150,6 +168,13 @@ class Server:
                                               " ".join(["+".join(x) for x in self.message])])
         except socket.error as message:
             print(f"Server error sending to Client {client_id}:", message)
+
+    def sendto(self, client_id: int, address): # TODO: Special method for game updates like UPP
+        try:
+            self.udp_socket.sendto(bytes(" ".join(["+".join(x) for x in self.message]), "utf-8"),
+                                   address)
+        except socket.error as message:
+            print(f"UDP Server error sending to Client {client_id}:", message)
 
     def reset_message(self):
         """Resets the global message of the Server."""

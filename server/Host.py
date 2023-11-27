@@ -21,20 +21,27 @@ class Host:
             while len(self.character_list) < len(self.server.clients):
                 self.character_list.append("null")
                 self.username_list.append("USR")
-            for client_id, (client, _) in enumerate(self.server.clients):
-                message = self.server.receive(client_id, client)
-                self.parse(client_id, message)
+            if not self.GAME_RUNNING:
+                for client_id, client in enumerate(self.server.clients):
+                    message = self.server.receive(client_id, client)
+                    self.parse(client_id, message)
+            else:
+                message = self.server.receivefrom()
+                self.parse(-1, message)
             
             if not self.GAME_RUNNING and self.characters_selected == len(self.server.clients):
                 self.GAME_RUNNING = True
-                self.load_game()                
+                self.load_game()
 
 
 
 
-
-            for client_id, (client, _) in enumerate(self.server.clients):
-                self.server.send(client, client_id=client_id)
+            if not self.GAME_RUNNING:
+                for client_id, client in enumerate(self.server.clients):
+                    self.server.send(client, client_id=client_id)
+            else:
+                for client_id, address in enumerate(self.server.addresses):
+                    self.server.sendto(client_id, address)
             
             self.tick += 1
             execution_time = time.time() - start_time
@@ -79,9 +86,9 @@ class Host:
                                            str(self.username_list[p1]),
                                            str(self.character_list[p1]),
                                            str(p1),
-                                           str(self.username_list[p2]),
-                                           str(self.character_list[p2]),
-                                           str(p2)])
+                                           str(self.username_list[p1]),
+                                           str(self.character_list[p1]),
+                                           str(p1)])
         
         self.server.add_packet_to_message(["$MAP", str(map_id)])
         self.server.add_packet_to_message(["$STARTGAME"])
