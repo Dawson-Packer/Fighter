@@ -78,6 +78,7 @@ class Game:
         packet_list = self.comms.parse()
         self.object_manager.parse(packet_list)
         self.parse(packet_list)
+        self.player_id = self.comms.client_id
 
 
         self.sprites_list.empty()
@@ -207,6 +208,7 @@ class Game:
                 self.gui_overlay_state = gui_overlay.CHARACTER_SELECTION
             if packet_type == "$ID":
                 self.player_id = int(contents[1])
+                print(self.player_id)
             if packet_type == "$STARTGAME":
                 self.gui_overlay_state = gui_overlay.NONE
 

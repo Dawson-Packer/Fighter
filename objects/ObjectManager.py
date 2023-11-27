@@ -104,10 +104,13 @@ class ObjectManager:
             if packet_type == "$PID":
                 self.player_1_info[0] = contents[1] # Player 1 Username
                 self.player_1_info[1] = contents[2] # Player 1 Character
-                self.player_1_info[2] = contents[3] # Player 1 Client ID
+                self.player_1_info[2] = int(contents[3]) # Player 1 Client ID
                 self.player_2_info[0] = contents[4] # Player 2 Username
                 self.player_2_info[1] = contents[5] # Player 2 Character
-                self.player_2_info[2] = contents[6] # Player 2 Client ID
+                self.player_2_info[2] = int(contents[6]) # Player 2 Client ID
                 self.load_players()
-                
-        return packets
+    
+    def move(self, player_id: int, direction: int):
+        for _, player in self.players.items():
+            if player.connected_client == player_id:
+                player.move(direction)

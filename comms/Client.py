@@ -32,6 +32,9 @@ class Client:
             self.socket.connect((address, self.port))
             self.socket.send(bytes("", "utf-8"))
             self.IS_CONNECTED = True
+            message = self.socket.recv(1024).decode("utf-8")
+            contents = message.split("+")
+            self.client_id = int(contents[1])
         except socket.error as message:
             return False
         return True
@@ -45,6 +48,7 @@ class Client:
         if self.lost_connection(): return
         try:
             message = self.socket.recv(1024).decode("utf-8")
+
             self.incoming_log.enter_data([tick, message])
             return message
         except socket.error as message:

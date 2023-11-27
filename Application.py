@@ -54,11 +54,11 @@ class Application:
                 self.game.check_buttons(pygame.mouse.get_pos(), True)
         keys = pygame.key.get_pressed()
         KEY_PRESSED = False
-        if keys[pygame.K_w]: self.game.quit()
-        # if keys[pygame.K_a]: self.game.send_input('A')
-        # if keys[pygame.K_s]: self.game.send_input('S')
-        # if keys[pygame.K_d]: self.game.send_input('D')
-        # if keys[pygame.K_SPACE]: self.game.send_input('SPACE')
+        if keys[pygame.K_w]: pass
+        if keys[pygame.K_a]: self.game.object_manager.move(self.game.player_id, 0)
+        if keys[pygame.K_s]: pass
+        if keys[pygame.K_d]: self.game.object_manager.move(self.game.player_id, 1)
+        if keys[pygame.K_SPACE]: self.game.object_manager.move(self.game.player_id, 2)
         # if keys[pygame.K_LSHIFT]: self.game.send_input('LSHIFT')
         # if keys[pygame.K_LCTRL]: self.game.send_input('LCTRL')
         # if keys[pygame.K_UP]: self.game.send_input('UP')

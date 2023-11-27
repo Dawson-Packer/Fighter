@@ -40,6 +40,7 @@ class Comms:
             start_time = time.time()
             self.client.reset_message(self.tick)
             self.receive(self.tick)
+            self.client_id = self.client.client_id
 
 
 
@@ -69,8 +70,6 @@ class Comms:
                 self.client.disconnect()
             if packet_type == "$QUIT":
                 print("Client received QUIT command from other client")
-            if packet_type == "$ID":
-                self.client_id = int(contents[1])
         return packets
             
 

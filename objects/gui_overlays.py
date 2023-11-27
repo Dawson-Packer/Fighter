@@ -43,4 +43,3 @@ class character_pick(menu):
         self.stickman_button = Button(-1, 50, 100, 50, 100, "Stickman",
                                       button_type.STICKMAN_CHARACTER)
         self.buttons_list.append(self.stickman_button)
-        print(len(self.buttons_list))

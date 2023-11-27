@@ -118,7 +118,7 @@ class Player(PhysicsObject, AnimatedSprite):
         self.hitbox_height = hitbox_height
         self.hitbox_width = hitbox_width
         self.comms = comms
-        self.connected_client = None
+        self.connected_client = client_id
         self.status = player_status.IDLE
         self.status_effect = 0 # TODO: Replace with config value
         self.direction = direction
