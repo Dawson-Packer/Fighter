@@ -43,11 +43,7 @@ class ObjectManager:
         """Runs all ongoing object management functions in a single tick."""
         self.player_id = self.comms.client_id
         ## * Process objects.
-        for _, player in self.players.items():
-            player.tick()
 
-
-        
         for _, player in self.players.items():
             if player.connected_client == self.player_id:
                 self.comms.send_player_data(self.player_id,
@@ -57,6 +53,13 @@ class ObjectManager:
                                             player.status,
                                             player.status_effect
                                             )
+
+        for _, player in self.players.items():
+            player.tick()
+
+
+        
+        
 
     def next_object_id(self):
         self.next_object_id_counter += 1
