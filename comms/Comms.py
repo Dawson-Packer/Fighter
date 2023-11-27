@@ -55,7 +55,7 @@ class Comms:
         """
         while self.client.IS_CONNECTED:
             start_time = time.time()
-            self.client.reset_message()
+            self.client.reset_message(self.tick)
             self.message = self.client.receive(self.tick)
             self.parse()
 

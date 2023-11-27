@@ -21,8 +21,9 @@ class Host:
             while len(self.character_list) < len(self.server.addresses):
                 self.character_list.append("null")
                 self.username_list.append("USR")
-            client_id, message = self.server.receive()
-            self.parse(client_id, message)
+            for _ in len(self.server.addresses):
+                client_id, message = self.server.receive()
+                self.parse(client_id, message)
             
             if not self.GAME_RUNNING and self.characters_selected == len(self.server.addresses) and\
                 len(self.server.addresses) > 0:

@@ -45,7 +45,6 @@ class ObjectManager:
         ## * Process objects.
         for _, player in self.players.items():
             player.tick()
-            if player.status == 1: print("yes!")
 
         for _, player in self.players.items():
             if player.connected_client == self.player_id:

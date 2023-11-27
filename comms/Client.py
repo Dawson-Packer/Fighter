@@ -74,8 +74,6 @@ class Client:
         :kwargs:
          - 'message': A message to send directly to the server (overrides normal packet string).
         """
-        if len(self.message) == 0: return
-        else: self.set_message(tick)
         try:
             if 'message' in kwargs:
                 self.socket.sendto(bytes(" ".join(["+".join(x) for x in 
@@ -112,14 +110,10 @@ class Client:
         """
         self.message.append(packet)
 
-    def set_message(self, tick: int):
-        """Sets the global message of the Client."""
-        self.message.insert(0, ["$R" + str(tick)])
-        self.message.insert(0, [f"$ID+{self.client_id}"])
-    
-    def reset_message(self):
+    def reset_message(self, tick: int):
         """Resets the global message of the Client."""
-        self.message = []
+        self.message = [[f"$ID+{self.client_id}"], ["$R" + str(tick)]]
+        
 
     def disconnect(self):
         """Disconnects the Client from the server."""
