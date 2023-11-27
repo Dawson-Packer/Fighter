@@ -40,6 +40,7 @@ class Host:
             
             self.tick += 1
             execution_time = time.time() - start_time
+            # print(execution_time)
             if 0.10 - execution_time > 0: time.sleep(0.10 - execution_time)
     
     def parse(self, client_id: int, message: str):

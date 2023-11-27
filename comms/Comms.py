@@ -57,6 +57,8 @@ class Comms:
             start_time = time.time()
             self.client.reset_message(self.tick)
             self.message = self.client.receive(self.tick)
+            execution_time = time.time() - start_time
+            print(execution_time)
             self.parse()
 
 
@@ -65,7 +67,6 @@ class Comms:
 
             self.client.send(self.tick)
             self.tick += 1
-            execution_time = time.time() - start_time
             if 0.010 - execution_time > 0: time.sleep(0.010 - execution_time)
 
     def parse(self) -> list:
