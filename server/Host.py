@@ -79,9 +79,9 @@ class Host:
                                            str(self.username_list[p1]),
                                            str(self.character_list[p1]),
                                            str(p1),
-                                           str(self.username_list[p1]),
-                                           str(self.character_list[p1]),
-                                           str(p1)])
+                                           str(self.username_list[p2]),
+                                           str(self.character_list[p2]),
+                                           str(p2)])
         
         self.server.add_packet_to_message(["$MAP", str(map_id)])
         self.server.add_packet_to_message(["$STARTGAME"])

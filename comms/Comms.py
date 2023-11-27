@@ -21,6 +21,22 @@ class Comms:
     def send_character(self, character: str):
         self.client.add_packet_to_message(["$CHAR",character])
 
+    def send_player_data(self,
+                         player_id: int,
+                         x_pos: int,
+                         y_pos: int,
+                         direction: bool,
+                         status: int,
+                         status_effect: int):
+        self.client.add_packet_to_message(["$UPP",
+                                           str(player_id), # 1
+                                           str(x_pos), # 2
+                                           str(y_pos), # 3
+                                           str(int(direction)), # 4
+                                           str(status), # 5
+                                           str(status_effect) # 6
+                                           ])
+
     def connect(self, ip_address: str):
         while not self.client.IS_CONNECTED:
             try:

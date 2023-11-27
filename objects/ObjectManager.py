@@ -22,6 +22,7 @@ class ObjectManager:
         """
 
         self.comms = comms
+        self.player_id = None
         self.player_1 = None
         self.player_2 = None
         self.background_list = {}
@@ -40,14 +41,22 @@ class ObjectManager:
 
     def run(self, tick: int):
         """Runs all ongoing object management functions in a single tick."""
-         
+        self.player_id = self.comms.client_id
         ## * Process objects.
         for _, player in self.players.items():
             player.tick()
 
 
         
-        ## * Load objects
+        for _, player in self.players.items():
+            if player.connected_client == self.player_id:
+                self.comms.send_player_data(self.player_id,
+                                            int(player.x_pos),
+                                            int(player.y_pos),
+                                            player.direction,
+                                            player.status,
+                                            player.status_effect
+                                            )
 
     def next_object_id(self):
         self.next_object_id_counter += 1
@@ -109,6 +118,15 @@ class ObjectManager:
                 self.player_2_info[1] = contents[5] # Player 2 Character
                 self.player_2_info[2] = int(contents[6]) # Player 2 Client ID
                 self.load_players()
+            if packet_type == "$UPP":
+                for _, player in self.players.items():
+                    if player.connected_client == contents[1] and contents[1] != self.player_id:
+                        player.x_pos = int(contents[2])
+                        player.y_pos = int(contents[3])
+                        player.direction = bool(int(contents[4]))
+                        player.status = int(contents[5])
+                        player.status_effect = int(contents[6])
+                        player.update_sprite(player.x_pos, player.y_pos)
     
     def move(self, player_id: int, direction: int):
         for _, player in self.players.items():
