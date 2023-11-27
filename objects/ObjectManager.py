@@ -114,3 +114,23 @@ class ObjectManager:
         for _, player in self.players.items():
             if player.connected_client == player_id:
                 player.move(direction)
+
+    def crouch(self, player_id: int):
+        for _, player in self.players.items():
+            if player.connected_client == player_id:
+                player.crouch()
+
+    def duck(self, player_id):
+        for _, player in self.players.items():
+            if player.connected_client == player_id:
+                player.duck()
+    
+    def punch(self, player_id: int, facing_right: bool):
+        for _, player in self.players.items():
+            if player.connected_client == player_id:
+                player.punch(facing_right)
+
+    def kick(self, player_id: int, facing_right: bool):
+        for _, player in self.players.items():
+            if player.connected_client == player_id:
+                player.kick(facing_right)

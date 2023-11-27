@@ -1,5 +1,8 @@
-from Window import *
-from Game import *
+import pygame
+
+from Window import Window
+from Game import Game
+from UserInput import UserInput
 
 class Application:
     """Application class for communicating between Events, program logic, and the
@@ -16,6 +19,7 @@ class Application:
         self.dimensions = (dim_width, dim_height)
         self.wd = Window(title, (200, 200, 200), self.dimensions[0], self.dimensions[1])
         self.game = Game(dim_width, dim_height, (0, 0))
+        self.user_input = UserInput(self.game, self.game.object_manager)
         self.IS_RUNNING = self.wd.IS_RUNNING
         self.IS_PAUSED = False
         self.delay = 0.050 # seconds
@@ -49,16 +53,8 @@ class Application:
             if event.type == pygame.QUIT:
                 self.quit()
                 return
-            mouse_buttons_state = pygame.mouse.get_pressed(num_buttons=3)
-            if mouse_buttons_state[0]:
-                self.game.check_buttons(pygame.mouse.get_pos(), True)
-        keys = pygame.key.get_pressed()
-        KEY_PRESSED = False
-        if keys[pygame.K_w]: pass
-        if keys[pygame.K_a]: self.game.object_manager.move(self.game.player_id, 0)
-        if keys[pygame.K_s]: pass
-        if keys[pygame.K_d]: self.game.object_manager.move(self.game.player_id, 1)
-        if keys[pygame.K_SPACE]: self.game.object_manager.move(self.game.player_id, 2)
+        self.user_input.handle_inputs(self.game.player_id)
+        
         # if keys[pygame.K_LSHIFT]: self.game.send_input('LSHIFT')
         # if keys[pygame.K_LCTRL]: self.game.send_input('LCTRL')
         # if keys[pygame.K_UP]: self.game.send_input('UP')

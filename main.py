@@ -5,9 +5,6 @@ from Application import Application
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-# TODO: new plan! Change so each game is fully packaged, communicate to each other through
-# TODO: existing server-client architecture (call GameManager from ClientManager [rename])
-
 def main():
     
     game = Application("Fighter", 1000, 600)

@@ -134,7 +134,6 @@ class Player(PhysicsObject, AnimatedSprite):
         # Sprite Data
         self.character = character
         self.last_status = self.status
-        self.last_direction = self.direction
         if not self.direction:
             self.flip_texture(True, False)
 
@@ -194,11 +193,7 @@ class Player(PhysicsObject, AnimatedSprite):
             self.animate("player/" + self.character + "/" + str(player_status.APPEAR) + "/", 1, 1, self.direction)
             if self.animation_tick == 0: self.status = player_status.IDLE
 
-        # Change orientation
-        if self.direction != self.last_direction:
-            self.flip_texture(True, False)
         self.last_status = current_status
-        self.last_direction = self.direction
 
 
     def move(self, direction: int):
@@ -230,6 +225,7 @@ class Player(PhysicsObject, AnimatedSprite):
     def punch(self, facing_right: bool):
         if self.punch_cooldown == 0:
             self.status = player_status.PUNCHING
+            self.reset_animation_tick()
             if self.direction and not facing_right:
                 self.direction = False
             elif not self.direction and facing_right:
