@@ -43,6 +43,8 @@ class ObjectManager:
         """Runs all ongoing object management functions in a single tick."""
         self.player_id = self.comms.client_id
         ## * Process objects.
+        for _, player in self.players.items():
+            player.tick()
 
         for _, player in self.players.items():
             if player.connected_client == self.player_id:
@@ -53,13 +55,6 @@ class ObjectManager:
                                             player.status,
                                             player.status_effect
                                             )
-
-        for _, player in self.players.items():
-            player.tick()
-
-
-        
-        
 
     def next_object_id(self):
         self.next_object_id_counter += 1
@@ -134,24 +129,29 @@ class ObjectManager:
     def move(self, player_id: int, direction: int):
         for _, player in self.players.items():
             if player.connected_client == player_id:
+                player.status_changed = True
                 player.move(direction)
 
     def crouch(self, player_id: int):
         for _, player in self.players.items():
             if player.connected_client == player_id:
+                player.status_changed = True
                 player.crouch()
 
     def duck(self, player_id):
         for _, player in self.players.items():
             if player.connected_client == player_id:
+                player.status_changed = True
                 player.duck()
     
     def punch(self, player_id: int, facing_right: bool):
         for _, player in self.players.items():
             if player.connected_client == player_id:
+                player.status_changed = True
                 player.punch(facing_right)
 
     def kick(self, player_id: int, facing_right: bool):
         for _, player in self.players.items():
             if player.connected_client == player_id:
+                player.status_changed = True
                 player.kick(facing_right)

@@ -115,6 +115,7 @@ class Player(PhysicsObject, AnimatedSprite):
                                 round(x_pos), round(field_dimensions.HEIGHT - y_pos),
                                 rotation, "blank/blank")
         # Object Data
+        self.status_changed = False
         self.hitbox_height = hitbox_height
         self.hitbox_width = hitbox_width
         self.comms = comms
@@ -159,10 +160,10 @@ class Player(PhysicsObject, AnimatedSprite):
             self.animate("player/" + self.character + "/" + str(player_status.IDLE) + "/", 4, 7, self.direction)
         elif self.status == player_status.MOVING:
             self.animate("player/" + self.character + "/" + str(player_status.MOVING) + "/", 2, 7, self.direction)
-            self.status = player_status.IDLE
+            if not self.status_changed: self.status = player_status.IDLE
         elif self.status == player_status.IN_AIR:
             self.animate("player/" + self.character + "/" + str(player_status.IN_AIR) + "/", 1, 4, self.direction)
-            self.status = player_status.IDLE
+            if not self.status_changed: self.status = player_status.IDLE
         elif self.status == player_status.PUNCHING:
             self.animate("player/" + self.character + "/" + str(player_status.PUNCHING) + "/", 1, 3, self.direction)
             if self.animation_tick == 0: self.status = player_status.IDLE
