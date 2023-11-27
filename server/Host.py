@@ -21,7 +21,11 @@ class Host:
             while len(self.character_list) < len(self.server.addresses):
                 self.character_list.append("null")
                 self.username_list.append("USR")
-            for _ in range(len(self.server.addresses)):
+            if len(self.server.addresses) > 0:
+                for _ in range(len(self.server.addresses)):
+                    client_id, message = self.server.receive()
+                    self.parse(client_id, message)
+            else:
                 client_id, message = self.server.receive()
                 self.parse(client_id, message)
             

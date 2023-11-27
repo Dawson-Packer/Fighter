@@ -104,7 +104,7 @@ class Server:
         # if self.lost_connection(client_id): return ""
         try:
             # client.settimeout(0.050)
-            message, address = self.socket.recvfrom(1024)
+            message, address = self.socket.recvfrom(256)
             message = message.decode('utf-8')
             if not address[0] in self.ip_addresses:
                 print(f'Client {address} successfully connected!')
