@@ -205,6 +205,7 @@ class Game:
             contents = packet.split("+")
             packet_type = contents[0]
             if packet_type == "$CHARPICK":
+                print("Received CHARPICK")
                 self.gui_overlay_state = gui_overlay.CHARACTER_SELECTION
             if packet_type == "$ID":
                 self.player_id = int(contents[1])

@@ -16,6 +16,7 @@ class Comms:
         self.IS_CONNECTED = False
 
     def start_game(self):
+        print("Sent start")
         self.client.add_packet_to_message(["$START"])
 
     def send_character(self, character: str):
@@ -54,7 +55,7 @@ class Comms:
         """
         while self.client.IS_CONNECTED:
             start_time = time.time()
-            self.client.reset_message(self.tick)
+            self.client.reset_message()
             self.message = self.client.receive(self.tick)
             self.parse()
 

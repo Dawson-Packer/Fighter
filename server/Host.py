@@ -18,7 +18,7 @@ class Host:
             start_time = time.time()
             self.server.reset_message()
             self.server.run()
-            while len(self.character_list) < len(self.server.clients):
+            while len(self.character_list) < len(self.server.addresses):
                 self.character_list.append("null")
                 self.username_list.append("USR")
             client_id, message = self.server.receive()
@@ -64,7 +64,7 @@ class Host:
             if packet_type == "$USR":
                 self.username_list.append(contents[1])
             if packet_type[:2] != "$R" and packet_type != "$USR" and packet_type != "$CHAR" and\
-                packet_type != "$START" and packet_type != "$ID":
+                packet_type != "$START" and packet_type != "$ID" and packet_type != "$DUMMY":
                 self.server.add_packet_to_message(contents)
     
     def load_game(self):
@@ -76,9 +76,9 @@ class Host:
                                            str(self.username_list[p1]),
                                            str(self.character_list[p1]),
                                            str(p1),
-                                           str(self.username_list[p1]),
-                                           str(self.character_list[p1]),
-                                           str(p1)])
+                                           str(self.username_list[p2]),
+                                           str(self.character_list[p2]),
+                                           str(p2)])
         
         self.server.add_packet_to_message(["$MAP", str(map_id)])
         self.server.add_packet_to_message(["$STARTGAME"])

@@ -1,22 +1,4 @@
 Timestamp, Client ID, Message Received
 1, 0,  $DUMMY
-2, 0, $ID+0 $R0
-3, 0, $ID+0 $R1
-4, 0, $ID+0 $R2
-5, 0, $ID+0 $R3
-6, 0, $ID+0 $R4
-7, 0, $ID+0 $R5
-8, 0, $ID+0 $R6
-9, 0, $ID+0 $R7
-10, 0, $ID+0 $R8 $START
-11, 0, $ID+0 $R9
-12, 0, $ID+0 $R10
-13, 0, $ID+0 $R11
-14, 0, $ID+0 $R12
-15, 0, $ID+0 $R13
-16, 0, $ID+0 $R14
-17, 0, $ID+0 $R15
-18, 0, $ID+0 $R16
-19, 0, $ID+0 $R17
-20, 0, $ID+0 $R18
-21, 0, $ID+0 $R19 $CHAR+stickman
+161, 0, $ID+0 $R159 $START
+243, 0, $ID+0 $R241 $CHAR+stickman
