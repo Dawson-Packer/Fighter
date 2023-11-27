@@ -28,43 +28,45 @@ class Game:
         self.buttons_list = []
         self.message = []
         self.gui_overlay_state = gui_overlay.MAIN_MENU
-        self.comms = None
         self.player_id = None
-        self.main_menu = main_menu()
+        self.comms = Comms()
         self.object_manager = ObjectManager(self.comms)
+        self.main_menu = main_menu()
         self.lobby = lobby()
+        self.pause_screen = pause_screen()
+        self.character_selection_screen = character_pick()
         self.tick = 0
         self.IS_RUNNING = True
         self.sprites_list = pygame.sprite.Group()
 
-    def parse(self, message: str):
-        """
-        De-serializes the message and runs functions associated with the packet contents.
+    # def parse(self, message: str):
+    #     """
+    #     De-serializes the message and runs functions associated with the packet contents.
 
-        :param message: The message to de-serialize.
-        """
-        if not message: return
-        packets = message.split(" ")
-        for packet in packets:
-            contents = packet.split("+")
-            packet_type = contents[0]
-            if packet_type == "$ID":
-                self.client_id = int(contents[1])
-            if packet_type == "$START":
-                self.gui_overlay_state = gui_overlay.NONE
-                self.player_id = int(contents[1])
-                print(self.player_id)
-                pass
-            if packet_type == "$MAP":
-                self.object_manager.load_map(contents[1])
-            if packet_type == "$UPP":
-                self.objects_list[int(contents[1])].x_pos = int(contents[2])
-                self.objects_list[int(contents[1])].y_pos = int(contents[3])
-                self.objects_list[int(contents[1])].direction = bool(int(contents[4]))
-                self.objects_list[int(contents[1])].status = int(contents[5])
-                self.objects_list[int(contents[1])].status_effect = int(contents[6])
-            if packet_type == "$OBJ":
-                pass
+    #     :param message: The message to de-serialize.
+    #     """
+    #     if not message: return
+    #     packets = message.split(" ")
+    #     for packet in packets:
+    #         contents = packet.split("+")
+    #         packet_type = contents[0]
+    #         if packet_type == "$ID":
+    #             self.client_id = int(contents[1])
+    #         if packet_type == "$START":
+    #             self.gui_overlay_state = gui_overlay.NONE
+    #             self.player_id = int(contents[1])
+    #             print(self.player_id)
+    #             pass
+    #         if packet_type == "$MAP":
+    #             self.object_manager.load_map(contents[1])
+    #         if packet_type == "$UPP":
+    #             self.objects_list[int(contents[1])].x_pos = int(contents[2])
+    #             self.objects_list[int(contents[1])].y_pos = int(contents[3])
+    #             self.objects_list[int(contents[1])].direction = bool(int(contents[4]))
+    #             self.objects_list[int(contents[1])].status = int(contents[5])
+    #             self.objects_list[int(contents[1])].status_effect = int(contents[6])
+    #         if packet_type == "$OBJ":
+    #             pass
     
     def get_data_to_send(self): return self.message
 
@@ -73,12 +75,17 @@ class Game:
     def run(self):
         """Runs all ongoing Game functions in a single tick."""
         # self.client.reset_message()
+        packet_list = self.comms.parse()
+        self.object_manager.parse(packet_list)
+        self.parse(packet_list)
+
+
         self.sprites_list.empty()
         self.gui_items_list.clear()
         self.buttons_list.clear()
         # self.message = []
 
-        # * Networkings
+        # * Networking
         # if self.IS_HOST:
         #     self.receive_data(self.server.receive(self.competitor_client_id,
         #                                                        self.server.clients[self.competitor_client_id][0]))
@@ -86,6 +93,7 @@ class Game:
         # if not self.IS_HOST:
         #     self.receive_data(self.client.receive(self.tick))
         #     self.client.add_packet_to_message(["$R" + str(self.tick)])
+        
 
         # * Run ObjectManager
         self.object_manager.run(self.tick)
@@ -103,8 +111,19 @@ class Game:
                 self.gui_items_list.append(element)
             for button in buttons:
                 self.buttons_list.append(button)
+        if self.gui_overlay_state == gui_overlay.PAUSE_SCREEN:
+            elements, buttons = self.pause_screen.load_elements()
+            for element in elements + buttons:
+                self.gui_items_list.append(element)
+            for button in buttons:
+                self.buttons_list.append(button)
+        if self.gui_overlay_state == gui_overlay.CHARACTER_SELECTION:
+            elements, buttons = self.character_selection_screen.load_elements()
+            for element in elements + buttons:
+                self.gui_items_list.append(element)
+            for button in buttons:
+                self.buttons_list.append(button)
         self.check_buttons((-1, -1), False)
-
 
 
         self.tick += 1
@@ -155,13 +174,11 @@ class Game:
                     self.host = Host()
                     self.hosted_game_thread = threading.Thread(target=self.host.run)
                     self.hosted_game_thread.start()
-                    self.comms = Comms()
                     self.comms_thread = threading.Thread(target=self.comms.run)
                     self.comms.connect('localhost')
                     self.comms_thread.start()
                     self.gui_overlay_state = gui_overlay.LOBBY
                 if button.function == button_type.DIRECT_CONNECT and button.IS_PRESSED:
-                    self.comms = Comms()
                     self.comms_thread = threading.Thread(target=self.comms.run)
                     self.comms.connect('192.168.1.15')
                     self.comms_thread.start()
@@ -174,6 +191,24 @@ class Game:
                     self.start()
         if self.gui_overlay_state == gui_overlay.PAUSE_SCREEN:
             pass
+        if self.gui_overlay_state == gui_overlay.CHARACTER_SELECTION:
+            for button in self.character_selection_screen.buttons_list:
+                button.check_button(cursor_position, MOUSE_CLICKED)
+                if button.function == button_type.STICKMAN_CHARACTER and button.IS_PRESSED:
+                    self.comms.send_character("stickman")
+
+    def parse(self, packets: list):
+        """Runs functions associated with the packet contents."""
+        if not packets: return
+        for packet in packets:
+            contents = packet.split("+")
+            packet_type = contents[0]
+            if packet_type == "$CHARPICK":
+                self.gui_overlay_state = gui_overlay.CHARACTER_SELECTION
+            if packet_type == "$ID":
+                self.player_id = int(contents[1])
+            if packet_type == "$STARTGAME":
+                self.gui_overlay_state = gui_overlay.NONE
 
     def quit(self):
         self.comms.quit()
@@ -182,6 +217,4 @@ class Game:
         """Sends start message to server."""
         # self.client.add_packet_to_message(["$START"])
         self.comms.start_game()
-        self.player_id = 0
-        self.gui_overlay_state = gui_overlay.NONE
         pass

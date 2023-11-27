@@ -80,9 +80,11 @@ class Server:
                 self.clients.append((clientsocket, address))
                 self.ip_addresses.append(address[0])
                 self.packets_lost.append(0)
+                self.send(clientsocket, message=f"$ID+{len(self.clients) - 1}")
             elif self.lost_connection(self.ip_addresses.index(address[0])):
                 self.packets_lost[self.ip_addresses.index(address[0])] = 0
                 self.clients[self.ip_addresses.index(address[0])] = (clientsocket, address)
+                self.send(clientsocket, message=f"$ID+{self.ip_addresses.index(address[0])}")
             print(f'Client {address} successfully connected!')
             # self.send(clientsocket, message=f"$GAME {str(self.GAME_STATE)}")
         except socket.timeout: pass

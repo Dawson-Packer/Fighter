@@ -87,13 +87,15 @@ class Projectile(PhysicsObject):
 
 class Player(PhysicsObject, AnimatedSprite):
     """Player Object that stores data for the player like health."""
-    def __init__(self, object_id: int, comms: Comms, x_pos: float, y_pos: float, direction: bool,
-                 x_velocity: float, y_velocity: float, hitbox_height: int, hitbox_width: int,
-                 sprite_height: int, sprite_width: int, character: str, rotation: float):
+    def __init__(self, object_id: int, client_id: int, comms: Comms, x_pos: float, y_pos: float,
+                 direction: bool, x_velocity: float, y_velocity: float, hitbox_height: int,
+                 hitbox_width: int, sprite_height: int, sprite_width: int, character: str,
+                 rotation: float):
         """
         Initializes a Player object.
 
         :param object_id: The ID of the Object.
+        :param client_id: The ID of the client connected to the Player.
         :param comms: The communication service to use.
         :param x_pos: The x-position of the Player.
         :param y_pos: The y-position of the Player.

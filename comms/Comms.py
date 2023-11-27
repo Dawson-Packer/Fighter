@@ -12,9 +12,14 @@ class Comms:
         self.client = Client()
         self.message = None
         self.tick = 0
+        self.client_id = None
+        self.IS_CONNECTED = False
 
     def start_game(self):
         self.client.add_packet_to_message(["$START"])
+
+    def send_character(self, character: str):
+        self.client.add_packet_to_message(["$CHAR",character])
 
     def connect(self, ip_address: str):
         while not self.client.IS_CONNECTED:
@@ -23,6 +28,7 @@ class Comms:
                 if not success: print(f"Client failed to connect to {ip_address}")
             except socket.error as message:
                 print(message)
+        self.IS_CONNECTED = True
     
     def run(self):
         """
@@ -45,17 +51,17 @@ class Comms:
             if 0.010 - execution_time > 0: time.sleep(0.010 - execution_time)
 
     def receive(self, tick: int):
-        message = self.client.receive(tick)
-        self.parse(message)
+        self.message = self.client.receive(tick)
+        # self.parse(self.message)
 
-    def parse(self, message: str):
+    def parse(self) -> list:
         """
         De-serializes the message and runs functions associated with the packet contents.
 
-        :param message: The message to de-serialize.
+        :returns: A list of packets to parse.
         """
-        if not message: return
-        packets = message.split(" ")
+        if not self.message: return
+        packets = self.message.split(" ")
         for packet in packets:
             contents = packet.split("+")
             packet_type = contents[0]
@@ -63,6 +69,11 @@ class Comms:
                 self.client.disconnect()
             if packet_type == "$QUIT":
                 print("Client received QUIT command from other client")
+            if packet_type == "$ID":
+                self.client_id = int(contents[1])
+        return packets
+            
+
     
     def quit(self):
         self.client.add_packet_to_message(["$QUIT"])

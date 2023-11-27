@@ -25,7 +25,7 @@ class Sprite(pygame.sprite.Sprite):
         :param height: The height of the Sprite texture.
         :param width: The width of the Sprite texture.
         :param x_pos: The x-position of the Sprite.
-        :param y_pos: The y-position of the Sprite.
+        :param y_pos: The y-position of the Sprite (top-down).
         :param file_path: The path to the file to load from /textures/ on (excluding '.png').
         """
         
@@ -71,7 +71,6 @@ class Sprite(pygame.sprite.Sprite):
          - 1: The y-position of the Object.
         """
         if len(args) > 0:
-            print(args[0], args[1])
             self.display_x_pos = round(args[0])
             self.display_y_pos = round(field_dimensions.HEIGHT - args[1])
         self.rect.x = self.display_x_pos - (self.width // 2)

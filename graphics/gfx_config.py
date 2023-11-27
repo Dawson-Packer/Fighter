@@ -12,3 +12,4 @@ class gui_overlay(Enum.Enum):
     MAIN_MENU = 1
     LOBBY = 2
     PAUSE_SCREEN = 3
+    CHARACTER_SELECTION = 4

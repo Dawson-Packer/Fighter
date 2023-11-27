@@ -33,6 +33,8 @@ class ObjectManager:
         self.objects_list = {}
         self.game_tick = -1
         self.tick = 0
+        self.player_1_info = ["USR", "null", -1]
+        self.player_2_info = ["USR", "null", -1]
 
         self.next_object_id_counter = 0
 
@@ -60,23 +62,52 @@ class ObjectManager:
 
     def load_players(self):
 
-        # Player 0 object
-        object_id = self.next_object_id()
-        self.players[object_id] = StickmanCharacter(object_id,
-                                                    self.comms,
-                                                    200.0,
-                                                    200.0,
-                                                    True,
-                                                    0.0,
-                                                    0.
-                                                    )
-        object_id = self.next_object_id()
         # Player 1 object
-        self.players[object_id] = StickmanCharacter(object_id,
-                                                    self.comms,
-                                                    800.0,
-                                                    200.0,
-                                                    False,
-                                                    0.0, 
-                                                    0.0
-                                                    )
+        object_id = self.next_object_id()
+        if self.player_1_info[1] == "stickman":
+            self.players[object_id] = StickmanCharacter(object_id,
+                                                        self.player_1_info[2],
+                                                        self.comms,
+                                                        200.0,
+                                                        200.0,
+                                                        True,
+                                                        0.0,
+                                                        0.0,
+                                                        128,
+                                                        128,
+                                                        0.0
+                                                        )
+        object_id = self.next_object_id()
+        # Player 2 object
+        if self.player_2_info[1] == "stickman":
+            self.players[object_id] = StickmanCharacter(object_id,
+                                                        self.player_2_info[2],
+                                                        self.comms,
+                                                        800.0,
+                                                        200.0,
+                                                        False,
+                                                        0.0, 
+                                                        0.0,
+                                                        128,
+                                                        128,
+                                                        0.0
+                                                        )
+        
+    def parse(self, packets: list):
+        """Runs functions associated with the packet contents."""
+        if not packets: return
+        for packet in packets:
+            contents = packet.split("+")
+            packet_type = contents[0]
+            if packet_type == "$MAP":
+                self.load_map(int(contents[1]))
+            if packet_type == "$PID":
+                self.player_1_info[0] = contents[1] # Player 1 Username
+                self.player_1_info[1] = contents[2] # Player 1 Character
+                self.player_1_info[2] = contents[3] # Player 1 Client ID
+                self.player_2_info[0] = contents[4] # Player 2 Username
+                self.player_2_info[1] = contents[5] # Player 2 Character
+                self.player_2_info[2] = contents[6] # Player 2 Client ID
+                self.load_players()
+                
+        return packets

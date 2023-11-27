@@ -45,7 +45,6 @@ class Client:
         if self.lost_connection(): return
         try:
             message = self.socket.recv(1024).decode("utf-8")
-            print(tick, message)
             self.incoming_log.enter_data([tick, message])
             return message
         except socket.error as message:
