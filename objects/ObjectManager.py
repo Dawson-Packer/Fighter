@@ -120,7 +120,7 @@ class ObjectManager:
                 self.load_players()
             if packet_type == "$UPP":
                 for _, player in self.players.items():
-                    if player.connected_client == contents[1] and contents[1] != self.player_id:
+                    if player.connected_client == int(contents[1]) and int(contents[1]) != self.player_id:
                         player.x_pos = int(contents[2])
                         player.y_pos = int(contents[3])
                         player.direction = bool(int(contents[4]))
