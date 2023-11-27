@@ -21,27 +21,17 @@ class Host:
             while len(self.character_list) < len(self.server.clients):
                 self.character_list.append("null")
                 self.username_list.append("USR")
-            if not self.GAME_RUNNING:
-                for client_id, client in enumerate(self.server.clients):
-                    message = self.server.receive(client_id, client)
-                    self.parse(client_id, message)
-            else:
-                message = self.server.receivefrom()
-                self.parse(-1, message)
+            client_id, message = self.server.receive()
+            self.parse(client_id, message)
             
-            if not self.GAME_RUNNING and self.characters_selected == len(self.server.clients):
+            if not self.GAME_RUNNING and self.characters_selected == len(self.server.addresses) and\
+                len(self.server.addresses) > 0:
                 self.GAME_RUNNING = True
                 self.load_game()
 
 
 
-
-            if not self.GAME_RUNNING:
-                for client_id, client in enumerate(self.server.clients):
-                    self.server.send(client, client_id=client_id)
-            else:
-                for client_id, address in enumerate(self.server.addresses):
-                    self.server.sendto(client_id, address)
+            self.server.send()
             
             self.tick += 1
             execution_time = time.time() - start_time
@@ -74,7 +64,7 @@ class Host:
             if packet_type == "$USR":
                 self.username_list.append(contents[1])
             if packet_type[:2] != "$R" and packet_type != "$USR" and packet_type != "$CHAR" and\
-                packet_type != "$START":
+                packet_type != "$START" and packet_type != "$ID":
                 self.server.add_packet_to_message(contents)
     
     def load_game(self):

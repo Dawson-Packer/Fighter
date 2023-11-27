@@ -40,7 +40,7 @@ class Comms:
     def connect(self, ip_address: str):
         while not self.client.IS_CONNECTED:
             try:
-                success = self.client.connect(ip_address)
+                success, self.client_id = self.client.connect(ip_address)
                 if not success: print(f"Client failed to connect to {ip_address}")
             except socket.error as message:
                 print(message)
@@ -55,8 +55,8 @@ class Comms:
         while self.client.IS_CONNECTED:
             start_time = time.time()
             self.client.reset_message(self.tick)
-            self.receive(self.tick)
-            self.client_id = self.client.client_id
+            self.message = self.client.receive(self.tick)
+            self.parse()
 
 
 
@@ -66,10 +66,6 @@ class Comms:
             self.tick += 1
             execution_time = time.time() - start_time
             if 0.010 - execution_time > 0: time.sleep(0.010 - execution_time)
-
-    def receive(self, tick: int):
-        self.message = self.client.receive(tick)
-        # self.parse(self.message)
 
     def parse(self) -> list:
         """

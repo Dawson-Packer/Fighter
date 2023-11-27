@@ -181,7 +181,7 @@ class Game:
                     self.gui_overlay_state = gui_overlay.LOBBY
                 if button.function == button_type.DIRECT_CONNECT and button.IS_PRESSED:
                     self.comms_thread = threading.Thread(target=self.comms.run)
-                    self.comms.connect('192.168.1.15')
+                    self.comms.connect('192.168.1.175')
                     self.comms_thread.start()
                     self.gui_overlay_state = gui_overlay.LOBBY
         if self.gui_overlay_state == gui_overlay.LOBBY:

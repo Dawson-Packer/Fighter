@@ -22,7 +22,7 @@ class Server:
                                    ["Timestamp", "Client ID", "Message Received"])
         self.outgoing_log = Logger("logs/server_outgoing", ["Timestamp", "Message Sent"])
         try:
-            self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.host = ''
             self.port = 60010
             self.socket.bind((self.host, self.port))
@@ -50,7 +50,7 @@ class Server:
     
     def next_client_id(self):
         """Returns the ID of the next client connected."""
-        return len(self.addresses) - 1
+        return len(self.clients) - 1
     
     def client_disconnected(self, client_id: int):
         """
@@ -67,33 +67,32 @@ class Server:
         if self.num_connections() == 0: self.clients.clear()
         if not self.CLIENT_CONNECTIONS_SATURATED:
             try:
-                # self.listen()
-                pass
+                self.listen()
             except socket.timeout: pass
         else: self.CLIENT_CONNECTIONS_SATURATED = False
         self.tick += 1
 
-    # def listen(self):
-    #     """Listens for connections to the server."""
-    #     try:
-    #         self.socket.listen(1)
-    #         clientsocket, address = self.socket.accept()
-    #         if not address[0] in self.ip_addresses:
-    #             self.clients.append(clientsocket)
-    #             self.addresses.append(address)
-    #             self.ip_addresses.append(address[0])
-    #             self.packets_lost.append(0)
-    #             self.send(clientsocket, message=f"$ID+{len(self.clients) - 1}")
-    #         elif self.lost_connection(self.ip_addresses.index(address[0])):
-    #             self.packets_lost[self.ip_addresses.index(address[0])] = 0
-    #             self.clients[self.ip_addresses.index(address[0])] = (clientsocket, address)
-    #             self.send(clientsocket, message=f"$ID+{self.ip_addresses.index(address[0])}")
-    #         print(f'Client {address} successfully connected!')
-    #         # self.send(clientsocket, message=f"$GAME {str(self.GAME_STATE)}")
-    #     except socket.timeout: pass
-    #     if len(self.clients) > self.MAX_CONNECTIONS: self.CLIENT_CONNECTIONS_SATURATED = True
+    def listen(self):
+        """Listens for connections to the server."""
+        try:
+            self.socket.listen(1)
+            clientsocket, address = self.socket.accept()
+            if not address[0] in self.ip_addresses:
+                self.clients.append(clientsocket)
+                self.addresses.append(address)
+                self.ip_addresses.append(address[0])
+                self.packets_lost.append(0)
+                self.send(clientsocket, message=f"$ID+{len(self.clients) - 1}")
+            elif self.lost_connection(self.ip_addresses.index(address[0])):
+                self.packets_lost[self.ip_addresses.index(address[0])] = 0
+                self.clients[self.ip_addresses.index(address[0])] = (clientsocket, address)
+                self.send(clientsocket, message=f"$ID+{self.ip_addresses.index(address[0])}")
+            print(f'Client {address} successfully connected!')
+            # self.send(clientsocket, message=f"$GAME {str(self.GAME_STATE)}")
+        except socket.timeout: pass
+        if len(self.clients) > self.MAX_CONNECTIONS: self.CLIENT_CONNECTIONS_SATURATED = True
 
-    def receive(self) -> str:
+    def receive(self, client_id: int, client: socket) -> str:
         """
         Receives a message from a client specified.
 
@@ -101,26 +100,19 @@ class Server:
         :param client: The client socket to read data from.
         :returns: The decoded message from the client.
         """
-        # if self.lost_connection(client_id): return ""
+        start_time = time.time()
+        if self.lost_connection(client_id): return ""
         try:
-            # client.settimeout(0.050)
-            message, address = self.socket.recvfrom(1024)
-            message = message.decode('utf-8')
-            if not address[0] in self.ip_addresses:
-                print(f'Client {address} successfully connected!')
-                self.addresses.append(address)
-                self.ip_addresses.append(address[0])
-                client_id = self.next_client_id()
-                self.socket.sendto(bytes(f" $ID+{client_id}", 'utf-8'), address)
-                
-            else:
-                client_id = self.find_client_id(message)
+            client.settimeout(0.050)
+            message = client.recv(1024).decode("utf-8")
+            self.packets_lost[client_id] = 0
             self.incoming_log.enter_data([self.tick, client_id, message])
-            return client_id, message
+            # print(time.time() - start_time)
+            return message
         except socket.error as message:
-            print(f"Server error on reading from Client:", message)
-            # self.packets_lost[client_id] += 1
-            return -1, ""
+            print(f"Server error on reading from Client {client_id}:", message)
+            self.packets_lost[client_id] += 1
+            return ""
         
     def add_packet_to_message(self, packet: list):
         """
@@ -136,7 +128,7 @@ class Server:
         if self.packets_lost[client_id] > MAX_PACKET_LOSS_ALLOWABLE: return True
         else: return False
 
-    def send(self, *args, **kwargs):
+    def send(self, client_socket: socket, *args, **kwargs):
         """
         Sends a message to a client specified.
 
@@ -150,34 +142,20 @@ class Server:
             client_id = kwargs.get('client_id', "")
             if self.lost_connection(client_id): return
         else: client_id = None
-        for client_id, address in enumerate(self.addresses):
-            try:
-                if 'message' in kwargs:
-                    self.socket.sendto(bytes(" ".join([kwargs.get('message', "")]), 'utf-8'),
-                                       address)
-                    self.outgoing_log.enter_data([self.tick,
-                                                  " ".join([kwargs.get('message', "")])])
-                else:
-                    self.socket.sendto(bytes(" ".join(["+".join(x) for x in self.message]), 'utf-8'),
-                                     address)
-                    self.outgoing_log.enter_data([self.tick,
-                                                  " ".join(["+".join(x) for x in self.message])])
-            except socket.error as message:
-                print(f"Server error sending to Client {client_id}:", message)
+        try:
+            if 'message' in kwargs:
+                client_socket.send(bytes(" ".join([kwargs.get('message', "")]), "utf-8"))
+                self.outgoing_log.enter_data([self.tick, " ".join([kwargs.get('message', "")])])
+            else:
+                client_socket.send(bytes(" ".join(["+".join(x) for x in self.message]), "utf-8"))
+                self.outgoing_log.enter_data([self.tick,
+                                              " ".join(["+".join(x) for x in self.message])])
+        except socket.error as message:
+            print(f"Server error sending to Client {client_id}:", message)
 
     def reset_message(self):
         """Resets the global message of the Server."""
         self.message = [["$T" + str(self.tick)]]
-    
-    def find_client_id(self, message: str):
-        if not message: return
-        packets = message.split(" ")
-        for packet in packets:
-            contents = packet.split("+")
-            packet_type = contents[0]
-            if packet_type == "$ID":
-                return int(contents[1])
-        return -1
 
     def start_game(self):
         """Sends a STARTGAME command to the clients."""

@@ -5,8 +5,7 @@ from Application import Application
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-# TODO: Turn Server into a 2-socket (TCP and UDP) server where Clients hold connections to the
-# TODO: TCP socket and fire fast messages to the UDP socket
+# TODO: Turn Server into a UDP server where Clients hold connections to the fire fast messages to the UDP socket
 
 def main():
     
