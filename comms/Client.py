@@ -61,7 +61,7 @@ class Client:
         if self.lost_connection(): return
         try:
             start_time = time.time()
-            message = self.socket.recvfrom(64)[0].decode('utf-8')
+            message = self.socket.recvfrom(256)[0].decode('utf-8')
  
             self.incoming_log.enter_data([tick, message, time.time() - start_time])
             return message

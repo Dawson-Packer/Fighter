@@ -107,7 +107,7 @@ class Server:
         try:
             # client.settimeout(0.050)
             start_time = time.time()
-            message, address = self.socket.recvfrom(64)
+            message, address = self.socket.recvfrom(256)
             message = message.decode('utf-8')
             if not address[0] in self.ip_addresses:
                 print(f'Client {address} successfully connected!')
