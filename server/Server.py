@@ -19,8 +19,10 @@ class Server:
         self.tick = 0
 
         self.incoming_log = Logger("logs/server_incoming",
-                                   ["Timestamp", "Client ID", "Message Received"])
-        self.outgoing_log = Logger("logs/server_outgoing", ["Timestamp", "Message Sent"])
+                                   ["Timestamp", "Client ID", "Message Received",
+                                    "Execution Time"])
+        self.outgoing_log = Logger("logs/server_outgoing", ["Timestamp", "Message Sent",
+                                                            "Execution Time"])
         try:
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             self.host = ''
@@ -104,7 +106,8 @@ class Server:
         # if self.lost_connection(client_id): return ""
         try:
             # client.settimeout(0.050)
-            message, address = self.socket.recvfrom(256)
+            start_time = time.time()
+            message, address = self.socket.recvfrom(64)
             message = message.decode('utf-8')
             if not address[0] in self.ip_addresses:
                 print(f'Client {address} successfully connected!')
@@ -115,7 +118,7 @@ class Server:
                 
             else:
                 client_id = self.find_client_id(message)
-            self.incoming_log.enter_data([self.tick, client_id, message])
+            self.incoming_log.enter_data([self.tick, client_id, message, time.time() - start_time])
             return client_id, message
         except socket.error as message:
             print(f"Server error on reading from Client:", message)
@@ -153,15 +156,19 @@ class Server:
         for client_id, address in enumerate(self.addresses):
             try:
                 if 'message' in kwargs:
+                    start_time = time.time()
                     self.socket.sendto(bytes(" ".join([kwargs.get('message', "")]), 'utf-8'),
                                        address)
                     self.outgoing_log.enter_data([self.tick,
-                                                  " ".join([kwargs.get('message', "")])])
+                                                  " ".join([kwargs.get('message', "")]),
+                                                  time.time() - start_time])
                 else:
+                    start_time = time.time()
                     self.socket.sendto(bytes(" ".join(["+".join(x) for x in self.message]), 'utf-8'),
                                      address)
                     self.outgoing_log.enter_data([self.tick,
-                                                  " ".join(["+".join(x) for x in self.message])])
+                                                  " ".join(["+".join(x) for x in self.message]),
+                                                  time.time() - start_time])
             except socket.error as message:
                 print(f"Server error sending to Client {client_id}:", message)
 

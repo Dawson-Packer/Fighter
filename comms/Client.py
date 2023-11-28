@@ -1,4 +1,5 @@
 import socket
+import time
 
 from Logger import Logger
 
@@ -17,8 +18,10 @@ class Client:
         self.packets_lost = 0
         self.message = [[]]
 
-        self.incoming_log = Logger("logs/client_incoming", ["Timestamp", "Message Received"])
-        self.outgoing_log = Logger("logs/client_outgoing", ["Timestamp", "Message Sent"])
+        self.incoming_log = Logger("logs/client_incoming", ["Timestamp", "Message Received",
+                                                            "Execution Time"])
+        self.outgoing_log = Logger("logs/client_outgoing", ["Timestamp", "Message Sent",
+                                                            "Execution Time"])
 
 
         # States
@@ -57,9 +60,10 @@ class Client:
         """
         if self.lost_connection(): return
         try:
-            message = self.socket.recvfrom(256)[0].decode('utf-8')
-
-            self.incoming_log.enter_data([tick, message])
+            start_time = time.time()
+            message = self.socket.recvfrom(64)[0].decode('utf-8')
+ 
+            self.incoming_log.enter_data([tick, message, time.time() - start_time])
             return message
         except socket.error as message:
             print("CLIENT could not receive:", message)
@@ -76,21 +80,28 @@ class Client:
         """
         try:
             if 'message' in kwargs:
+                start_time = time.time()
                 self.socket.sendto(bytes(" ".join(["+".join(x) for x in 
                                                  kwargs.get('message', "")]), 'utf-8'),
                                                  (self.target_ip_address,
                                                  self.port))
-                self.outgoing_log.enter_data([tick, " ".join(["+".join(x) for x in 
-                                                 kwargs.get('message', "")])])
+                self.outgoing_log.enter_data([tick,
+                                               " ".join(["+".join(x) for x in 
+                                                 kwargs.get('message', "")]),
+                                                 time.time() - start_time])
 
             else:
                 if not self.IS_CONNECTED:
                     self.message.append(["$QUIT"])
+                start_time = time.time()
+
                 
                 self.socket.sendto(bytes(" ".join(["+".join(x) for x in self.message]), 'utf-8'),
                                                  (self.target_ip_address,
                                                  self.port))
-                self.outgoing_log.enter_data([tick, " ".join(["+".join(x) for x in self.message])])
+                self.outgoing_log.enter_data([tick,
+                                               " ".join(["+".join(x) for x in self.message]),
+                                               time.time() - start_time])
         except socket.error as message:
             print("CLIENT could not send:", message)
 
