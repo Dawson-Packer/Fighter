@@ -7,9 +7,9 @@ from Logger import Logger
 class Server:
     def __init__(self):
         """
-        Starts local server and binds to port.
+        Starts a local UDP server and binds to port.
 
-        :param max_connections: The maximum number of connections allowed on the server.
+         :param max_connections: The maximum number of connections allowed on the server.
         """
         print("Server started")
         self.IS_RUNNING = True
@@ -30,7 +30,7 @@ class Server:
             self.socket.bind((self.host, self.port))
             self.socket.settimeout(0.005)
         except socket.error as message:
-            print("TCP Socket bind error:", message)
+            print("UDP Socket bind error:", message)
 
         self.received_message = ""
         self.message = [["$T" + str(self.tick)]]
@@ -48,7 +48,7 @@ class Server:
 
     def num_connections(self):
         """Returns the number of clients connected to the server."""
-        return len(self.clients)
+        return len(self.addresses)
     
     def next_client_id(self):
         """Returns the ID of the next client connected."""

@@ -18,7 +18,7 @@ class Host:
             start_time = time.time()
             self.server.reset_message()
             self.server.run()
-            while len(self.character_list) < len(self.server.addresses):
+            while len(self.character_list) < self.server.num_connections():
                 self.character_list.append("null")
                 self.username_list.append("USR")
             if len(self.server.addresses) > 0:
@@ -29,8 +29,8 @@ class Host:
                 client_id, message = self.server.receive()
                 self.parse(client_id, message)
             
-            if not self.GAME_RUNNING and self.characters_selected == len(self.server.addresses) and\
-                len(self.server.addresses) > 0:
+            if not self.GAME_RUNNING and self.characters_selected == self.server.num_connections()\
+            and self.server.num_connections() > 0:
                 self.GAME_RUNNING = True
                 self.load_game()
 
@@ -40,7 +40,7 @@ class Host:
             
             self.tick += 1
             execution_time = time.time() - start_time
-            # print(execution_time)
+            print(execution_time)
             if 0.10 - execution_time > 0: time.sleep(0.10 - execution_time)
     
     def parse(self, client_id: int, message: str):
@@ -82,9 +82,9 @@ class Host:
                                            str(self.username_list[p1]),
                                            str(self.character_list[p1]),
                                            str(p1),
-                                           str(self.username_list[p2]),
-                                           str(self.character_list[p2]),
-                                           str(p2)])
+                                           str(self.username_list[p1]),
+                                           str(self.character_list[p1]),
+                                           str(p1)])
         
         self.server.add_packet_to_message(["$MAP", str(map_id)])
         self.server.add_packet_to_message(["$STARTGAME"])

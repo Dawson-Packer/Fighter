@@ -39,6 +39,8 @@ class Comms:
                                            ])
 
     def connect(self, ip_address: str):
+        # if ip_address == 'localhost':
+        #     ip_address = socket.gethostbyname(socket.gethostname())
         while not self.client.IS_CONNECTED:
             try:
                 success, self.client_id = self.client.connect(ip_address)
@@ -57,8 +59,6 @@ class Comms:
             start_time = time.time()
             self.client.reset_message(self.tick)
             self.message = self.client.receive(self.tick)
-            execution_time = time.time() - start_time
-            print(execution_time)
             self.parse()
 
 
@@ -67,6 +67,8 @@ class Comms:
 
             self.client.send(self.tick)
             self.tick += 1
+            execution_time = time.time() - start_time
+            print(execution_time)
             if 0.010 - execution_time > 0: time.sleep(0.010 - execution_time)
 
     def parse(self) -> list:

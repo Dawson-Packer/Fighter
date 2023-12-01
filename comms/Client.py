@@ -1,5 +1,6 @@
 import socket
 import time
+import random
 
 from Logger import Logger
 
@@ -11,6 +12,8 @@ class Client:
 
         super().__init__()
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.socket.bind(('localhost', random.randint(8000, 9000)))
+        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 1024)
         self.target_ip_address = None
         self.port = 60010
         self.connected_ip_address = None
@@ -61,8 +64,7 @@ class Client:
         if self.lost_connection(): return
         try:
             start_time = time.time()
-            message = self.socket.recvfrom(256)[0].decode('utf-8')
- 
+            message = self.socket.recvfrom(1024)[0].decode('utf-8')
             self.incoming_log.enter_data([tick, message, time.time() - start_time])
             return message
         except socket.error as message:
