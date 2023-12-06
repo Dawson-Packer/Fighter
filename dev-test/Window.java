@@ -24,7 +24,7 @@ public class Window implements WindowListener {
     private void initialize_components() {
 
         frame = new JFrame();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.setSize(window_width, window_height);
         frame.setLocationRelativeTo(null);
         frame.addWindowListener(this);
@@ -34,41 +34,37 @@ public class Window implements WindowListener {
     }
 
     @Override
-    public void windowActivated(WindowEvent e) {
-        System.out.println("Window opened...");
+    public void windowOpened(WindowEvent e) {
+        // DO NOTHING
     }
 
     @Override
-    public void windowClosed(WindowEvent e) {
-        IS_RUNNING = false;
+    public void windowActivated(WindowEvent e) {
+        // DO NOTHING
+    }
+
+    @Override
+    public void windowDeactivated(WindowEvent e) {
+        // DO NOTHING
+    }
+
+    @Override
+    public void windowDeiconified(WindowEvent e) {
+        // DO NOTHING
+    }
+
+    @Override
+    public void windowIconified(WindowEvent e) {
+        // DO NOTHING
     }
 
     @Override
     public void windowClosing(WindowEvent e) {
         IS_RUNNING = false;
-    }
+    }    
 
     @Override
-    public void windowDeactivated(WindowEvent e) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'windowDeactivated'");
-    }
-
-    @Override
-    public void windowDeiconified(WindowEvent e) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'windowDeiconified'");
-    }
-
-    @Override
-    public void windowIconified(WindowEvent e) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'windowIconified'");
-    }
-
-    @Override
-    public void windowOpened(WindowEvent e) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'windowOpened'");
+    public void windowClosed(WindowEvent e) {
+        // DO NOTHING
     }
 }

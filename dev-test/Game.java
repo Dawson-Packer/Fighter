@@ -1,12 +1,7 @@
 import java.lang.Thread;
-import javax.swing.JFrame;
-import javax.swing.WindowConstants;
 import java.awt.EventQueue;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 
-public class Game {
+public class Game extends Thread {
 
     public boolean IS_RUNNING = false;
     
@@ -24,19 +19,20 @@ public class Game {
         this.IS_RUNNING = true;
     }
 
-    public void tick() {
-        // while (IS_RUNNING) {
+    @Override
+    public void run() {
+        while (IS_RUNNING) {
 
             
-        //     // Try to sleep the tick
-        //     try {
-        //     Thread.sleep(sleep_delay);
-        //     } catch (Exception e) {
-        //         System.out.println(e);
-        //     }
-        //     if (!window.IS_RUNNING) IS_RUNNING = false;
-        // }
-        // quit();
+            // Try to sleep the tick
+            try {
+            Thread.sleep(sleep_delay);
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+            if (!window.IS_RUNNING) IS_RUNNING = false;
+        }
+        quit();
     }
 
 
@@ -48,10 +44,7 @@ public class Game {
     }
 
     public static void main(String[] args) {
-        EventQueue.invokeLater(() -> {
-            Game game = new Game();
-            game.tick();
-        });
-        
+        Game game = new Game();
+        game.start();
     }
 }
