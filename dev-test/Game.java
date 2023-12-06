@@ -1,5 +1,4 @@
 import java.lang.Thread;
-import java.awt.EventQueue;
 
 public class Game extends Thread {
 
@@ -11,11 +10,13 @@ public class Game extends Thread {
     private long sleep_delay = 50;
     private int frame_height = 600;
     private int frame_width = 1000;
-    private Window window;
+    private Interface window;
+    private ObjectHandler object_handler;
 
     public Game() {
 
-        window = new Window(frame_height, frame_width);
+        object_handler = new ObjectHandler();
+        window = new Interface(object_handler.action_handler, frame_height, frame_width);
         this.IS_RUNNING = true;
     }
 
@@ -41,6 +42,32 @@ public class Game extends Thread {
 
         System.out.println("Program exiting...");
         System.exit(0);
+    }
+
+    public class ObjectHandler {
+
+        public ActionHandler action_handler;
+        public ObjectHandler() {
+            action_handler = new ActionHandler();
+        }
+
+        public class ActionHandler {
+
+            public ActionHandler() {}
+
+            public void move_left() {
+                System.out.println("Moved left");
+            }
+
+            public void move_right() {
+                System.out.println("Moved right");
+            }
+
+            public void jump() {
+                System.out.println("Jumped");
+            }
+        }
+
     }
 
     public static void main(String[] args) {
