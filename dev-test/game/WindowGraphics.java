@@ -2,13 +2,19 @@ package game;
 
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.Container;
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-
+import java.util.ArrayList;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JComponent;
 
-public class Interface implements WindowListener {
+import game.objects.*;
+
+public class WindowGraphics extends JComponent implements WindowListener {
     
     public boolean IS_RUNNING = false;
 
@@ -17,13 +23,12 @@ public class Interface implements WindowListener {
     private int window_height;
     private Game.ObjectHandler.ActionHandler action_handler;
     private InputHandler input_handler;
-    private Screen screen;
+    private Container container;
 
-    public Interface(Game.ObjectHandler.ActionHandler action_handler, int window_height, int window_width) {
+    public WindowGraphics(Game.ObjectHandler.ActionHandler action_handler, int window_height, int window_width) {
 
         this.action_handler = action_handler;
         this.input_handler = new InputHandler();
-        this.screen = new Screen();
         this.window_width = window_width;
         this.window_height = window_height;
         IS_RUNNING = true;
@@ -38,9 +43,38 @@ public class Interface implements WindowListener {
         frame.setLocationRelativeTo(null);
         frame.addWindowListener(this);
         frame.addKeyListener(input_handler);
+        frame.getContentPane().setBackground(null);
+        frame.setLayout(null);
+        container = frame.getContentPane();
+
         
         frame.setVisible(true);
 
+    }
+
+    // TODO: Find a library to do this
+    public void update(ArrayList<Sprite> sprite_list) {
+        // System.out.println(Integer.toString(sprite_list.size()));
+        for (int i = 0; i < sprite_list.size(); ++i) {
+            JPanel panel = new JPanel();
+            
+            Rectangle bounds = new Rectangle(sprite_list.get(i).get_display_x(),
+            sprite_list.get(i).get_display_y(),
+            sprite_list.get(i).image_width,
+            sprite_list.get(i).image_height);
+            panel.setBounds(bounds);
+            bounds = null;
+            panel.setBackground(null);
+            container.add(panel);
+
+            JLabel image_label = new JLabel();
+            image_label.setIcon(sprite_list.get(i).image);
+            panel.add(image_label);
+            image_label = null;
+            panel = null;
+
+        }
+        // frame.setVisible(true);
     }
 
     @Override
@@ -105,14 +139,6 @@ public class Interface implements WindowListener {
         @Override
         public void keyReleased(KeyEvent e) {
             // DO NOTHING
-        }       
-    }
-
-    // TODO: Maybe unnecessary
-    private class Screen extends JPanel {
-
-        public Screen() {}
-
-        
+        }
     }
 }

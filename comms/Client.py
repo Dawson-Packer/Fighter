@@ -34,7 +34,7 @@ class Client:
         """
         Connects the Client to a server.
         
-        :param address: The IP Address of the server to connect to.
+        :param ip_address: The IP Address of the server to connect to.
         """
         success = False
         self.target_ip_address = ip_address

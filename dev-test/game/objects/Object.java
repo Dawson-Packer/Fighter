@@ -1,9 +1,10 @@
 package game.objects;
 
+import java.lang.Math;
 import game.config;
 import game.config.player_status;
 
-public class Object {
+public class Object extends Sprite {
     
     public int id;
 
@@ -20,8 +21,19 @@ public class Object {
     public Object(
         int id,
         double x_pos,
-        double y_pos
+        double y_pos,
+        int sprite_height,
+        int sprite_width,
+        String path_to_texture
     ) {
+        super(
+            id,
+            (int)Math.round(x_pos),
+            (int)Math.round(y_pos),
+            sprite_height,
+            sprite_width,
+            path_to_texture
+        );
         this.x_pos = x_pos;
         this.y_pos = y_pos;
         this.status = player_status.IDLE;
