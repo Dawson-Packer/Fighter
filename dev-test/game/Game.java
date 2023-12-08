@@ -1,21 +1,27 @@
+package game;
+
 import java.lang.Thread;
+
+import game.config;
 
 public class Game extends Thread {
 
     public boolean IS_RUNNING = false;
     
 
-
+    protected config config;
 
     private long sleep_delay = 50;
     private int frame_height = 600;
     private int frame_width = 1000;
     private Interface window;
     private ObjectHandler object_handler;
+    private UIHandler ui_handler;
 
     public Game() {
 
         object_handler = new ObjectHandler();
+        ui_handler = new UIHandler();
         window = new Interface(object_handler.action_handler, frame_height, frame_width);
         this.IS_RUNNING = true;
     }
@@ -35,8 +41,6 @@ public class Game extends Thread {
         }
         quit();
     }
-
-
 
     private void quit() {
 
@@ -67,7 +71,13 @@ public class Game extends Thread {
                 System.out.println("Jumped");
             }
         }
+    }
 
+    public class UIHandler {
+
+        public UIHandler() {
+
+        }
     }
 
     public static void main(String[] args) {
