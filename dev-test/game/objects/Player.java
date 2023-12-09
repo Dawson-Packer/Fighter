@@ -39,7 +39,7 @@ public class Player extends Sprite implements PhysicsObjectInterface, AnimatedSp
         (int)Math.round(y_pos),
         sprite_height,
         sprite_width,
-        "./0.png"
+        "/game/objects/0.png"
         );
         this.x_pos = x_pos;
         this.y_pos = y_pos;

@@ -14,7 +14,7 @@ public class Game extends Thread {
 
     protected config config;
 
-    private long sleep_delay = 50;
+    private long sleep_delay = 20;
     private int frame_height = 600;
     private int frame_width = 1000;
     private WindowGraphics window;
@@ -68,7 +68,7 @@ public class Game extends Thread {
 
         public void load_media() {
             try {
-                Player player1 = new Player(0, 0, 300.0, 500.0, true, 0.0, 0.0, 10, 10, 10, 10, "blank", 0.0);
+                Player player1 = new Player(0, 0, 300.0, 250.0, true, 0.0, 0.0, 10, 10, 10, 10, "blank", 0.0);
                 sprite_list.add(player1);
                 player1 = null;
             } catch (Exception e) {

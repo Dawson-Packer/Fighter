@@ -1,11 +1,13 @@
 package game.objects;
 
+import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.geom.AffineTransform;
 import javax.swing.ImageIcon;
 
 public class Sprite {
  
-    public ImageIcon image;
+    private Image image;
     public int id;
     public int image_width;
     public int image_height;
@@ -28,11 +30,21 @@ public class Sprite {
         this.image_height = height;
         this.image_width = width;
         this.path_to_texture = path;
+        this.image = null;
         load_image();
     }
 
+    public void draw(Graphics2D graphics) {
+        System.out.println("Drawing");
+        AffineTransform old_transform = graphics.getTransform();
+        graphics.translate(x_display_pos, y_display_pos);
+        graphics.drawImage(image, 0, 0, null);
+        graphics.setTransform(old_transform);
+    }
+
     private void load_image() {
-        ImageIcon image = new ImageIcon(this.path_to_texture);
+        this.image = new ImageIcon(getClass().getResource(path_to_texture)).getImage();
+        // this.image = 
         // this.image = image_icon.getImage();
         // this.image_width = this.image.getWidth(null);
         // this.image_height = this.image.getHeight(null);
