@@ -14,31 +14,40 @@ public class Game extends Thread {
 
     protected config config;
 
-    private long sleep_delay = 20;
-    private int frame_height = 600;
-    private int frame_width = 1000;
+    private long sleep_delay = 100;
+    private int frame_height = game.config.window_height;
+    private int frame_width = game.config.window_width;
     private WindowGraphics window;
     private ObjectHandler object_handler;
     private UIHandler ui_handler;
 
+    public int i;
+
     public Game() {
+        i = 0;
 
         object_handler = new ObjectHandler();
         ui_handler = new UIHandler();
         window = new WindowGraphics(object_handler.action_handler, frame_height, frame_width);
         this.IS_RUNNING = true;
 
-        object_handler.load_media();
+        object_handler.load_game();
     }
 
     @Override
     public void run() {
         while (IS_RUNNING) {
-
+            ++i;
+            object_handler.tick();            
             
-            
 
-
+            if (i % 20 == 0) {
+                System.out.println("say so");
+                object_handler.player_list.get(0).set_texture("/assets/textures/player/stickman/2/2.png");
+            }
+            if (i % 20 == 10) {
+                object_handler.player_list.get(0).set_texture("/assets/textures/player/stickman/2/2.png");
+            }
             window.update(object_handler.sprite_list);
             try {
             Thread.sleep(sleep_delay);
@@ -60,22 +69,53 @@ public class Game extends Thread {
 
         public ArrayList<Sprite> sprite_list;
 
+        private int available_object_id;
+
+        private ArrayList<Player> player_list;
+
         public ActionHandler action_handler;
         public ObjectHandler() {
+            available_object_id = -1;
             action_handler = new ActionHandler();
             sprite_list = new ArrayList<Sprite>();
+            player_list = new ArrayList<Player>();
         }
 
-        public void load_media() {
+        private int next_object_id() {
+
+            ++available_object_id;
+            return available_object_id;
+        }
+
+        public void load_game() {
             try {
-                Player player1 = new Player(0, 0, 300.0, 250.0, true, 0.0, 0.0, 10, 10, 10, 10, "blank", 0.0);
+
+                Background background = new Background(
+                    next_object_id(),
+                    0,
+                    game.config.window_width / 2,
+                    0.0,
+                    game.config.window_height,
+                    game.config.window_width
+                    );
+                sprite_list.add(background);
+
+                Player player1 = new Player(0, 0, 200.0, game.config.ground_level, true, 0.0, 0.0, 160, 160, 160, 160, "stickman", 0.0);
                 sprite_list.add(player1);
+                player_list.add(player1);
                 player1 = null;
             } catch (Exception e) {
-                System.out.println("Media failed to load");
+                System.out.println("Game graphics failed to load");
                 System.out.println(e);
             }
         
+        }
+
+        public void tick() {
+
+            for (int i = 0; i < player_list.size(); ++i) {
+                player_list.get(i).tick();
+            }
         }
 
         public class ActionHandler {

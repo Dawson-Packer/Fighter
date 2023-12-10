@@ -65,6 +65,7 @@ public class WindowGraphics extends JComponent implements WindowListener {
     // TODO: Find a library to do this
     public void update(ArrayList<Sprite> sprite_list) {
         // System.out.println(Integer.toString(sprite_list.size()));
+        panel.paintComponent(panel.graphics);
         panel.load_background();
         for (int i = 0; i < sprite_list.size(); ++i) {
             sprite_list.get(i).draw(panel.graphics);
@@ -176,6 +177,11 @@ public class WindowGraphics extends JComponent implements WindowListener {
             Graphics g = getGraphics();
             g.drawImage(image, 0, 0, null);
             g.dispose();
+        }
+
+        @Override
+        public void paintComponent(Graphics g) {
+            super.paintComponent(g);
         }
 
     }
