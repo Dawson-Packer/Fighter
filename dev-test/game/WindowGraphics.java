@@ -69,6 +69,7 @@ public class WindowGraphics extends JComponent implements WindowListener {
         panel.load_background();
         for (int i = 0; i < sprite_list.size(); ++i) {
             sprite_list.get(i).draw(panel.graphics);
+        
         //     // panel.add(image_label);
         //     // image_label = null;
         //     // panel = null;

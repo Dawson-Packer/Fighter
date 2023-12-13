@@ -1,17 +1,27 @@
 package game.objects;
 
+import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
+import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.ImageIcon;
 
 import game.config;
 
-public class Sprite {
+public class Sprite implements PaintableEntity {
  
     private Image image;
+    
+    private SpriteSheet sprite_sheet;
+    private ArrayList<SpriteSheet> sprite_sheets = new ArrayList<>();
+    private ArrayList<Double> cycle_times = new ArrayList<>();
+    private long cycle_start_time; // in seconds
+    private int animation_value;
+
     private boolean image_loaded;
     public int id;
     public int image_width;
@@ -34,6 +44,7 @@ public class Sprite {
         int width,
         String path
     ) {
+        cycle_start_time = System.nanoTime();
         this.image_loaded = false;
         this.x_display_pos = x_pos;
         this.y_display_pos = y_pos;
@@ -48,50 +59,28 @@ public class Sprite {
         set_texture();
     }
 
-    public void draw(Graphics2D graphics) {
-        int vertical_multiplier = 1;
-        int horizontal_multiplier = 1;
-        if (flipped_vertically) {
-            vertical_multiplier = -1;
-            vertical_flip_offset = image_height;
-        } else if (!flipped_vertically) {
-            vertical_multiplier = 1;
-            vertical_flip_offset = 0;
-        }
-        if (flipped_horizontally) {
-            horizontal_multiplier = -1;
-            horizontal_flip_offset = image_width;
-        } else if (!flipped_horizontally) {
-            horizontal_multiplier = 1;
-            horizontal_flip_offset = 0;
-        }
-        AffineTransform old_transform = graphics.getTransform();
-        graphics.translate(x_display_pos, y_display_pos);
-        graphics.drawImage(
-            image,
-            0 - (image_width / 2) + horizontal_flip_offset,
-            0 - (image_height) + vertical_flip_offset,
-            image_width * horizontal_multiplier,
-            image_height * vertical_multiplier,
-            null);
-        graphics.setTransform(old_transform);
-        Toolkit.getDefaultToolkit().sync();
+    public void load_sprite_sheets() {
+        cycle_times.add(0.5); // IDLE
+        cycle_times.add(1.0); // MOVING
+
+        
     }
 
     public void set_texture(String...path) {
-        String image_path = path.length > 0 ? path[0] : "null";
-        // if (image_loaded) image.flush();
-        if (image_path != "null") {
-            image = null;
-            image = new ImageIcon(getClass().getResource(image_path)).getImage();
-            image = image.getScaledInstance(image_width, image_height, java.awt.Image.SCALE_SMOOTH);
-        }
-        else {
-            image = null;
-            image = new ImageIcon(getClass().getResource(path_to_texture)).getImage();
-            image = image.getScaledInstance(image_width, image_height, java.awt.Image.SCALE_SMOOTH);
-        }
-        image_loaded = true;
+        // String image_path = path.length > 0 ? path[0] : "null";
+        // // if (image_loaded) image.flush();
+        // if (image_path != "null") {
+        //     image = null;
+        //     image = new ImageIcon(getClass().getResource(image_path)).getImage();
+        //     image = image.getScaledInstance(image_width, image_height, java.awt.Image.SCALE_SMOOTH);
+        // }
+        // else {
+        //     image = null;
+        //     image = new ImageIcon(getClass().getResource(path_to_texture)).getImage();
+        //     image = image.getScaledInstance(image_width, image_height, java.awt.Image.SCALE_SMOOTH);
+        // }
+
+        // image_loaded = true;
     }
 
     public int get_display_x() { return x_display_pos; }
@@ -108,9 +97,26 @@ public class Sprite {
         }
     }
 
+    protected void set_animation_value(int val) {
+        animation_value = val;
+    }
+
     protected void update_sprite(double x_pos, double y_pos) {
         this.x_display_pos = (int)(Math.round(x_pos));
         this.y_display_pos = config.field_height - (int)(Math.round(y_pos));
+    }
+
+    @Override
+    public void paint(Graphics2D g2d, long time) {
+        double cycle_length = cycle_times.get(animation_value) * (1.0e9);
+        double progress = (time - cycle_start_time) / cycle_length;
+        if (progress < 0) progress = -progress;
+        g2d.drawImage(
+            sprite_sheets.get(animation_value).get_sprite(progress),
+            x_display_pos,
+            y_display_pos,
+            null
+        );
     }
 
 }

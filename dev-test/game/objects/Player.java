@@ -63,6 +63,7 @@ public class Player extends Sprite implements PhysicsObjectInterface, AnimatedSp
     public void tick() {
 
         // prepare_animation();
+        swap_texture();
 
         update_sprite(x_pos, y_pos);
     }

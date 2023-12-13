@@ -43,10 +43,10 @@ public class Game extends Thread {
 
             if (i % 20 == 0) {
                 System.out.println("say so");
-                object_handler.player_list.get(0).set_texture("/assets/textures/player/stickman/2/2.png");
+                // object_handler.player_list.get(0).set_texture("/assets/textures/player/stickman/2/2.png");
             }
             if (i % 20 == 10) {
-                object_handler.player_list.get(0).set_texture("/assets/textures/player/stickman/2/2.png");
+                // object_handler.player_list.get(0).set_texture("/assets/textures/player/stickman/2/2.png");
             }
             window.update(object_handler.sprite_list);
             try {
