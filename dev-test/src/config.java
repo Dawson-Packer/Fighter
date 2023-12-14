@@ -1,4 +1,4 @@
-package game;
+package src;
 
 public class config {
     

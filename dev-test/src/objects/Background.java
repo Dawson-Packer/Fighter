@@ -1,6 +1,6 @@
-package game.objects;
+package src.objects;
 
-import game.config;
+import src.config;
 
 public class Background extends StaticSprite {
     

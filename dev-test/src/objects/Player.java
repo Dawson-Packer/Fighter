@@ -1,9 +1,9 @@
-package game.objects;
+package src.objects;
 
 import java.lang.Math;
 
-import game.config;
-import game.config.player_status;
+import src.config;
+import src.config.player_status;
 
 public class Player extends AnimatedSprite implements PhysicsObjectInterface {
     

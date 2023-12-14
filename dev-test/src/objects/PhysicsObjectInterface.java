@@ -1,7 +1,7 @@
-package game.objects;
+package src.objects;
 
-import game.config;
-import game.config.player_status;
+import src.config;
+import src.config.player_status;
 
 public interface PhysicsObjectInterface {
 

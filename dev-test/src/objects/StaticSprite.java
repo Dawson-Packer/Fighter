@@ -1,4 +1,4 @@
-package game.objects;
+package src.objects;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -8,7 +8,7 @@ import javax.imageio.ImageIO;
 
 import org.imgscalr.Scalr;
 
-import game.config;
+import src.config;
 
 public class StaticSprite extends Sprite {
  
@@ -74,7 +74,7 @@ public class StaticSprite extends Sprite {
             vertical_multiplier = -1;
             vertical_flip_offset = sprite_height;
         }
-        System.out.println("Hello!");
+
         g2d.drawImage(
             this.image,
             x_display_pos + horizontal_flip_offset,

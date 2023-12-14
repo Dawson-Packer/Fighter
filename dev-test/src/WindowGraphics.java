@@ -1,4 +1,4 @@
-package game;
+package src;
 
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -16,7 +16,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JComponent;
 
-import game.objects.*;
+import src.objects.*;
 
 public class WindowGraphics extends JComponent implements WindowListener {
     

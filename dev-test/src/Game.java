@@ -1,11 +1,11 @@
-package game;
+package src;
 
 import java.lang.Thread;
 import java.util.ArrayList;
 
-import game.objects.*;
+import src.objects.*;
 
-import game.config;
+import src.config;
 
 public class Game extends Thread {
 
@@ -15,8 +15,8 @@ public class Game extends Thread {
     protected config config;
 
     private long sleep_delay = 100;
-    private int frame_height = game.config.window_height;
-    private int frame_width = game.config.window_width;
+    private int frame_height = src.config.window_height;
+    private int frame_width = src.config.window_width;
     private WindowGraphics window;
     private ObjectHandler object_handler;
     private UIHandler ui_handler;
@@ -93,14 +93,14 @@ public class Game extends Thread {
                 Background background = new Background(
                     next_object_id(),
                     0,
-                    game.config.window_width / 2,
+                    src.config.window_width / 2,
                     0.0,
-                    game.config.window_height,
-                    game.config.window_width
+                    src.config.window_height,
+                    src.config.window_width
                     );
                 sprite_list.add(background);
 
-                Player player1 = new Player(0, 0, 200.0, game.config.ground_level, true, 0.0, 0.0, 160, 160, 160, 160, "stickman", 0.0);
+                Player player1 = new Player(0, 0, 200.0, src.config.ground_level, true, 0.0, 0.0, 160, 160, 160, 160, "stickman", 0.0);
                 sprite_list.add(player1);
                 player_list.add(player1);
                 player1 = null;

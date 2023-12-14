@@ -1,4 +1,4 @@
-package game.objects;
+package src.objects;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -7,8 +7,8 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
-import game.config;
-import game.config.player_status;
+import src.config;
+import src.config.player_status;
 
 public class AnimatedSprite extends Sprite {
     
@@ -16,6 +16,7 @@ public class AnimatedSprite extends Sprite {
     private ArrayList<Double> cycle_times = new ArrayList<>();
     private long cycle_start_time; // in seconds
     private int animation_value;
+    private int frame;
 
     private long last_system_time;
 
@@ -39,7 +40,7 @@ public class AnimatedSprite extends Sprite {
     }
 
     public void load_sprite_sheets(int width, int height) {
-        cycle_times.add(0.45); // IDLE
+        cycle_times.add(0.30); // IDLE
         try {
             BufferedImage sheet = ImageIO.read(
                 AnimatedSprite.class.getResource("../.." +
@@ -113,12 +114,6 @@ public class AnimatedSprite extends Sprite {
     public void paint(Graphics2D g2d) {
         long current_time = System.nanoTime();
         double cycle_length = cycle_times.get(animation_value) * (1.0e9);
-        double progress = (current_time - cycle_start_time) / cycle_length;
-        if (current_time - cycle_start_time >= cycle_length) {
-            cycle_start_time = last_system_time;
-        }
-        if (progress > 1.0) progress = 0.125;
-        if (progress < 0.0) progress = -progress;
         int horizontal_multiplier = 1, vertical_multiplier = 1;
         if (flipped_horizontally) {
             horizontal_multiplier = -1;
@@ -129,14 +124,19 @@ public class AnimatedSprite extends Sprite {
             vertical_flip_offset = sprite_height;
         }
         
+        if (current_time - last_system_time >=
+        (cycle_length / sprite_sheets.get(animation_value).num_frames())) {
+            frame += 1;
+            if (frame >= sprite_sheets.get(animation_value).num_frames()) frame = 0;
+            last_system_time = current_time;
+        }
         g2d.drawImage(
-            sprite_sheets.get(animation_value).get_sprite(progress),
+            sprite_sheets.get(animation_value).get_sprite(frame),
             x_display_pos + horizontal_flip_offset,
             y_display_pos + vertical_flip_offset,
             sprite_width * horizontal_multiplier, sprite_height * vertical_multiplier,
             null
         );
-        last_system_time = current_time;
         horizontal_flip_offset = 0;
         vertical_flip_offset = 0;
     }
