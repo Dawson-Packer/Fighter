@@ -40,7 +40,8 @@ public class Player extends AnimatedSprite implements PhysicsObjectInterface {
         super(
             object_id,
             (int)Math.round(x_pos),
-            config.field_height - (int)Math.round(y_pos),
+            config.field_height - (int)Math.round(y_pos) + sprite_height,
+            true,
             sprite_height,
             sprite_width,
             256,
@@ -67,7 +68,7 @@ public class Player extends AnimatedSprite implements PhysicsObjectInterface {
 
         // prepare_animation();
 
-        update_sprite(x_pos, y_pos);
+        update_sprite(x_pos, y_pos + sprite_height);
     }
 
     @Override
@@ -107,70 +108,62 @@ public class Player extends AnimatedSprite implements PhysicsObjectInterface {
         return status;
     }
 
-    private void prepare_animation() {
-        config.player_status current_status = status;
-        if (last_status != current_status) reset_animation_tick();
-        if (status == player_status.IDLE) {
-            animate("/assets/textures/player/" + character_name + "/" + status.ordinal() + "/", 4, 7, direction);
-        }
-        else if (status == player_status.MOVING) {
-            animate("/assets/textures/player/" + character_name + "/" + status.ordinal() + "/", 2, 7, direction);
-            status = player_status.IDLE;
-        }
-        else if (status == player_status.IN_AIR) {
-            animate("/assets/textures/player/" + character_name + "/" + status.ordinal() + "/", 1, 4, direction);
-            status = player_status.IDLE;
-        }
-        else if (status == player_status.PUNCHING) {
-            animate("/assets/textures/player/" + character_name + "/" + status.ordinal() + "/", 1, 3, direction);
-            if (animation_tick == 0) status = player_status.IDLE;
-        }
-        else if (status == player_status.KICKING) {
-            animate("/assets/textures/player/" + character_name + "/" + status.ordinal() + "/", 1, 3, direction);
-            if (animation_tick == 0) status = player_status.IDLE;
-        }
-        else if (status == player_status.DUCKING) {
-            animate("/assets/textures/player/" + character_name + "/" + status.ordinal() + "/", 1, 1, direction);
-            status = player_status.IDLE;
-        }
-        else if (status == player_status.MOVING_SLOW) {
-            animate("/assets/textures/player/" + character_name + "/" + status.ordinal() + "/", 4, 15, direction);
-            status = player_status.IDLE;
-        }
-        else if (status == player_status.DEFENDING) {
-            animate("/assets/textures/player/" + character_name + "/" + status.ordinal() + "/", 1, 1, direction);
-        }
-        else if (status == player_status.MOVE1) {
-            animate("/assets/textures/player/" + character_name + "/" + status.ordinal() + "/", 1, 1, direction);
-            if (animation_tick == 0) status = player_status.IDLE;
-        }
-        else if (status == player_status.MOVE2) {
-            animate("/assets/textures/player/" + character_name + "/" + status.ordinal() + "/", 1, 1, direction);
-            if (animation_tick == 0) status = player_status.IDLE;
-        }
-        else if (status == player_status.MOVE3) {
-            animate("/assets/textures/player/" + character_name + "/" + status.ordinal() + "/", 1, 1, direction);
-            if (animation_tick == 0) status = player_status.IDLE;
-        }
-        else if (status == player_status.ULTIMATE) {
-            animate("/assets/textures/player/" + character_name + "/" + status.ordinal() + "/", 1, 1, direction);
-            if (animation_tick == 0) status = player_status.IDLE;
-        }
-        else if (status == player_status.APPEAR) {
-            animate("/assets/textures/player/" + character_name + "/" + status.ordinal() + "/", 1, 1, direction);
-            if (animation_tick == 0) status = player_status.IDLE;
-        }
+    // private void prepare_animation() {
+    //     config.player_status current_status = status;
+    //     if (last_status != current_status) reset_animation_tick();
+    //     if (status == player_status.IDLE) {
+    //         animate("/assets/textures/player/" + character_name + "/" + status.ordinal() + "/", 4, 7, direction);
+    //     }
+    //     else if (status == player_status.MOVING) {
+    //         animate("/assets/textures/player/" + character_name + "/" + status.ordinal() + "/", 2, 7, direction);
+    //         status = player_status.IDLE;
+    //     }
+    //     else if (status == player_status.IN_AIR) {
+    //         animate("/assets/textures/player/" + character_name + "/" + status.ordinal() + "/", 1, 4, direction);
+    //         status = player_status.IDLE;
+    //     }
+    //     else if (status == player_status.PUNCHING) {
+    //         animate("/assets/textures/player/" + character_name + "/" + status.ordinal() + "/", 1, 3, direction);
+    //         if (animation_tick == 0) status = player_status.IDLE;
+    //     }
+    //     else if (status == player_status.KICKING) {
+    //         animate("/assets/textures/player/" + character_name + "/" + status.ordinal() + "/", 1, 3, direction);
+    //         if (animation_tick == 0) status = player_status.IDLE;
+    //     }
+    //     else if (status == player_status.DUCKING) {
+    //         animate("/assets/textures/player/" + character_name + "/" + status.ordinal() + "/", 1, 1, direction);
+    //         status = player_status.IDLE;
+    //     }
+    //     else if (status == player_status.MOVING_SLOW) {
+    //         animate("/assets/textures/player/" + character_name + "/" + status.ordinal() + "/", 4, 15, direction);
+    //         status = player_status.IDLE;
+    //     }
+    //     else if (status == player_status.DEFENDING) {
+    //         animate("/assets/textures/player/" + character_name + "/" + status.ordinal() + "/", 1, 1, direction);
+    //     }
+    //     else if (status == player_status.MOVE1) {
+    //         animate("/assets/textures/player/" + character_name + "/" + status.ordinal() + "/", 1, 1, direction);
+    //         if (animation_tick == 0) status = player_status.IDLE;
+    //     }
+    //     else if (status == player_status.MOVE2) {
+    //         animate("/assets/textures/player/" + character_name + "/" + status.ordinal() + "/", 1, 1, direction);
+    //         if (animation_tick == 0) status = player_status.IDLE;
+    //     }
+    //     else if (status == player_status.MOVE3) {
+    //         animate("/assets/textures/player/" + character_name + "/" + status.ordinal() + "/", 1, 1, direction);
+    //         if (animation_tick == 0) status = player_status.IDLE;
+    //     }
+    //     else if (status == player_status.ULTIMATE) {
+    //         animate("/assets/textures/player/" + character_name + "/" + status.ordinal() + "/", 1, 1, direction);
+    //         if (animation_tick == 0) status = player_status.IDLE;
+    //     }
+    //     else if (status == player_status.APPEAR) {
+    //         animate("/assets/textures/player/" + character_name + "/" + status.ordinal() + "/", 1, 1, direction);
+    //         if (animation_tick == 0) status = player_status.IDLE;
+    //     }
 
-        last_status = current_status;
-    }
-
-    public void animate(String dir, int divisor, int cycle_end, boolean facing_right) {
-        // System.out.println(Integer.toString((int)(animation_tick / divisor)));
-        set_texture(dir + (int)(animation_tick / divisor) + ".png");
-        if (facing_right != direction) flip_texture(true, false);
-        ++animation_tick;
-        if (animation_tick == cycle_end) animation_tick = 0;
-    }
+    //     last_status = current_status;
+    // }
 
     public void reset_animation_tick() {
         animation_tick = 0;

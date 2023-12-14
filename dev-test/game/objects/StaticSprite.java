@@ -1,76 +1,45 @@
 package game.objects;
 
-import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Toolkit;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
+
+import org.imgscalr.Scalr;
 
 import game.config;
-import game.config.player_status;
 
-public class StaticSprite implements SpriteInterface {
+public class StaticSprite extends Sprite {
  
-    private Image image;
-
-    public int id;
-    public int image_width;
-    public int image_height;
-
-    private boolean flipped_vertically;
-    private int vertical_flip_offset;
-    private boolean flipped_horizontally;
-    private int horizontal_flip_offset;
-    private int x_display_pos;
-    private int y_display_pos;
-    public String path_to_texture;
-    
+    private BufferedImage image;
 
     public StaticSprite(
         int id,
         int x_pos,
         int y_pos,
+        boolean facing_right,
         int height,
         int width,
         int image_height,
         int image_width,
         String path
     ) {
-        this.x_display_pos = x_pos;
-        this.y_display_pos = y_pos;
-        this.image_height = height;
-        this.image_width = width;
-        this.path_to_texture = path;
+        super(id, x_pos, y_pos, facing_right, height, width, image_height, image_width, path);
         this.image = null;
-        this.flipped_vertically = false;
-        this.vertical_flip_offset = 0;
-        this.flipped_horizontally = false;
-        this.horizontal_flip_offset = 0;
-        set_texture();
+        set_texture(this.path_to_texture);
     }
 
-    public void set_texture(String...path) {
-        // String image_path = path.length > 0 ? path[0] : "null";
-        // // if (image_loaded) image.flush();
-        // if (image_path != "null") {
-        //     image = null;
-        //     image = new ImageIcon(getClass().getResource(image_path)).getImage();
-        //     image = image.getScaledInstance(image_width, image_height, java.awt.Image.SCALE_SMOOTH);
-        // }
-        // else {
-        //     image = null;
-        //     image = new ImageIcon(getClass().getResource(path_to_texture)).getImage();
-        //     image = image.getScaledInstance(image_width, image_height, java.awt.Image.SCALE_SMOOTH);
-        // }
-
-        // image_loaded = true;
+    public void set_texture(String path) {
+        System.out.println(path);
+        try {
+            this.image = ImageIO.read(
+                StaticSprite.class.getResource("../.." + path)
+            );
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+        image = Scalr.resize(image, Scalr.Method.BALANCED, sprite_width, sprite_height);
     }
 
     public int get_display_x() { return x_display_pos; }
@@ -99,22 +68,21 @@ public class StaticSprite implements SpriteInterface {
         int horizontal_multiplier = 1, vertical_multiplier = 1;
         if (flipped_horizontally) {
             horizontal_multiplier = -1;
-            horizontal_flip_offset = image_width;
+            horizontal_flip_offset = sprite_width;
         }
         if (flipped_vertically) {
             vertical_multiplier = -1;
-            vertical_flip_offset = image_height;
+            vertical_flip_offset = sprite_height;
         }
-        
-        // g2d.drawImage(
-        //     sprite_sheets.get(animation_value).get_sprite(progress),
-        //     x_display_pos + horizontal_flip_offset,
-        //     y_display_pos + vertical_flip_offset,
-        //     image_width * horizontal_multiplier, image_height * vertical_multiplier,
-        //     null
-        // );
+        System.out.println("Hello!");
+        g2d.drawImage(
+            this.image,
+            x_display_pos + horizontal_flip_offset,
+            y_display_pos + vertical_flip_offset,
+            sprite_width * horizontal_multiplier, sprite_height * vertical_multiplier,
+            null
+        );
         horizontal_flip_offset = 0;
         vertical_flip_offset = 0;
     }
-
 }

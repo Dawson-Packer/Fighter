@@ -2,7 +2,7 @@ package game.objects;
 
 import game.config;
 
-public class Background extends SpriteInterface {
+public class Background extends StaticSprite {
     
     public int map_id;
 
@@ -16,12 +16,14 @@ public class Background extends SpriteInterface {
     ) {
         super(
             object_id,
-            (int)Math.round(x_pos),
-            config.field_height - (int)Math.round(y_pos),
+            (int)Math.round(x_pos) - (sprite_width / 2),
+            config.field_height - (int)Math.round(y_pos) - sprite_height,
+            true,
             sprite_height,
             sprite_width,
-            "/assets/textures/background/",
-            map_id
+            1024,
+            640,
+            "/assets/textures/background/" + Integer.toString(map_id) + ".png"
         );
         this.map_id = map_id;
     }

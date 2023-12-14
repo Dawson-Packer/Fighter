@@ -6,16 +6,13 @@ import java.awt.image.BufferedImage;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JComponent;
 
@@ -62,24 +59,14 @@ public class WindowGraphics extends JComponent implements WindowListener {
 
     }
 
-    // TODO: Find a library to do this
-    public void update(ArrayList<AnimatedSprite> sprite_list) {
-        // System.out.println(Integer.toString(sprite_list.size()));
+    public void update(ArrayList<Sprite> sprite_list) {
         panel.paintComponent(panel.graphics);
 
         panel.load_background();
-        // panel.load_objects(sprite_list);
         for (int i = 0; i < sprite_list.size(); ++i) {
             sprite_list.get(i).paint(panel.graphics);
         }
-        
-        //     // panel.add(image_label);
-        //     // image_label = null;
-        //     // panel = null;
-
-        
         panel.render();
-        // frame.setVisible(true);
     }
 
     @Override
