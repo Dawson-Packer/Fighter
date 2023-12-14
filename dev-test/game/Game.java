@@ -42,7 +42,7 @@ public class Game extends Thread {
             
 
             if (i % 20 == 0) {
-                System.out.println("say so");
+                // System.out.println("say so");
                 // object_handler.player_list.get(0).set_texture("/assets/textures/player/stickman/2/2.png");
             }
             if (i % 20 == 10) {
@@ -67,7 +67,7 @@ public class Game extends Thread {
 
     public class ObjectHandler {
 
-        public ArrayList<Sprite> sprite_list;
+        public ArrayList<AnimatedSprite> sprite_list;
 
         private int available_object_id;
 
@@ -77,7 +77,7 @@ public class Game extends Thread {
         public ObjectHandler() {
             available_object_id = -1;
             action_handler = new ActionHandler();
-            sprite_list = new ArrayList<Sprite>();
+            sprite_list = new ArrayList<AnimatedSprite>();
             player_list = new ArrayList<Player>();
         }
 
@@ -90,17 +90,17 @@ public class Game extends Thread {
         public void load_game() {
             try {
 
-                Background background = new Background(
-                    next_object_id(),
-                    0,
-                    game.config.window_width / 2,
-                    0.0,
-                    game.config.window_height,
-                    game.config.window_width
-                    );
-                sprite_list.add(background);
+                // Background background = new Background(
+                //     next_object_id(),
+                //     0,
+                //     game.config.window_width / 2,
+                //     0.0,
+                //     game.config.window_height,
+                //     game.config.window_width
+                //     );
+                // sprite_list.add(background);
 
-                Player player1 = new Player(0, 0, 200.0, game.config.ground_level, true, 0.0, 0.0, 160, 160, 160, 160, "stickman", 0.0);
+                Player player1 = new Player(0, 0, 200.0, game.config.ground_level + 200, true, 0.0, 0.0, 160, 160, 160, 160, "stickman", 0.0);
                 sprite_list.add(player1);
                 player_list.add(player1);
                 player1 = null;

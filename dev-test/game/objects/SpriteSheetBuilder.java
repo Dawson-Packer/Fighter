@@ -3,11 +3,14 @@ package game.objects;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import org.imgscalr.Scalr;
+
 public class SpriteSheetBuilder {
     
     private BufferedImage sprite_sheet;
     private int rows, columns;
     private int sprite_width, sprite_height;
+    private int image_width, image_height;
     private int sprite_count;
 
     public SpriteSheetBuilder using(BufferedImage image) {
@@ -26,6 +29,12 @@ public class SpriteSheetBuilder {
     }
 
     public SpriteSheetBuilder with_size(int width, int height) {
+        this.image_width = width;
+        this.image_height = height;
+        return this;
+    }
+
+    public SpriteSheetBuilder with_display_size(int width, int height) {
         this.sprite_width = width;
         this.sprite_height = height;
         return this;
@@ -49,11 +58,11 @@ public class SpriteSheetBuilder {
     }
 
     protected int get_sprite_width() {
-        return this.sprite_width;
+        return this.image_width;
     }
 
     protected int get_sprite_height() {
-        return this.sprite_height;
+        return this.image_height;
     }
 
     protected BufferedImage get_sprite_sheet() {
@@ -84,7 +93,9 @@ public class SpriteSheetBuilder {
         ArrayList<BufferedImage> sprites = new ArrayList<>(count);
 
         for (int i = 0; i < count; ++i) {
-            sprites.add(sheet.getSubimage(x, y, width, height));
+            BufferedImage frame = sheet.getSubimage(x, y, width, height);
+            frame = Scalr.resize(frame, Scalr.Method.BALANCED, sprite_width, sprite_height);
+            sprites.add(frame);
             x += width;
             if (x >= width * columns) {
                 x = 0;

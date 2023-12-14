@@ -5,7 +5,7 @@ import java.lang.Math;
 import game.config;
 import game.config.player_status;
 
-public class Player extends Sprite implements PhysicsObjectInterface, AnimatedSpriteInterface {
+public class Player extends AnimatedSprite implements PhysicsObjectInterface {
     
     public double x_pos;
     public double y_pos;
@@ -43,7 +43,10 @@ public class Player extends Sprite implements PhysicsObjectInterface, AnimatedSp
             config.field_height - (int)Math.round(y_pos),
             sprite_height,
             sprite_width,
-            "/assets/textures/player/stickman/0/0.png"
+            256,
+            256,
+            "/assets/textures/player/stickman/",
+            player_status.IDLE.ordinal()
         );
         this.x_pos = x_pos;
         this.y_pos = y_pos;
@@ -63,7 +66,6 @@ public class Player extends Sprite implements PhysicsObjectInterface, AnimatedSp
     public void tick() {
 
         // prepare_animation();
-        swap_texture();
 
         update_sprite(x_pos, y_pos);
     }
@@ -162,7 +164,6 @@ public class Player extends Sprite implements PhysicsObjectInterface, AnimatedSp
         last_status = current_status;
     }
 
-    @Override
     public void animate(String dir, int divisor, int cycle_end, boolean facing_right) {
         // System.out.println(Integer.toString((int)(animation_tick / divisor)));
         set_texture(dir + (int)(animation_tick / divisor) + ".png");
@@ -171,7 +172,6 @@ public class Player extends Sprite implements PhysicsObjectInterface, AnimatedSp
         if (animation_tick == cycle_end) animation_tick = 0;
     }
 
-    @Override
     public void reset_animation_tick() {
         animation_tick = 0;
     }

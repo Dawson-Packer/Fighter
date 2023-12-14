@@ -2,7 +2,7 @@ package game.objects;
 
 import game.config;
 
-public class Background extends Sprite {
+public class Background extends SpriteInterface {
     
     public int map_id;
 
@@ -20,7 +20,8 @@ public class Background extends Sprite {
             config.field_height - (int)Math.round(y_pos),
             sprite_height,
             sprite_width,
-            "/assets/textures/background/" + map_id + ".png"
+            "/assets/textures/background/",
+            map_id
         );
         this.map_id = map_id;
     }

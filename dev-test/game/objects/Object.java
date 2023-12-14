@@ -4,7 +4,7 @@ import java.lang.Math;
 import game.config;
 import game.config.player_status;
 
-public class Object extends Sprite {
+public class Object extends SpriteInterface {
     
     public int id;
 

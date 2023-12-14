@@ -63,18 +63,21 @@ public class WindowGraphics extends JComponent implements WindowListener {
     }
 
     // TODO: Find a library to do this
-    public void update(ArrayList<Sprite> sprite_list) {
+    public void update(ArrayList<AnimatedSprite> sprite_list) {
         // System.out.println(Integer.toString(sprite_list.size()));
         panel.paintComponent(panel.graphics);
+
         panel.load_background();
+        // panel.load_objects(sprite_list);
         for (int i = 0; i < sprite_list.size(); ++i) {
-            sprite_list.get(i).draw(panel.graphics);
+            sprite_list.get(i).paint(panel.graphics);
+        }
         
         //     // panel.add(image_label);
         //     // image_label = null;
         //     // panel = null;
 
-        }
+        
         panel.render();
         // frame.setVisible(true);
     }
@@ -144,10 +147,11 @@ public class WindowGraphics extends JComponent implements WindowListener {
         }
     }
 
-    private class Panel extends JComponent {
+    private class Panel extends JPanel {
 
         private Graphics2D graphics;
         private BufferedImage image;
+        private ArrayList<AnimatedSprite> sprite_list;
 
         private int panel_height;
         private int panel_width;
@@ -170,8 +174,8 @@ public class WindowGraphics extends JComponent implements WindowListener {
             graphics.fillRect(0, 0, panel_width, panel_height);
         }
 
-        public void load_objects() {
-
+        public void load_objects(ArrayList<AnimatedSprite> sprites) {
+            this.sprite_list = sprites;
         }
 
         public void render() {
@@ -182,7 +186,17 @@ public class WindowGraphics extends JComponent implements WindowListener {
 
         @Override
         public void paintComponent(Graphics g) {
-            super.paintComponent(g);
+            super.paintComponent(graphics);
+            // Graphics2D g2d = (Graphics2D) g.create();
+            
+            // for (int i = 0; i < sprite_list.size(); ++i) {
+            //     BufferedImage sprite = sprite_list.get(i);
+            // }
+            // BufferedImage sprite = spriteSheet.getSprite(spriteEngine.getCycleProgress());
+            // int x = (getWidth() - sprite.getWidth()) / 2;
+            // int y = (getHeight() - sprite.getHeight()) / 2;
+            // g2d.drawImage(sprite, x, y, this);
+            // g2d.dispose();
         }
 
     }
