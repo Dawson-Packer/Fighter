@@ -14,11 +14,10 @@ public class AnimatedSprite extends Sprite {
     
     private ArrayList<SpriteSheet> sprite_sheets = new ArrayList<>();
     private ArrayList<Double> cycle_times = new ArrayList<>();
-    private long cycle_start_time; // in seconds
     private int animation_value;
     private int frame;
 
-    private long last_system_time;
+    private long previous_time;
 
     public AnimatedSprite(
         int id,
@@ -34,8 +33,7 @@ public class AnimatedSprite extends Sprite {
     ) {
         super(id, x_pos, y_pos, facing_right, height, width, image_height, image_width, path);
         animation_value = animation;
-        cycle_start_time = System.nanoTime();
-        this.last_system_time = System.nanoTime();
+        this.previous_time = System.nanoTime();
         load_sprite_sheets(image_width, image_height);
     }
 
@@ -124,11 +122,11 @@ public class AnimatedSprite extends Sprite {
             vertical_flip_offset = sprite_height;
         }
         
-        if (current_time - last_system_time >=
+        if (current_time - previous_time >=
         (cycle_length / sprite_sheets.get(animation_value).num_frames())) {
             frame += 1;
             if (frame >= sprite_sheets.get(animation_value).num_frames()) frame = 0;
-            last_system_time = current_time;
+            previous_time = current_time;
         }
         g2d.drawImage(
             sprite_sheets.get(animation_value).get_sprite(frame),

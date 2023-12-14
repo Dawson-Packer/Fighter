@@ -6,13 +6,9 @@ import java.awt.image.BufferedImage;
 
 public class SpriteSheet {
 
-
-    private int current_frame;
     private final List<BufferedImage> sprites;
 
     public SpriteSheet(List<BufferedImage> sprites) {
-
-        this.current_frame = 0;
         this.sprites = new ArrayList<>(sprites);
     }
 
