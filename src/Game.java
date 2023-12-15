@@ -1,6 +1,7 @@
 package src;
 
 import java.lang.Thread;
+import java.security.PublicKey;
 import java.util.ArrayList;
 
 import interfaces.config.WindowSettings;
@@ -12,9 +13,8 @@ import interfaces.config.FieldSettings;
 public class Game extends Thread {
 
     public boolean IS_RUNNING = false;
-    // protected config config;
 
-    private long sleep_delay = 100;
+    private long sleep_delay = 32;
     private int frame_height = WindowSettings.window_height;
     private int frame_width = WindowSettings.window_width;
     private WindowGraphics window;
@@ -38,7 +38,8 @@ public class Game extends Thread {
     public void run() {
         while (IS_RUNNING) {
             ++i;
-            object_handler.tick();            
+            object_handler.tick(); 
+            object_handler.action_handler.process_inputs();           
             
 
             if (i % 20 == 0) {
@@ -100,7 +101,7 @@ public class Game extends Thread {
                     );
                 sprite_list.add(background);
 
-                Player player1 = new StickmanCharacter(0, 0, 200.0, FieldSettings.ground_level, true, 0.0, 0.0, 160, 160, 160, 160, 0.0);
+                Player player1 = new StickmanCharacter(0, 0, 50.0, FieldSettings.ground_level, true, 0.0, 0.0, 140, 140, 0.0);
                 sprite_list.add(player1);
                 player_list.add(player1);
                 player1 = null;
@@ -121,18 +122,55 @@ public class Game extends Thread {
 
         public class ActionHandler {
 
+            public boolean KEY_A_PRESSED = false;
+            public boolean KEY_D_PRESSED = false;
+            public boolean KEY_SPACE_PRESSED = false;
+            public boolean KEY_SHIFT_PRESSED = false;
+            public boolean KEY_RIGHT_PRESSED = false;
+            public boolean KEY_LEFT_PRESSED = false;
+
             public ActionHandler() {}
 
-            public void move_left() {
-                System.out.println("Moved left");
+            public void process_inputs() {
+
+                if (KEY_SHIFT_PRESSED) duck();
+                else stop_duck();
+                if (KEY_A_PRESSED) move_left();
+                if (KEY_D_PRESSED) move_right();
+                if (KEY_SPACE_PRESSED) jump();
+                if (KEY_RIGHT_PRESSED || KEY_LEFT_PRESSED) interact();
             }
 
-            public void move_right() {
-                System.out.println("Moved right");
+            private void move_left() {
+                player_list.get(0).move(false, KEY_SHIFT_PRESSED);
             }
 
-            public void jump() {
-                System.out.println("Jumped");
+            private void move_right() {
+                player_list.get(0).move(true, KEY_SHIFT_PRESSED);
+            }
+
+            private void jump() {
+                player_list.get(0).jump();
+            }
+
+            private void interact() {
+                if (!KEY_SHIFT_PRESSED) {
+                    if (KEY_RIGHT_PRESSED) player_list.get(0).punch(true);
+                    if (KEY_LEFT_PRESSED) player_list.get(0).punch(false);
+                }
+                if (KEY_SHIFT_PRESSED) {
+                    if (KEY_RIGHT_PRESSED) player_list.get(0).kick(true);
+                    if (KEY_LEFT_PRESSED) player_list.get(0).kick(false);
+                }
+
+            }
+
+            private void duck() {
+                player_list.get(0).duck();
+            }
+
+            private void stop_duck() {
+                player_list.get(0).stop_duck();
             }
         }
     }

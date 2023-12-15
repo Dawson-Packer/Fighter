@@ -13,8 +13,6 @@ public class StickmanCharacter extends Player {
         boolean facing_right,
         double x_velocity,
         double y_velocity,
-        int hitbox_height,
-        int hitbox_width,
         int sprite_height,
         int sprite_width,
         double rotation
@@ -27,8 +25,8 @@ public class StickmanCharacter extends Player {
             facing_right,
             x_velocity,
             y_velocity,
-            hitbox_height,
-            hitbox_width,
+            100,
+            20,
             sprite_height,
             sprite_width,
             new StickmanCharacterConfig(),
@@ -42,7 +40,12 @@ public class StickmanCharacter extends Player {
 
         // prepare_animation();
 
+        update_status(process_physics());
+
+        ping();
+
         update_sprite(x_pos, y_pos + sprite_height);
+        // reset_status();
     }
 
     

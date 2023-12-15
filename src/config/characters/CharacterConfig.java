@@ -1,4 +1,4 @@
-package interfaces.characters;
+package src.config.characters;
 
 import java.util.ArrayList;
 
@@ -13,6 +13,8 @@ public class CharacterConfig {
     public void load_textures(
         ArrayList<SpriteSheet> sprite_sheets,
         ArrayList<Double> cycle_times,
+        int image_width,
+        int image_height,
         int sprite_width,
         int sprite_height
         ) { }

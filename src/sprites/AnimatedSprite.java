@@ -1,18 +1,10 @@
 package src.sprites;
 
 import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-import javax.imageio.ImageIO;
-
-import interfaces.config.PlayerSettings;
-import src.objects.Player;
-import interfaces.characters.CharacterConfig;
 import interfaces.config.FieldSettings;
+import src.config.characters.CharacterConfig;
 
 public class AnimatedSprite extends Sprite {
     
@@ -21,6 +13,7 @@ public class AnimatedSprite extends Sprite {
     private int animation_value;
     private int frame;
 
+    private boolean first_tick_after_change = true;
     private long previous_time;
 
     public AnimatedSprite(
@@ -39,11 +32,24 @@ public class AnimatedSprite extends Sprite {
         super(id, x_pos, y_pos, facing_right, height, width, image_height, image_width, path);
         animation_value = animation;
         this.previous_time = System.nanoTime();
-        load_sprite_sheets(character);
+        load_sprite_sheets(character, image_width, image_height, width, height);
     }
 
-    public void load_sprite_sheets(CharacterConfig config) {
-        config.load_textures(sprite_sheets, cycle_times, sprite_width, sprite_height);
+    public void load_sprite_sheets(
+        CharacterConfig config,
+        int image_width,
+        int image_height,
+        int sprite_width,
+        int sprite_height
+        ) {
+        config.load_textures
+        (sprite_sheets,
+        cycle_times,
+        image_width,
+        image_height,
+        sprite_width,
+        sprite_height
+        );
     }
 
     public int get_display_x() { return x_display_pos; }
@@ -62,12 +68,14 @@ public class AnimatedSprite extends Sprite {
     }
 
     protected void set_animation_value(int val) {
+        first_tick_after_change = true;
+        frame = 0;
         animation_value = val;
     }
 
     @Override
     public void update_sprite(double x_pos, double y_pos) {
-        this.x_display_pos = (int)(Math.round(x_pos));
+        this.x_display_pos = (int)(Math.round(x_pos)) - (sprite_width / 2);
         this.y_display_pos = FieldSettings.field_height - (int)(Math.round(y_pos));
     }
 
@@ -87,7 +95,7 @@ public class AnimatedSprite extends Sprite {
         
         if (current_time - previous_time >=
         (cycle_length / sprite_sheets.get(animation_value).num_frames())) {
-            frame += 1;
+            if (!first_tick_after_change) frame += 1;
             if (frame >= sprite_sheets.get(animation_value).num_frames()) frame = 0;
             previous_time = current_time;
         }
@@ -100,5 +108,6 @@ public class AnimatedSprite extends Sprite {
         );
         horizontal_flip_offset = 0;
         vertical_flip_offset = 0;
+        first_tick_after_change = false;
     }
 }

@@ -12,6 +12,8 @@ import src.sprites.SpriteSheetBuilder;
 
 public interface StickmanCharacter {
     
+    public static final int hitbox_height = 100;
+
     public static void load_textures(
         ArrayList<SpriteSheet> sprite_sheets,
         ArrayList<Double> cycle_times,

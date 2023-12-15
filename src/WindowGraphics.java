@@ -118,20 +118,48 @@ public class WindowGraphics extends JComponent implements WindowListener {
         public void keyPressed(KeyEvent e) {
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_A :
-                    action_handler.move_left();
+                    action_handler.KEY_A_PRESSED = true;
                     break;
                 case KeyEvent.VK_D :
-                    action_handler.move_right();
+                    action_handler.KEY_D_PRESSED = true;
                     break;
                 case KeyEvent.VK_SPACE :
-                    action_handler.jump();
+                    action_handler.KEY_SPACE_PRESSED = true;
+                    break;
+                case KeyEvent.VK_RIGHT :
+                    action_handler.KEY_RIGHT_PRESSED = true;
+                    break;
+                case KeyEvent.VK_LEFT :
+                    action_handler.KEY_LEFT_PRESSED = true;
+                    break;
+                case KeyEvent.VK_SHIFT :
+                    action_handler.KEY_SHIFT_PRESSED = true;
                     break;
             }
         }
 
         @Override
         public void keyReleased(KeyEvent e) {
-            // DO NOTHING
+            switch (e.getKeyCode()) {
+                case KeyEvent.VK_A :
+                    action_handler.KEY_A_PRESSED = false;
+                    break;
+                case KeyEvent.VK_D :
+                    action_handler.KEY_D_PRESSED = false;
+                    break;
+                case KeyEvent.VK_SPACE :
+                    action_handler.KEY_SPACE_PRESSED = false;
+                    break;
+                case KeyEvent.VK_RIGHT :
+                    action_handler.KEY_RIGHT_PRESSED = false;
+                    break;
+                case KeyEvent.VK_LEFT :
+                    action_handler.KEY_LEFT_PRESSED = false;
+                    break;
+                case KeyEvent.VK_SHIFT :
+                    action_handler.KEY_SHIFT_PRESSED = false;
+                    break;
+            }
         }
     }
 
