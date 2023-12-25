@@ -73,6 +73,8 @@ public class AnimatedSprite extends Sprite {
         animation_value = val;
     }
 
+    public void force_animation_reset() { frame = 0; }
+
     @Override
     public void update_sprite(double x_pos, double y_pos) {
         this.x_display_pos = (int)(Math.round(x_pos)) - (sprite_width / 2);
@@ -96,7 +98,10 @@ public class AnimatedSprite extends Sprite {
         if (current_time - previous_time >=
         (cycle_length / sprite_sheets.get(animation_value).num_frames())) {
             if (!first_tick_after_change) frame += 1;
-            if (frame >= sprite_sheets.get(animation_value).num_frames()) frame = 0;
+            if (frame >= sprite_sheets.get(animation_value).num_frames()) {
+                frame = 0;
+                
+            }
             previous_time = current_time;
         }
         g2d.drawImage(

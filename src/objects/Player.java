@@ -27,7 +27,6 @@ public class Player extends AnimatedSprite implements Physics {
     private int kick_timer = 0;
     private int hitbox_height;
     private int hitbox_width;
-    private String character_name;
 
     private boolean IS_PUNCHING = false;
     private boolean IS_KICKING = false;
@@ -70,7 +69,6 @@ public class Player extends AnimatedSprite implements Physics {
         this.last_direction = direction;
         this.hitbox_height = hitbox_height;
         this.hitbox_width = hitbox_width;
-        this.character_name = character.name;
         this.move_cooldown = 0;
         status = PlayerSettings.player_status.IDLE;
         
@@ -188,8 +186,9 @@ public class Player extends AnimatedSprite implements Physics {
         if (punch_cooldown == 0) {
             IS_PUNCHING = true;
             update_status(PlayerSettings.player_status.PUNCHING);
+            force_animation_reset();
             move_cooldown = 5;
-            punch_cooldown = 8;
+            punch_cooldown = 5;
             punch_timer = 3;
         }
     }
@@ -200,6 +199,7 @@ public class Player extends AnimatedSprite implements Physics {
         if (kick_cooldown == 0 && !IS_KICKING) {
             IS_KICKING = true;
             update_status(PlayerSettings.player_status.KICKING);
+            force_animation_reset();
             move_cooldown = 8;
             kick_cooldown = 10;
             kick_timer = 5;

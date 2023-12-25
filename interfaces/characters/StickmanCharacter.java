@@ -6,6 +6,8 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
+import interfaces.config.PlayerSettings;
+import interfaces.config.PlayerSettings.player_status;
 import src.sprites.AnimatedSprite;
 import src.sprites.SpriteSheet;
 import src.sprites.SpriteSheetBuilder;
@@ -60,6 +62,10 @@ public interface StickmanCharacter {
             );
         } catch (IOException e) {
             System.out.println(e);
-        }  
+        }
+    }
+
+    public static PlayerSettings.player_status default_animation_status() {
+        return PlayerSettings.player_status.IDLE;
     }
 }
