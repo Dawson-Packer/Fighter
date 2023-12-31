@@ -48,7 +48,10 @@ public class Game extends Thread {
             if (i % 20 == 10) {
                 // object_handler.player_list.get(0).set_texture("/assets/textures/player/stickman/2/2.png");
             }
+            window.prepare_render();
             window.update(object_handler.sprite_list);
+            if (ui_handler.visible) window.show_gui(ui_handler.sprite_list);
+            window.render();
             try {
             Thread.sleep(sleep_delay);
             } catch (Exception e) {
@@ -179,8 +182,22 @@ public class Game extends Thread {
 
     public class UIHandler {
 
-        public UIHandler() {
+        public ArrayList<Sprite> sprite_list;
 
+        private int available_object_id;
+
+        public boolean visible;
+
+        public UIHandler() {
+            visible = true;
+            available_object_id = -1;
+            sprite_list = new ArrayList<Sprite>();
+
+        }
+
+        private int next_object_id() {
+            available_object_id++;
+            return available_object_id;
         }
     }
 

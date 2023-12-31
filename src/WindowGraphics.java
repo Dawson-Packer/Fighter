@@ -60,15 +60,31 @@ public class WindowGraphics extends JComponent implements WindowListener {
 
     }
 
-    public void update(ArrayList<Sprite> sprite_list) {
+    public void prepare_render() {
         panel.paintComponent(panel.graphics);
+    }
+
+    // TODO: Replace for loop with smart for loop
+    public void update(ArrayList<Sprite> sprite_list) {
+        // panel.paintComponent(panel.graphics);
 
         panel.load_background();
         for (int i = 0; i < sprite_list.size(); ++i) {
             sprite_list.get(i).paint(panel.graphics);
         }
-        panel.render();
+        // panel.render();
     }
+
+    // TODO: Replace for loop with smart for loop
+    public void show_gui(ArrayList<Sprite> sprite_list) {
+        // panel.paintComponent(panel.graphics);
+
+        for (int i = 0; i < sprite_list.size(); ++i) {
+            sprite_list.get(i).paint(panel.graphics);
+        }
+    }
+
+    public void render() { panel.render(); }
 
     @Override
     public void windowOpened(WindowEvent e) {
