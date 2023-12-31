@@ -62,7 +62,7 @@ public class Player extends AnimatedSprite implements Physics {
         );
         this.x_pos = x_pos;
         this.y_pos = y_pos;
-        speed = 12.0;
+        speed = 15.0;
         this.x_velocity = x_velocity;
         this.y_velocity = y_velocity;
         this.direction = facing_right;
@@ -202,7 +202,7 @@ public class Player extends AnimatedSprite implements Physics {
             force_animation_reset();
             move_cooldown = 8;
             kick_cooldown = 10;
-            kick_timer = 5;
+            kick_timer = 3;
         }
     }
 

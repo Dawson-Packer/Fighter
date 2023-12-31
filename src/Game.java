@@ -140,11 +140,11 @@ public class Game extends Thread {
                 if (KEY_RIGHT_PRESSED || KEY_LEFT_PRESSED) interact();
             }
 
-            private void move_left() {
+            public void move_left() {
                 player_list.get(0).move(false, KEY_SHIFT_PRESSED);
             }
 
-            private void move_right() {
+            public void move_right() {
                 player_list.get(0).move(true, KEY_SHIFT_PRESSED);
             }
 
@@ -161,6 +161,9 @@ public class Game extends Thread {
                     if (KEY_RIGHT_PRESSED) player_list.get(0).kick(true);
                     if (KEY_LEFT_PRESSED) player_list.get(0).kick(false);
                 }
+
+                KEY_RIGHT_PRESSED = false;
+                KEY_LEFT_PRESSED = false;
 
             }
 

@@ -119,9 +119,11 @@ public class WindowGraphics extends JComponent implements WindowListener {
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_A :
                     action_handler.KEY_A_PRESSED = true;
+                    action_handler.move_left();
                     break;
                 case KeyEvent.VK_D :
                     action_handler.KEY_D_PRESSED = true;
+                    action_handler.move_right();
                     break;
                 case KeyEvent.VK_SPACE :
                     action_handler.KEY_SPACE_PRESSED = true;

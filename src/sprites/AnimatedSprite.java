@@ -97,6 +97,7 @@ public class AnimatedSprite extends Sprite {
         
         if (current_time - previous_time >=
         (cycle_length / sprite_sheets.get(animation_value).num_frames())) {
+            // System.out.println("" + ((current_time - previous_time)/1000000));
             if (!first_tick_after_change) frame += 1;
             if (frame >= sprite_sheets.get(animation_value).num_frames()) {
                 frame = 0;
