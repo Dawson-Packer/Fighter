@@ -3,13 +3,13 @@ package src.objects;
 import interfaces.config.FieldSettings;
 import src.sprites.StaticSprite;
 
-public class Background extends StaticSprite {
+public class Map extends StaticSprite {
     
     public int map_id;
 
-    public Background(
+    public Map(
         int object_id,
-        String texture_name,
+        int map_id,
         double x_pos,
         double y_pos,
         int sprite_height,
@@ -24,7 +24,8 @@ public class Background extends StaticSprite {
             sprite_width,
             1024,
             640,
-            "/assets/textures/background/" + texture_name + ".png"
+            "/assets/textures/background/" + Integer.toString(map_id) + ".png"
         );
+        this.map_id = map_id;
     }
 }

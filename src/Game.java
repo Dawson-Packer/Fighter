@@ -93,15 +93,15 @@ public class Game extends Thread {
         public void load_game() {
             try {
 
-                Background background = new Background(
+                Map map = new Map(
                     next_object_id(),
                     0,
                     WindowSettings.window_width / 2,
                     0.0,
                     WindowSettings.window_height,
                     WindowSettings.window_width
-                    );
-                sprite_list.add(background);
+                );
+                sprite_list.add(map);
 
                 Player player1 = new StickmanCharacter(0, 0, 50.0, FieldSettings.ground_level, true, 0.0, 0.0, 140, 140, 0.0);
                 sprite_list.add(player1);
@@ -192,12 +192,27 @@ public class Game extends Thread {
             visible = true;
             available_object_id = -1;
             sprite_list = new ArrayList<Sprite>();
-
+            
+            load_main_menu();
         }
 
         private int next_object_id() {
             available_object_id++;
             return available_object_id;
+        }
+
+        private void load_main_menu() {
+            sprite_list.clear();
+            Background background = new Background(
+                next_object_id(),
+                "main_menu",
+                WindowSettings.window_width / 2,
+                0.0,
+                WindowSettings.window_height,
+                WindowSettings.window_width
+            );
+            sprite_list.add(background);
+            // TODO: Add buttons for host game, direct connect, and a list of local games
         }
     }
 
