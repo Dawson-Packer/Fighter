@@ -195,7 +195,7 @@ public class Game extends Thread {
             available_object_id = -1;
             sprite_list = new ArrayList<Sprite>();
             
-            // load_main_menu();
+            load_main_menu();
         }
 
         private int next_object_id() {
