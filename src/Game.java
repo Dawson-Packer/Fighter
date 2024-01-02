@@ -13,7 +13,7 @@ public class Game extends Thread {
 
     public boolean IS_RUNNING = false;
 
-    private long sleep_delay = 32;
+    private long sleep_delay = 36;
     private int frame_height = WindowSettings.window_height;
     private int frame_width = WindowSettings.window_width;
     private WindowGraphics window;
@@ -36,6 +36,7 @@ public class Game extends Thread {
     @Override
     public void run() {
         while (IS_RUNNING) {
+            long start_time = System.nanoTime();
             ++i;
             object_handler.tick(); 
             object_handler.action_handler.process_inputs();           
@@ -52,8 +53,9 @@ public class Game extends Thread {
             window.update(object_handler.sprite_list);
             if (ui_handler.visible) window.show_gui(ui_handler.sprite_list);
             window.render();
+            long elapsed_time_ms = (System.nanoTime() - start_time) / 1000000;
             try {
-            Thread.sleep(sleep_delay);
+            Thread.sleep(sleep_delay - elapsed_time_ms);
             } catch (Exception e) {
                 System.out.println(e);
             }
@@ -193,7 +195,7 @@ public class Game extends Thread {
             available_object_id = -1;
             sprite_list = new ArrayList<Sprite>();
             
-            load_main_menu();
+            // load_main_menu();
         }
 
         private int next_object_id() {
