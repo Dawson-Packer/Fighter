@@ -5,7 +5,7 @@ import java.lang.Math;
 import interfaces.Physics;
 import interfaces.config.PlayerSettings;
 import interfaces.config.FieldSettings;
-import src.config.characters.CharacterConfig;
+import src.config.*;
 import src.sprites.AnimatedSprite;
 
 public class Player extends AnimatedSprite implements Physics {
@@ -44,7 +44,7 @@ public class Player extends AnimatedSprite implements Physics {
         int hitbox_width,
         int sprite_height,
         int sprite_width,
-        CharacterConfig character,
+        SpriteConfig sprite_config,
         double rotation
     ) {
         super(
@@ -58,7 +58,7 @@ public class Player extends AnimatedSprite implements Physics {
             256,
             "/assets/textures/player/stickman/",
             PlayerSettings.player_status.IDLE.ordinal(),
-            character
+            sprite_config
         );
         this.x_pos = x_pos;
         this.y_pos = y_pos;

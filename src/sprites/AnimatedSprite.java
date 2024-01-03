@@ -4,7 +4,7 @@ import java.awt.Graphics2D;
 import java.util.ArrayList;
 
 import interfaces.config.FieldSettings;
-import src.config.characters.CharacterConfig;
+import src.config.*;
 
 public class AnimatedSprite extends Sprite {
     
@@ -27,22 +27,22 @@ public class AnimatedSprite extends Sprite {
         int image_width,
         String path,
         int animation,
-        CharacterConfig character
+        SpriteConfig sprite_config
     ) {
         super(id, x_pos, y_pos, facing_right, height, width, image_height, image_width, path);
         animation_value = animation;
         this.previous_time = System.nanoTime();
-        load_sprite_sheets(character, image_width, image_height, width, height);
+        load_sprite_sheets(sprite_config, image_width, image_height, width, height);
     }
 
     public void load_sprite_sheets(
-        CharacterConfig config,
+        SpriteConfig sprite_config,
         int image_width,
         int image_height,
         int sprite_width,
         int sprite_height
         ) {
-        config.load_textures
+        sprite_config.load_textures
         (sprite_sheets,
         cycle_times,
         image_width,
